@@ -22,7 +22,12 @@ import {
   Copy,
   Settings,
   Sparkles,
-  Search
+  Search,
+  Edit3,
+  Trash2,
+  Plus,
+  Tag,
+  RefreshCw
 } from 'lucide-react';
 import { formatBOB, generateSecureReceiptToken, PaymentMethod } from '@xentra/shared';
 import { useTenantStore } from '../stores/tenantStore';
@@ -83,6 +88,43 @@ const INITIAL_PAYMENTS: PaymentMock[] = [
   }
 ];
 
+export interface OtbFee {
+  id: string;
+  title: string;
+  type: 'Ordinaria' | 'AporteEspecial' | 'ServicioAgua' | 'Alumbrado';
+  dueDate: string;
+  amount: number;
+  description: string;
+  status: 'Activa' | 'Cerrada';
+  assignedLots: number;
+  paidLots: number;
+}
+
+const INITIAL_FEES_OTB: OtbFee[] = [
+  {
+    id: 'fee-1',
+    title: 'Cuota Ordinaria Noviembre 2026',
+    type: 'Ordinaria',
+    dueDate: '30/11/2026',
+    amount: 25.0,
+    description: 'Fondo operativo para pago de alumbrado público, recojo de basura comunal y mantenimiento.',
+    status: 'Activa',
+    assignedLots: 48,
+    paidLots: 36
+  },
+  {
+    id: 'fee-2',
+    title: 'Aporte Pro-Tinglado (Cuota 1 de 2)',
+    type: 'AporteEspecial',
+    dueDate: '15/12/2026',
+    amount: 100.0,
+    description: 'Fondo exclusivo con destino a la compra de perfiles y tinglado de la cancha polifuncional.',
+    status: 'Activa',
+    assignedLots: 48,
+    paidLots: 22
+  }
+];
+
 export const FinanzasPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
@@ -139,6 +181,29 @@ export const FinanzasPage: React.FC = () => {
   const [formInstructions, setFormInstructions] = useState(otbPaymentConfig.instructions);
   const [qrFilePreview, setQrFilePreview] = useState<string>(otbPaymentConfig.qrImageUrl || '');
   const [configSavedNotice, setConfigSavedNotice] = useState(false);
+
+  // Estados CRUD Cuotas Comunales (Rol Tesorero)
+  const [fees, setFees] = useState<OtbFee[]>(INITIAL_FEES_OTB);
+  const [showCreateFeeModal, setShowCreateFeeModal] = useState(false);
+  const [newFeeTitle, setNewFeeTitle] = useState('');
+  const [newFeeType, setNewFeeType] = useState<OtbFee['type']>('Ordinaria');
+  const [newFeeDueDate, setNewFeeDueDate] = useState('31/12/2026');
+  const [newFeeAmount, setNewFeeAmount] = useState('25.00');
+  const [newFeeDescription, setNewFeeDescription] = useState('');
+
+  const [editingFee, setEditingFee] = useState<OtbFee | null>(null);
+  const [editFeeTitle, setEditFeeTitle] = useState('');
+  const [editFeeType, setEditFeeType] = useState<OtbFee['type']>('Ordinaria');
+  const [editFeeDueDate, setEditFeeDueDate] = useState('');
+  const [editFeeAmount, setEditFeeAmount] = useState('');
+  const [editFeeDescription, setEditFeeDescription] = useState('');
+  const [editFeeStatus, setEditFeeStatus] = useState<'Activa' | 'Cerrada'>('Activa');
+
+  const [deletingFee, setDeletingFee] = useState<OtbFee | null>(null);
+
+  // Estado para Revertir / Anular Recibo Contable (Auditoría)
+  const [reversingPayment, setReversingPayment] = useState<PaymentMock | null>(null);
+  const [reversalReason, setReversalReason] = useState('');
 
   const pendingCount = getPendingCount();
 
@@ -249,6 +314,121 @@ export const FinanzasPage: React.FC = () => {
       action_route: `/verificar-recibo?token=${token}&receipt=${receiptNum}`,
       created_at: new Date().toISOString()
     });
+  };
+
+  // CRUD Cuotas: Crear Nueva Cuota
+  const handleCreateFee = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amountNum = parseFloat(newFeeAmount);
+    if (!newFeeTitle.trim() || isNaN(amountNum) || amountNum <= 0) {
+      alert('Ingresa un título válido y un monto mayor a 0 Bs.');
+      return;
+    }
+
+    const createdFee: OtbFee = {
+      id: `fee-${Date.now()}`,
+      title: newFeeTitle.trim(),
+      type: newFeeType,
+      dueDate: newFeeDueDate,
+      amount: amountNum,
+      description: newFeeDescription.trim() || 'Obligación aprobada en asamblea de la OTB.',
+      status: 'Activa',
+      assignedLots: 48,
+      paidLots: 0
+    };
+
+    setFees([createdFee, ...fees]);
+    setShowCreateFeeModal(false);
+    setNewFeeTitle('');
+    setNewFeeAmount('25.00');
+    setNewFeeDescription('');
+    alert(`¡Nueva cuota "${createdFee.title}" creada y asignada a las viviendas de la OTB!`);
+  };
+
+  // CRUD Cuotas: Iniciar Edición
+  const handleStartEditFee = (fee: OtbFee) => {
+    setEditingFee(fee);
+    setEditFeeTitle(fee.title);
+    setEditFeeType(fee.type);
+    setEditFeeDueDate(fee.dueDate);
+    setEditFeeAmount(fee.amount.toString());
+    setEditFeeDescription(fee.description);
+    setEditFeeStatus(fee.status);
+  };
+
+  // CRUD Cuotas: Guardar Edición (Update)
+  const handleSaveEditFee = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingFee || !editFeeTitle.trim()) return;
+
+    const amountNum = parseFloat(editFeeAmount) || editingFee.amount;
+
+    setFees(
+      fees.map((f) => {
+        if (f.id !== editingFee.id) return f;
+        return {
+          ...f,
+          title: editFeeTitle.trim(),
+          type: editFeeType,
+          dueDate: editFeeDueDate,
+          amount: amountNum,
+          description: editFeeDescription.trim(),
+          status: editFeeStatus
+        };
+      })
+    );
+
+    setEditingFee(null);
+  };
+
+  // CRUD Cuotas: Alternar Estado Activa / Cerrada
+  const handleToggleFeeStatus = (feeId: string) => {
+    setFees(
+      fees.map((f) => {
+        if (f.id !== feeId) return f;
+        const newStatus = f.status === 'Activa' ? 'Cerrada' : 'Activa';
+        return { ...f, status: newStatus };
+      })
+    );
+  };
+
+  // CRUD Cuotas: Eliminar Cuota (Delete)
+  const handleConfirmDeleteFee = () => {
+    if (!deletingFee) return;
+    setFees(fees.filter((f) => f.id !== deletingFee.id));
+    setDeletingFee(null);
+  };
+
+  // CRUD Pagos: Revertir / Anular Recibo Contable
+  const handleConfirmReversePayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reversingPayment) return;
+
+    setPayments(
+      payments.map((p) => {
+        if (p.id !== reversingPayment.id) return p;
+        return {
+          ...p,
+          status: 'Reversed'
+        };
+      })
+    );
+
+    addNotification({
+      id: `notif-${Date.now()}`,
+      recipient_user_id: 'user-neighbor',
+      otb_id: currentOtb?.id || '',
+      type: 'COMMUNITY_ALERT',
+      category: 'Pagos',
+      title: 'Recibo Anulado por Tesorería',
+      body: `El recibo ${reversingPayment.receiptNumber} fue revertido. Motivo: ${reversalReason || 'Ajuste contable'}.`,
+      priority: 'high',
+      created_at: new Date().toISOString()
+    });
+
+    setReversingPayment(null);
+    setReversalReason('');
+    alert('Recibo revertido con éxito en el libro de caja con constancia de auditoría.');
   };
 
   return (
@@ -751,16 +931,33 @@ export const FinanzasPage: React.FC = () => {
                       {formatBOB(p.amount)}
                     </td>
                     <td className="px-5 py-3.5 text-center">
-                      <button
-                        onClick={() =>
-                          navigate(`/verificar-recibo?token=${p.token}&receipt=${p.receiptNumber}`)
-                        }
-                        title="Verificar Recibo Oficial QR"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/40 transition-colors cursor-pointer"
-                      >
-                        <QrCode className="w-3.5 h-3.5 text-blue-400" />
-                        <span>Ver QR</span>
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <button
+                          onClick={() =>
+                            navigate(`/verificar-recibo?token=${p.token}&receipt=${p.receiptNumber}`)
+                          }
+                          title="Verificar Recibo Oficial QR"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/40 transition-colors cursor-pointer"
+                        >
+                          <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Ver QR</span>
+                        </button>
+
+                        {/* Botón Anular Recibo (Solo si está Confirmado) */}
+                        {p.status === 'Confirmed' && (
+                          <button
+                            onClick={() => {
+                              setReversingPayment(p);
+                              setReversalReason('');
+                            }}
+                            title="Revertir / Anular este recibo emitido por error"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/30 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Anular</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -771,42 +968,127 @@ export const FinanzasPage: React.FC = () => {
       )}
 
       {/* ======================================================== */}
-      {/* TAB 4: TARIFARIO DE CUOTAS                              */}
+      {/* TAB 4: TARIFARIO DE CUOTAS (CRUD COMPLETO TESORERÍA)    */}
       {/* ======================================================== */}
       {activeTab === 'cuotas' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
-                Ordinaria
-              </span>
-              <span className="text-xs text-slate-400 font-mono">Vence: 30/11/2026</span>
+        <div className="space-y-5">
+          {/* Barra superior de gestión de cuotas */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#0B132B]/90 border border-slate-700">
+            <div>
+              <h2 className="text-sm sm:text-base font-black text-white">
+                Cuotas Comunales & Obligaciones Aprobadas ({fees.length})
+              </h2>
+              <p className="text-xs text-slate-400">
+                Tarifas aprobadas en asamblea general asignadas a las viviendas para recaudación comunal.
+              </p>
             </div>
-            <h3 className="font-extrabold text-white text-base">Cuota Ordinaria Noviembre 2026</h3>
-            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-              Fondo operativo para pago de alumbrado público, recojo de basura comunal y mantenimiento.
-            </p>
-            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">Monto asignado por vivienda:</span>
-              <span className="text-xl font-black font-mono text-white">{formatBOB(25.0)}</span>
-            </div>
+            <button
+              onClick={() => setShowCreateFeeModal(true)}
+              className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Nueva Cuota Comunal</span>
+            </button>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
-                Aporte Especial
-              </span>
-              <span className="text-xs text-slate-400 font-mono">Vence: 15/12/2026</span>
-            </div>
-            <h3 className="font-extrabold text-white text-base">Aporte Pro-Tinglado (Cuota 1 de 2)</h3>
-            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-              Fondo exclusivo con destino a la compra de perfiles y tinglado de la cancha polifuncional.
-            </p>
-            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">Monto asignado por vivienda:</span>
-              <span className="text-xl font-black font-mono text-purple-400">{formatBOB(100.0)}</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {fees.map((fee) => {
+              const isOrdinaria = fee.type === 'Ordinaria';
+              const isSpecial = fee.type === 'AporteEspecial';
+              const isAgua = fee.type === 'ServicioAgua';
+              const percentCollected = Math.round((fee.paidLots / fee.assignedLots) * 100);
+
+              return (
+                <div
+                  key={fee.id}
+                  className={`p-6 rounded-3xl bg-[#0B132B]/90 border-2 transition-all space-y-4 shadow-xl ${
+                    fee.status === 'Activa'
+                      ? 'border-slate-700/80 hover:border-blue-500/50'
+                      : 'border-slate-800 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+                        isOrdinaria
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : isSpecial
+                          ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                          : isAgua
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                      }`}
+                    >
+                      {fee.type}
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleToggleFeeStatus(fee.id)}
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-black border cursor-pointer transition-colors ${
+                          fee.status === 'Activa'
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            : 'bg-slate-700/40 text-slate-400 border-slate-600'
+                        }`}
+                        title="Hacer clic para activar o pausar cobranza de esta cuota"
+                      >
+                        {fee.status === 'Activa' ? '✓ Cobranza Activa' : 'Pausada'}
+                      </button>
+                      <span className="text-xs text-slate-400 font-mono">Vence: {fee.dueDate}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-extrabold text-white text-base">{fee.title}</h3>
+                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                      {fee.description}
+                    </p>
+                  </div>
+
+                  {/* Progreso de Recaudación */}
+                  <div className="space-y-1.5 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs">
+                    <div className="flex justify-between text-slate-300 text-[11px]">
+                      <span>Viviendas al día: <strong className="text-white">{fee.paidLots} de {fee.assignedLots} lotes</strong></span>
+                      <strong className="text-emerald-400 font-bold">{percentCollected}% recaudado</strong>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full"
+                        style={{ width: `${percentCollected}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-slate-400 font-medium block">Monto por vivienda:</span>
+                      <span className="text-xl font-black font-mono text-white">
+                        {formatBOB(fee.amount)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleStartEditFee(fee)}
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                        title="Modificar monto, fecha o glosa"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Editar</span>
+                      </button>
+
+                      <button
+                        onClick={() => setDeletingFee(fee)}
+                        className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                        title="Eliminar cuota creada por error"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -1073,6 +1355,324 @@ export const FinanzasPage: React.FC = () => {
                 Cerrar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: CREAR NUEVA CUOTA COMUNAL                   */}
+      {/* ======================================================== */}
+      {showCreateFeeModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-slate-700 p-6 sm:p-7 space-y-4 my-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-blue-400 block tracking-wider">
+                  Tesorería OTB • Nueva Obligación
+                </span>
+                <h3 className="text-lg font-black text-white">Crear Nueva Cuota Comunal</h3>
+              </div>
+              <button
+                onClick={() => setShowCreateFeeModal(false)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateFee} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Concepto / Nombre de la Cuota</label>
+                <input
+                  type="text"
+                  required
+                  value={newFeeTitle}
+                  onChange={(e) => setNewFeeTitle(e.target.value)}
+                  placeholder="ej. Aporte Especial Luminarias Plaza Central"
+                  className="w-full px-3.5 py-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Tipo de Cuota</label>
+                  <select
+                    value={newFeeType}
+                    onChange={(e) => setNewFeeType(e.target.value as any)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
+                  >
+                    <option value="Ordinaria" className="bg-slate-900 text-white">Cuota Ordinaria Mensual</option>
+                    <option value="AporteEspecial" className="bg-slate-900 text-white">Aporte Especial / Extraordinario</option>
+                    <option value="ServicioAgua" className="bg-slate-900 text-white">Servicio de Agua Potable</option>
+                    <option value="Alumbrado" className="bg-slate-900 text-white">Mantenimiento de Alumbrado</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Monto Asignado (BOB)</label>
+                  <input
+                    type="number"
+                    step="0.50"
+                    required
+                    value={newFeeAmount}
+                    onChange={(e) => setNewFeeAmount(e.target.value)}
+                    placeholder="ej. 25.00"
+                    className="w-full font-mono font-black text-white px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Fecha Límite de Vencimiento</label>
+                <input
+                  type="text"
+                  required
+                  value={newFeeDueDate}
+                  onChange={(e) => setNewFeeDueDate(e.target.value)}
+                  placeholder="ej. 31/12/2026"
+                  className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Descripción / Destino del Fondo</label>
+                <textarea
+                  rows={2}
+                  value={newFeeDescription}
+                  onChange={(e) => setNewFeeDescription(e.target.value)}
+                  placeholder="Detalla el objetivo acordado en la asamblea de vecinos..."
+                  className="w-full p-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateFeeModal(false)}
+                  className="px-4 py-2 font-bold text-slate-400 hover:text-white rounded-xl cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 font-black text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 cursor-pointer flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Publicar y Asignar Cuota</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: EDITAR CUOTA COMUNAL (UPDATE)               */}
+      {/* ======================================================== */}
+      {editingFee && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-amber-500/50 p-6 sm:p-7 space-y-4 my-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">
+                  Modificar Cuota Comunal
+                </span>
+                <h3 className="text-lg font-black text-white">Editar: {editingFee.title}</h3>
+              </div>
+              <button
+                onClick={() => setEditingFee(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditFee} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Título de la Cuota</label>
+                <input
+                  type="text"
+                  required
+                  value={editFeeTitle}
+                  onChange={(e) => setEditFeeTitle(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-medium text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Monto Asignado (BOB)</label>
+                  <input
+                    type="number"
+                    step="0.50"
+                    required
+                    value={editFeeAmount}
+                    onChange={(e) => setEditFeeAmount(e.target.value)}
+                    className="w-full font-mono font-black text-white px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Fecha de Vencimiento</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFeeDueDate}
+                    onChange={(e) => setEditFeeDueDate(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Tipo</label>
+                  <select
+                    value={editFeeType}
+                    onChange={(e) => setEditFeeType(e.target.value as any)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-medium"
+                  >
+                    <option value="Ordinaria" className="bg-slate-900 text-white">Ordinaria</option>
+                    <option value="AporteEspecial" className="bg-slate-900 text-white">Aporte Especial</option>
+                    <option value="ServicioAgua" className="bg-slate-900 text-white">Servicio Agua</option>
+                    <option value="Alumbrado" className="bg-slate-900 text-white">Alumbrado</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Estado del Cobro</label>
+                  <select
+                    value={editFeeStatus}
+                    onChange={(e) => setEditFeeStatus(e.target.value as any)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-bold"
+                  >
+                    <option value="Activa">Activa (En recaudación)</option>
+                    <option value="Cerrada">Cerrada (Pausada)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Descripción</label>
+                <textarea
+                  rows={2}
+                  value={editFeeDescription}
+                  onChange={(e) => setEditFeeDescription(e.target.value)}
+                  className="w-full p-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingFee(null)}
+                  className="px-4 py-2 font-bold text-slate-400 hover:text-white rounded-xl cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 font-black text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-md shadow-amber-400/20 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4 text-slate-950" />
+                  <span>Guardar Cambios</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: ELIMINAR CUOTA COMUNAL (DELETE)             */}
+      {/* ======================================================== */}
+      {deletingFee && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl p-6 sm:p-7 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-white">¿Eliminar esta cuota comunal?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Vas a anular la obligación <strong className="text-white">{deletingFee.title}</strong> con monto asignado de <strong className="text-amber-400">{formatBOB(deletingFee.amount)}</strong>.
+              </p>
+              {deletingFee.paidLots > 0 && (
+                <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs text-left">
+                  ⚠️ Ya hay <strong>{deletingFee.paidLots} lotes</strong> que realizaron pagos para esta cuota.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeletingFee(null)}
+                className="flex-1 h-12 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteFee}
+                className="flex-1 h-12 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-2xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Confirmar Eliminación</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL AUDITORÍA: REVERTIR / ANULAR RECIBO               */}
+      {/* ======================================================== */}
+      {reversingPayment && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl p-6 sm:p-7 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-white">Anulación Contable de Recibo</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Estás por revertir el recibo <strong className="text-white font-mono">{reversingPayment.receiptNumber}</strong> por <strong className="text-emerald-400">{formatBOB(reversingPayment.amount)}</strong> a nombre de <strong className="text-white">{reversingPayment.neighborName}</strong>.
+              </p>
+            </div>
+
+            <form onSubmit={handleConfirmReversePayment} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">
+                  Motivo de Reversión (Obligatorio para Auditoría):
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={reversalReason}
+                  onChange={(e) => setReversalReason(e.target.value)}
+                  placeholder="ej. Cheque sin fondos / Error de digitación en ventanilla..."
+                  className="w-full p-3 bg-[#030712] border-2 border-rose-500/40 rounded-xl focus:outline-none focus:border-rose-400 text-white text-xs"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setReversingPayment(null)}
+                  className="flex-1 h-12 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors cursor-pointer"
+                >
+                  Volver
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 h-12 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-2xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Confirmar Reversión</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

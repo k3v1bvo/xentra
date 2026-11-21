@@ -15,7 +15,9 @@ import {
   MapPin,
   Megaphone,
   X,
-  Share2
+  Share2,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
@@ -124,6 +126,25 @@ export const VotaPage: React.FC = () => {
   const [newNewsDesc, setNewNewsDesc] = useState('');
   const [newNewsAgenda, setNewNewsAgenda] = useState('');
 
+  // CRUD Votaciones: Editar y Eliminar
+  const [editingPoll, setEditingPoll] = useState<PollMock | null>(null);
+  const [editPollTitle, setEditPollTitle] = useState('');
+  const [editPollDesc, setEditPollDesc] = useState('');
+  const [editPollBudget, setEditPollBudget] = useState('');
+  const [editPollEndDate, setEditPollEndDate] = useState('');
+  const [deletingPoll, setDeletingPoll] = useState<PollMock | null>(null);
+
+  // CRUD Convocatorias: Editar y Eliminar
+  const [editingNews, setEditingNews] = useState<CommunityNewsMock | null>(null);
+  const [editNewsTitle, setEditNewsTitle] = useState('');
+  const [editNewsType, setEditNewsType] = useState<CommunityNewsMock['type']>('asamblea');
+  const [editNewsDate, setEditNewsDate] = useState('');
+  const [editNewsTime, setEditNewsTime] = useState('');
+  const [editNewsLocation, setEditNewsLocation] = useState('');
+  const [editNewsDesc, setEditNewsDesc] = useState('');
+  const [editNewsAgenda, setEditNewsAgenda] = useState('');
+  const [deletingNews, setDeletingNews] = useState<CommunityNewsMock | null>(null);
+
   const isAdmin = currentRole === 'presidente' || currentRole === 'tesorero' || currentRole === 'superadmin';
 
   const handleVote = (pollId: string) => {
@@ -210,6 +231,90 @@ export const VotaPage: React.FC = () => {
     setNewNewsDate('');
     setNewNewsAgenda('');
     alert('¡Convocatoria oficial comunicada a la comunidad!');
+  };
+
+  // CRUD Votaciones: Iniciar Edición
+  const handleStartEditPoll = (poll: PollMock) => {
+    setEditingPoll(poll);
+    setEditPollTitle(poll.title);
+    setEditPollDesc(poll.description);
+    setEditPollBudget(poll.estimatedBudget.toString());
+    setEditPollEndDate(poll.endDate);
+  };
+
+  // CRUD Votaciones: Guardar Edición (Update)
+  const handleSaveEditPoll = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPoll || !editPollTitle.trim()) return;
+
+    setPolls(
+      polls.map((p) => {
+        if (p.id !== editingPoll.id) return p;
+        return {
+          ...p,
+          title: editPollTitle.trim(),
+          description: editPollDesc.trim(),
+          estimatedBudget: parseFloat(editPollBudget) || 0,
+          endDate: editPollEndDate
+        };
+      })
+    );
+    setEditingPoll(null);
+    alert('¡Votación comunitaria actualizada con éxito!');
+  };
+
+  // CRUD Votaciones: Confirmar Eliminación (Delete)
+  const handleConfirmDeletePoll = () => {
+    if (!deletingPoll) return;
+    setPolls(polls.filter((p) => p.id !== deletingPoll.id));
+    setDeletingPoll(null);
+  };
+
+  // CRUD Convocatorias: Iniciar Edición
+  const handleStartEditNews = (item: CommunityNewsMock) => {
+    setEditingNews(item);
+    setEditNewsTitle(item.title);
+    setEditNewsType(item.type);
+    setEditNewsDate(item.date);
+    setEditNewsTime(item.time);
+    setEditNewsLocation(item.location);
+    setEditNewsDesc(item.description);
+    setEditNewsAgenda(item.agenda ? item.agenda.join('\n') : '');
+  };
+
+  // CRUD Convocatorias: Guardar Edición (Update)
+  const handleSaveEditNews = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNews || !editNewsTitle.trim()) return;
+
+    const agendaList = editNewsAgenda
+      ? editNewsAgenda.split('\n').filter((item) => item.trim().length > 0)
+      : undefined;
+
+    setNews(
+      news.map((n) => {
+        if (n.id !== editingNews.id) return n;
+        return {
+          ...n,
+          title: editNewsTitle.trim(),
+          type: editNewsType,
+          date: editNewsDate.trim(),
+          time: editNewsTime.trim(),
+          location: editNewsLocation.trim(),
+          description: editNewsDesc.trim(),
+          agenda: agendaList
+        };
+      })
+    );
+    setEditingNews(null);
+    alert('¡Convocatoria actualizada con éxito!');
+  };
+
+  // CRUD Convocatorias: Confirmar Eliminación (Delete)
+  const handleConfirmDeleteNews = () => {
+    if (!deletingNews) return;
+    setNews(news.filter((n) => n.id !== deletingNews.id));
+    setDeletingNews(null);
   };
 
   return (
@@ -317,6 +422,27 @@ export const VotaPage: React.FC = () => {
                       <span className="text-xs text-emerald-400 font-bold block">
                         {poll.totalVotes} votos emitidos
                       </span>
+
+                      {/* Botones Directiva / Admin para CRUD */}
+                      {isAdmin && (
+                        <div className="flex items-center gap-1.5 pt-1.5 justify-start sm:justify-end">
+                          <button
+                            onClick={() => handleStartEditPoll(poll)}
+                            className="px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Editar consulta comunitaria"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>Editar</span>
+                          </button>
+                          <button
+                            onClick={() => setDeletingPoll(poll)}
+                            className="px-2 py-1 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Eliminar consulta"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -437,7 +563,7 @@ export const VotaPage: React.FC = () => {
                     <h2 className="text-base sm:text-lg font-black text-white">{item.title}</h2>
                   </div>
 
-                  <div className="flex-shrink-0 text-left sm:text-right">
+                  <div className="flex-shrink-0 text-left sm:text-right space-y-1">
                     <span className="text-xs font-bold text-amber-400 block flex items-center gap-1 sm:justify-end">
                       <Calendar className="w-3.5 h-3.5" />
                       {item.date}
@@ -445,6 +571,27 @@ export const VotaPage: React.FC = () => {
                     <span className="text-[11px] text-slate-400 font-mono block mt-0.5">
                       {item.time}
                     </span>
+
+                    {/* Botones Directiva / Admin para CRUD */}
+                    {isAdmin && (
+                      <div className="flex items-center gap-1.5 pt-1 justify-start sm:justify-end">
+                        <button
+                          onClick={() => handleStartEditNews(item)}
+                          className="px-2.5 py-1 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Editar convocatoria de asamblea"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          <span>Editar</span>
+                        </button>
+                        <button
+                          onClick={() => setDeletingNews(item)}
+                          className="px-2 py-1 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Eliminar convocatoria"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -705,6 +852,295 @@ export const VotaPage: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: EDITAR CONSULTA COMUNAL (UPDATE)            */}
+      {/* ======================================================== */}
+      {editingPoll && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-amber-500/50 p-6 sm:p-7 space-y-4 my-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">
+                  Directiva OTB • Modificar Consulta
+                </span>
+                <h3 className="text-lg font-black text-white">Editar Consulta Comunal</h3>
+              </div>
+              <button
+                onClick={() => setEditingPoll(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditPoll} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Título de la Consulta</label>
+                <input
+                  type="text"
+                  required
+                  value={editPollTitle}
+                  onChange={(e) => setEditPollTitle(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-medium text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Descripción y Justificación</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={editPollDesc}
+                  onChange={(e) => setEditPollDesc(e.target.value)}
+                  className="w-full p-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Presupuesto Referencial (BOB)</label>
+                  <input
+                    type="number"
+                    step="100"
+                    value={editPollBudget}
+                    onChange={(e) => setEditPollBudget(e.target.value)}
+                    className="w-full font-mono font-black text-white px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Fecha Límite de Cierre</label>
+                  <input
+                    type="text"
+                    required
+                    value={editPollEndDate}
+                    onChange={(e) => setEditPollEndDate(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingPoll(null)}
+                  className="px-4 py-2 font-bold text-slate-400 hover:text-white rounded-xl cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 font-black text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-md shadow-amber-400/20 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4 text-slate-950" />
+                  <span>Guardar Cambios</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: ELIMINAR CONSULTA COMUNAL (DELETE)          */}
+      {/* ======================================================== */}
+      {deletingPoll && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl p-6 sm:p-7 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-white">¿Eliminar esta consulta vecinal?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Estás a punto de anular <strong className="text-white">{deletingPoll.title}</strong> con <strong className="text-emerald-400">{deletingPoll.totalVotes} votos registrados</strong>.
+              </p>
+            </div>
+
+            <div className="pt-3 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeletingPoll(null)}
+                className="flex-1 h-12 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeletePoll}
+                className="flex-1 h-12 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-2xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Confirmar Eliminación</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: EDITAR CONVOCATORIA DE ASAMBLEA (UPDATE)    */}
+      {/* ======================================================== */}
+      {editingNews && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-purple-500/50 p-6 sm:p-7 space-y-4 my-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-purple-400 block tracking-wider">
+                  Mesa Directiva • Modificar Convocatoria
+                </span>
+                <h3 className="text-lg font-black text-white">Editar Convocatoria / Aviso</h3>
+              </div>
+              <button
+                onClick={() => setEditingNews(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditNews} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Título de la Convocatoria</label>
+                <input
+                  type="text"
+                  required
+                  value={editNewsTitle}
+                  onChange={(e) => setEditNewsTitle(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-medium text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Tipo de Evento</label>
+                  <select
+                    value={editNewsType}
+                    onChange={(e) => setEditNewsType(e.target.value as any)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-medium"
+                  >
+                    <option value="asamblea" className="bg-slate-900 text-white">Asamblea Ordinaria</option>
+                    <option value="urgente" className="bg-slate-900 text-white">Aviso Urgente</option>
+                    <option value="noticia" className="bg-slate-900 text-white">Comunicado General</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Fecha</label>
+                  <input
+                    type="text"
+                    required
+                    value={editNewsDate}
+                    onChange={(e) => setEditNewsDate(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Hora y Tolerancia</label>
+                  <input
+                    type="text"
+                    required
+                    value={editNewsTime}
+                    onChange={(e) => setEditNewsTime(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-200 block mb-1">Lugar de Reunión</label>
+                  <input
+                    type="text"
+                    required
+                    value={editNewsLocation}
+                    onChange={(e) => setEditNewsLocation(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">Descripción / Comunicado</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={editNewsDesc}
+                  onChange={(e) => setEditNewsDesc(e.target.value)}
+                  className="w-full p-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1">
+                  Orden del Día (un punto por línea):
+                </label>
+                <textarea
+                  rows={3}
+                  value={editNewsAgenda}
+                  onChange={(e) => setEditNewsAgenda(e.target.value)}
+                  className="w-full p-3 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-mono"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingNews(null)}
+                  className="px-4 py-2 font-bold text-slate-400 hover:text-white rounded-xl cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 font-black text-white bg-purple-600 hover:bg-purple-500 rounded-xl shadow-md shadow-purple-600/30 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Check className="w-4 h-4 text-white" />
+                  <span>Guardar Cambios</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: ELIMINAR CONVOCATORIA (DELETE)              */}
+      {/* ======================================================== */}
+      {deletingNews && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl p-6 sm:p-7 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
+              <Megaphone className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-white">¿Eliminar esta convocatoria?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Vas a dar de baja el aviso <strong className="text-white">{deletingNews.title}</strong> programado para <strong className="text-amber-400">{deletingNews.date}</strong>.
+              </p>
+            </div>
+
+            <div className="pt-3 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeletingNews(null)}
+                className="flex-1 h-12 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteNews}
+                className="flex-1 h-12 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-2xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Confirmar Baja</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

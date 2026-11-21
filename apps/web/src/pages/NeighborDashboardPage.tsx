@@ -21,7 +21,8 @@ import {
   Sparkles,
   AlertTriangle,
   ShieldCheck,
-  MapPin
+  MapPin,
+  Trash2
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
@@ -225,6 +226,14 @@ export const NeighborDashboardPage: React.FC = () => {
     setIsQrModalOpen(false);
     setSelectedFileName(null);
     alert('¡Comprobante enviado a la Tesorería de la OTB! El Tesorero ha recibido la alerta en su panel para verificarlo contra el extracto bancario.');
+  };
+
+  // CRUD Vecino: Cancelar / Eliminar Comprobante Pendiente de Verificación
+  const handleCancelSubmission = (submissionId: string) => {
+    if (window.confirm('¿Deseas retirar este comprobante enviado? Podrás volver a subir el comprobante correcto de inmediato.')) {
+      setSubmissions(submissions.filter((s) => s.id !== submissionId));
+      alert('Comprobante retirado con éxito. Puedes reportar tu pago con la captura correcta.');
+    }
   };
 
   return (
@@ -506,9 +515,19 @@ export const NeighborDashboardPage: React.FC = () => {
                     <ExternalLink className="w-4 h-4 text-blue-300" />
                   </button>
                 ) : (
-                  <span className="text-xs sm:text-sm text-amber-300 font-bold italic">
-                    En revisión por Tesorería
-                  </span>
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                    <span className="text-xs sm:text-sm text-amber-300 font-bold italic">
+                      En revisión por Tesorería
+                    </span>
+                    <button
+                      onClick={() => handleCancelSubmission(sub.id)}
+                      className="min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-black text-rose-300 hover:text-white bg-rose-950/50 hover:bg-rose-900/60 border border-rose-500/40 transition-colors cursor-pointer flex items-center gap-1.5"
+                      title="Retirar o anular este comprobante subido por error"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Cancelar Envío</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

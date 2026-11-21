@@ -17,7 +17,12 @@ import {
   Compass,
   Navigation,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Edit3,
+  Trash2,
+  X,
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
@@ -128,6 +133,21 @@ export const VecinosPage: React.FC = () => {
   const [newLat, setNewLat] = useState(-17.4132);
   const [newLng, setNewLng] = useState(-66.1654);
 
+  // Estados para CRUD - Edición de Vecino (Update)
+  const [editingNeighbor, setEditingNeighbor] = useState<NeighborMock | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCi, setEditCi] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editBlock, setEditBlock] = useState('Manzana A');
+  const [editHouse, setEditHouse] = useState('');
+  const [editStatus, setEditStatus] = useState<'Al Día' | 'En Mora'>('Al Día');
+  const [editDebt, setEditDebt] = useState('0.00');
+  const [editLat, setEditLat] = useState(-17.4132);
+  const [editLng, setEditLng] = useState(-66.1654);
+
+  // Estados para CRUD - Dar de Baja / Eliminar Vecino (Delete)
+  const [deletingNeighbor, setDeletingNeighbor] = useState<NeighborMock | null>(null);
+
   const filtered = neighbors.filter(
     (n) =>
       n.socioCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -215,6 +235,63 @@ export const VecinosPage: React.FC = () => {
     setNewCi('');
     setNewPhone('');
     setNewHouse('');
+  };
+
+  // CRUD - Iniciar Edición
+  const handleStartEdit = (vecino: NeighborMock) => {
+    setEditingNeighbor(vecino);
+    setEditName(vecino.name);
+    setEditCi(vecino.ci);
+    setEditPhone(vecino.phone);
+    setEditBlock(vecino.block);
+    setEditHouse(vecino.house);
+    setEditStatus(vecino.status);
+    setEditDebt(vecino.debt.toString());
+    setEditLat(vecino.latitude);
+    setEditLng(vecino.longitude);
+  };
+
+  // CRUD - Guardar Edición (Update)
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNeighbor || !editName.trim() || !editCi.trim()) return;
+
+    const parsedDebt = parseFloat(editDebt) || 0;
+    const updatedStatus = parsedDebt > 0 ? 'En Mora' : editStatus;
+
+    const updatedList = neighbors.map((n) => {
+      if (n.id !== editingNeighbor.id) return n;
+      return {
+        ...n,
+        name: editName.trim(),
+        ci: editCi.trim(),
+        phone: editPhone.trim() || 'Sin teléfono',
+        block: editBlock.trim(),
+        house: editHouse.trim() || 'Lote sin número',
+        status: updatedStatus,
+        debt: parsedDebt,
+        latitude: editLat,
+        longitude: editLng
+      };
+    });
+
+    setNeighbors(updatedList);
+    if (focusedNeighbor?.id === editingNeighbor.id) {
+      const updatedFocused = updatedList.find((n) => n.id === editingNeighbor.id) || null;
+      setFocusedNeighbor(updatedFocused);
+    }
+    setEditingNeighbor(null);
+  };
+
+  // CRUD - Confirmar Baja / Eliminación (Delete)
+  const handleConfirmDelete = () => {
+    if (!deletingNeighbor) return;
+    const remaining = neighbors.filter((n) => n.id !== deletingNeighbor.id);
+    setNeighbors(remaining);
+    if (focusedNeighbor?.id === deletingNeighbor.id) {
+      setFocusedNeighbor(remaining[0] || null);
+    }
+    setDeletingNeighbor(null);
   };
 
   return (
@@ -442,10 +519,10 @@ export const VecinosPage: React.FC = () => {
                         )}
                       </td>
                       <td className="px-5 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
                           <button
                             onClick={() => handleFocusNeighborOnMap(vecino)}
-                            className="h-9 px-3 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
+                            className="h-9 px-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all flex items-center gap-1 cursor-pointer"
                             title="Centrar casa en mapa"
                           >
                             <MapPin className="w-3 h-3 text-red-400" />
@@ -454,11 +531,30 @@ export const VecinosPage: React.FC = () => {
 
                           <button
                             onClick={() => handleOpenStatement(vecino)}
-                            className="h-9 px-3.5 rounded-xl text-xs font-black bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 hover:border-blue-500 transition-all flex items-center gap-1.5 cursor-pointer"
+                            className="h-9 px-3 rounded-xl text-xs font-black bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 hover:border-blue-500 transition-all flex items-center gap-1 cursor-pointer"
                             title="Abrir e imprimir Ficha Oficial & Estado de Cuenta"
                           >
                             <FileText className="w-3.5 h-3.5" />
-                            <span>Ficha Oficial</span>
+                            <span>Ficha</span>
+                          </button>
+
+                          {/* Botón Editar Vecino (CRUD Update) */}
+                          <button
+                            onClick={() => handleStartEdit(vecino)}
+                            className="h-9 px-2.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/30 hover:border-amber-400 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Editar datos del socio o reubicar vivienda"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Editar</span>
+                          </button>
+
+                          {/* Botón Dar de Baja (CRUD Delete) */}
+                          <button
+                            onClick={() => setDeletingNeighbor(vecino)}
+                            className="h-9 px-2 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/30 hover:border-rose-400 transition-all flex items-center gap-1 cursor-pointer"
+                            title="Dar de baja / archivar socio del padrón"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
@@ -589,6 +685,206 @@ export const VecinosPage: React.FC = () => {
           onClose={() => setIsStatementModalOpen(false)}
           data={selectedStatement}
         />
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: EDITAR DATOS DEL SOCIO / LOTE (UPDATE)      */}
+      {/* ======================================================== */}
+      {editingNeighbor && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] border-2 border-amber-500/50 shadow-2xl overflow-hidden text-white my-auto">
+            <div className="p-6 border-b border-slate-800 bg-[#030712]/90 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">
+                  Actualización Catastral OTB
+                </span>
+                <h2 className="text-lg font-black text-white">
+                  Editar Socio: {editingNeighbor.socioCode}
+                </h2>
+              </div>
+              <button
+                onClick={() => setEditingNeighbor(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                  Nombre Completo del Titular
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Cédula de Identidad (CI)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editCi}
+                    onChange={(e) => setEditCi(e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Celular de Contacto
+                  </label>
+                  <input
+                    type="text"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Manzana
+                  </label>
+                  <input
+                    type="text"
+                    value={editBlock}
+                    onChange={(e) => setEditBlock(e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Lote / N° de Casa
+                  </label>
+                  <input
+                    type="text"
+                    value={editHouse}
+                    onChange={(e) => setEditHouse(e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Estado de Solvencia
+                  </label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value as 'Al Día' | 'En Mora')}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-bold"
+                  >
+                    <option value="Al Día">Al Día (Sin Deuda)</option>
+                    <option value="En Mora">En Mora (Con Deuda Pendiente)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-300 block mb-1 uppercase tracking-wider text-[11px]">
+                    Saldo Deuda (BOB)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.50"
+                    value={editDebt}
+                    onChange={(e) => setEditDebt(e.target.value)}
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 text-white font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-400">📍 Reubicar Vivienda en Mapa:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditLat(-17.4132 + (Math.random() - 0.5) * 0.003);
+                      setEditLng(-66.1654 + (Math.random() - 0.5) * 0.003);
+                    }}
+                    className="text-[11px] font-bold text-blue-400 hover:text-blue-300 underline cursor-pointer"
+                  >
+                    Reajustar PIN GPS
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-slate-400">
+                  <span>Lat: {editLat.toFixed(5)}</span>
+                  <span>Lng: {editLng.toFixed(5)}</span>
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingNeighbor(null)}
+                  className="h-12 px-5 text-xs font-black text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="h-12 px-6 text-xs font-black text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-2xl shadow-xl shadow-amber-400/20 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4 text-slate-950" />
+                  <span>Guardar Cambios</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL CRUD: CONFIRMAR DAR DE BAJA / ELIMINAR (DELETE)    */}
+      {/* ======================================================== */}
+      {deletingNeighbor && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl p-6 sm:p-7 space-y-4 text-white">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-black text-white">¿Dar de baja al socio?</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Estás a punto de desvincular a <strong className="text-white">{deletingNeighbor.name}</strong> ({deletingNeighbor.socioCode} - {deletingNeighbor.block}, {deletingNeighbor.house}) del censo activo de la OTB.
+              </p>
+              {deletingNeighbor.debt > 0 && (
+                <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs text-left">
+                  ⚠️ <strong>Atención:</strong> Este vecino tiene una deuda pendiente de <strong>{formatBOB(deletingNeighbor.debt)}</strong>.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeletingNeighbor(null)}
+                className="flex-1 h-12 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="flex-1 h-12 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-2xl shadow-lg shadow-rose-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Confirmar Baja</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

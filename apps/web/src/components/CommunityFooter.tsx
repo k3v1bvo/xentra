@@ -16,7 +16,11 @@ import {
   Users,
   Compass,
   ArrowRight,
-  Sparkles
+  Github,
+  Scale,
+  Lock,
+  Cpu,
+  CheckCircle2
 } from 'lucide-react';
 import { BoliviaCoatOfArms } from './BoliviaCoatOfArms';
 import { useTenantStore } from '../stores/tenantStore';
@@ -41,86 +45,69 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
 }) => {
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
-
   const isPublic = variant === 'public';
 
   return (
     <footer className="relative z-10 border-t-2 border-slate-800 bg-[#020617] text-slate-300">
+      
       {/* =================================================================== */}
-      {/* FRANJA SUPERIOR INFORMATIVA                                         */}
+      {/* 1. BANDA SUPERIOR DE INGENIERÍA, SEGURIDAD & LICENCIAS              */}
       {/* =================================================================== */}
-      <div className="bg-[#0B132B]/90 border-b border-slate-800/80 px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <BoliviaCoatOfArms size={36} />
+      <div className="bg-[#0B132B] border-b border-slate-800/80 px-4 sm:px-8 py-4">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs">
+          
+          {/* Identidad Institucional Nacional */}
+          <div className="flex items-center gap-3">
+            <BoliviaCoatOfArms size={32} />
             <div>
-              {isPublic ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white uppercase tracking-wider">
-                      Plataforma Nacional de Organizaciones Territoriales de Base
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                      BOLIVIA
-                    </span>
-                  </div>
-                  <p className="text-base font-black text-white">
-                    Estado Plurinacional de Bolivia — Sistema Soberano de Gestión Comunal
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white uppercase tracking-wider">
-                      Organización Territorial de Base (OTB)
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                      {currentOtb?.code || 'OTB-CBBA-001'}
-                    </span>
-                  </div>
-                  <p className="text-base font-black text-white">
-                    {currentOtb?.name || 'OTB Registrada'} — {currentOtb?.department || 'Bolivia'}
-                  </p>
-                </>
-              )}
+              <div className="flex items-center gap-2">
+                <span className="font-black text-white uppercase tracking-wider text-sm">
+                  {isPublic ? 'Plataforma Nacional Comunal' : `OTB ${currentOtb?.name || 'Registrada'}`}
+                </span>
+                <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  {isPublic ? 'BOLIVIA' : (currentOtb?.code || 'OTB-CBBA-001')}
+                </span>
+              </div>
+              <p className="text-slate-400 text-xs">
+                {isPublic
+                  ? 'Sistema Integral de Gobernanza Barrial y Control Social Comunitario'
+                  : `${currentOtb?.zone || 'Zona Urbana'}, ${currentOtb?.municipality || 'Municipio'} — ${currentOtb?.department || 'Bolivia'}`}
+              </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
-            {isPublic ? (
-              <>
-                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-                  <Compass className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>Cobertura Nacional: <strong>9 Departamentos</strong></span>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-                  <ShieldCheck className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span>Ley N° 1551 de Participación Popular</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-                  <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>{currentOtb?.zone || 'Zona Urbana'}, {currentOtb?.municipality || 'Municipio'}</span>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-                  <Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span>Sede: <strong>+591 {currentOtb?.contact_phone || '76543210'}</strong></span>
-                </div>
-              </>
-            )}
+          {/* Badges de Arquitectura & Seguridad */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-emerald-400 font-bold">
+              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Cifrado SHA-256 Inmutable</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-blue-400 font-bold">
+              <Cpu className="w-3.5 h-3.5 text-blue-400" />
+              <span>Local-First SQLite</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-purple-400 font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+              <span>Multi-Tenant Zero-PII</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-400 font-bold">
+              <Scale className="w-3.5 h-3.5 text-amber-400" />
+              <span>Licencia Libre MIT</span>
+            </span>
           </div>
         </div>
       </div>
 
       {/* =================================================================== */}
-      {/* CUERPO PRINCIPAL DEL FOOTER EN 4 COLUMNAS                           */}
+      {/* 2. CUERPO PRINCIPAL: 4 COLUMNAS ESTRUCTURADAS                       */}
       {/* =================================================================== */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14 text-left">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           
-          {/* Columna 1: Identidad Institucional & Marco Jurídico */}
+          {/* Columna 1: Identidad & Marco Jurídico */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-base shadow-md">
@@ -133,7 +120,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              Software libre y soberano diseñado para la gestión transparente, trazabilidad inmutable de cuotas con código QR y participación democrática vecinal.
+              Software libre y soberano diseñado para la gestión transparente de cuotas comunales, auditoría criptográfica con código QR y participación democrática vecinal en Bolivia.
             </p>
 
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-1.5 text-xs text-slate-300">
@@ -146,6 +133,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 <li><strong>Ley N° 3488:</strong> Personería Jurídica Comunal.</li>
                 <li><strong>Ley N° 031:</strong> Autonomías y Descentralización.</li>
                 <li><strong>CPE Art. 241:</strong> Control Social Comunitario.</li>
+                <li><strong>Ley N° 164:</strong> Firma y Documentos Digitales.</li>
               </ul>
             </div>
           </div>
@@ -212,14 +200,14 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
             </div>
           </div>
 
-          {/* Columna 3: Servicios para el Ciudadano / Vecino */}
+          {/* Columna 3: Servicios para el Ciudadano & Recursos Abiertos */}
           <div className="space-y-3.5">
             <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
               <FileCheck className="w-4 h-4 text-blue-400" />
-              <span>Servicios de la Plataforma</span>
+              <span>Servicios & Recursos</span>
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Herramientas oficiales para consultar cuotas, validar comprobantes o instalar la app:
+              Accede a las herramientas oficiales de comprobación y al código fuente abierto:
             </p>
 
             <ul className="space-y-2 text-xs sm:text-sm">
@@ -252,69 +240,39 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 </button>
               </li>
 
-              {isPublic ? (
-                <>
-                  <li>
-                    <button
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        const searchEl = document.querySelector('input');
-                        if (searchEl) searchEl.focus();
-                      }}
-                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-purple-400" />
-                        <span>Consultar Estado de mi Lote</span>
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Buscar</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => navigate('/login')}
-                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-amber-400" />
-                        <span>Ingresar con mi Cuenta</span>
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Acceso</span>
-                    </button>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <button
-                      onClick={() => navigate('/vecino')}
-                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Building className="w-4 h-4 text-purple-400" />
-                        <span>Portal Vecinal (Mis Cuotas)</span>
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Acceso</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => navigate('/admin/vota')}
-                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Vote className="w-4 h-4 text-amber-400" />
-                        <span>Votaciones & Asambleas OTB</span>
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Directa</span>
-                    </button>
-                  </li>
-                </>
-              )}
+              <li>
+                <a
+                  href="https://github.com/k3v1bvo/xentra"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2">
+                    <Github className="w-4 h-4 text-purple-400" />
+                    <span>Repositorio Abierto en GitHub</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://github.com/k3v1bvo/xentra/blob/main/LICENSE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-amber-400" />
+                    <span>Licencia de Software MIT</span>
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Libre</span>
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Columna 4: Según variante Pública o Interna */}
+          {/* Columna 4: Gobernanza / Directiva Comunal */}
           {isPublic ? (
             /* Vista Pública: Invitación a Juntas Vecinales y Dirigentes de Bolivia */
             <div className="space-y-3.5">
@@ -323,21 +281,21 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 <span>Gobernanza Digital Barrial</span>
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ¿Eres Presidente o Tesorero de una OTB en Bolivia? Digitaliza la administración de tu comunidad:
+                ¿Eres dirigente de una OTB en Bolivia? Moderniza la administración de tu comunidad sin costos de instalación:
               </p>
 
               <div className="p-4 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-2.5 text-xs text-slate-300">
                 <div className="space-y-1.5">
                   <p className="flex items-center gap-2 text-slate-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                    <span>Cobros con QR Simple sin comisión bancaria.</span>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span>Cobros por QR Simple (0% comisión).</span>
                   </p>
                   <p className="flex items-center gap-2 text-slate-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" />
                     <span>Recibos oficiales sellados con código QR.</span>
                   </p>
                   <p className="flex items-center gap-2 text-slate-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-purple-400 flex-shrink-0" />
                     <span>Consultas y asambleas democráticas directas.</span>
                   </p>
                 </div>
@@ -347,7 +305,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                     onClick={() => navigate('/login')}
                     className="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                   >
-                    <span>Ingresar al Sistema</span>
+                    <span>Ingresar al Panel de tu OTB</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -392,24 +350,33 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
       </div>
 
       {/* =================================================================== */}
-      {/* FRANJA INFERIOR: SELLOS CRIPTOGRÁFICOS & DERECHOS                   */}
+      {/* 3. FRANJA INFERIOR: COPYRIGHT, REPOSITORIO & ESTADO DEL SISTEMA     */}
       {/* =================================================================== */}
       <div className="border-t border-slate-800/80 bg-[#01040D] px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-slate-400">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Cifrado SHA-256 Inmutable</span>
-            </span>
-            <span className="text-slate-600">•</span>
-            <span>Arquitectura Local-First SQLite</span>
-            <span className="text-slate-600">•</span>
-            <span>Aislamiento Multi-Tenant Estricto</span>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-left text-xs text-slate-400">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-slate-200">© 2026 XENTRA OTB BOLIVIA</span>
+            <span>•</span>
+            <span>Software Libre bajo Licencia MIT</span>
+            <span>•</span>
+            <a
+              href="https://github.com/k3v1bvo/xentra"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 font-mono underline"
+            >
+              github.com/k3v1bvo/xentra
+            </a>
           </div>
 
-          <p className="text-[11px] text-slate-400 font-mono">
-            © 2026 XENTRA OTB BOLIVIA • Plataforma Comunitaria Soberana
-          </p>
+          <div className="flex items-center gap-3 text-[11px] font-mono">
+            <span className="inline-flex items-center gap-1.5 text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Red Comunal 100% Operativa</span>
+            </span>
+            <span>•</span>
+            <span className="text-slate-500">Vercel Edge</span>
+          </div>
         </div>
       </div>
     </footer>

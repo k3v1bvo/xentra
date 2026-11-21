@@ -560,9 +560,8 @@ export const VecinosPage: React.FC = () => {
                   return (
                     <tr
                       key={vecino.id}
-                      className={`transition-colors ${
-                        isFocused ? 'bg-blue-600/10 border-l-4 border-l-blue-500' : 'hover:bg-slate-900/60'
-                      }`}
+                      className={`transition-colors ${isFocused ? 'bg-blue-600/10 border-l-4 border-l-blue-500' : 'hover:bg-slate-900/60'
+                        }`}
                     >
                       <td className="px-5 py-4 font-mono font-black text-blue-400">
                         <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 inline-block text-xs">

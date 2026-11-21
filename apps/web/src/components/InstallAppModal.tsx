@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Smartphone,
   Download,
@@ -14,6 +14,7 @@ import {
   Layers,
   Check
 } from 'lucide-react';
+import QRCode from 'qrcode';
 
 interface InstallAppModalProps {
   isOpen: boolean;
@@ -25,6 +26,23 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
   const [installedNotice, setInstalledNotice] = useState(false);
   const [downloadingApk, setDownloadingApk] = useState(false);
   const [apkDownloaded, setApkDownloaded] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      QRCode.toDataURL('https://xentra-two.vercel.app/', {
+        errorCorrectionLevel: 'H',
+        margin: 2,
+        width: 320,
+        color: {
+          dark: '#020617',
+          light: '#FFFFFF'
+        }
+      })
+        .then((url) => setQrCodeDataUrl(url))
+        .catch((err) => console.error('Error generating App QR', err));
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -79,7 +97,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
               Lleva XENTRA OTB en tu Teléfono Móvil
             </h3>
             <p className="text-xs text-slate-300 mt-1">
-              Diseñado para vecinos y adultos de 40 a 60 años: acceso en 1 toque, sin contraseñas difíciles y con avisos en vivo.
+              Diseñado para vecinos y adultos: acceso en 1 toque, sin contraseñas difíciles y con avisos en vivo.
             </p>
           </div>
 
@@ -207,59 +225,33 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
             </div>
           )}
 
-          {/* TAB 3: QR para Celular */}
+          {/* TAB 3: QR Real y Escaneable para Celular */}
           {tab === 'qr' && (
             <div className="space-y-3 text-center animate-in fade-in duration-200">
               <p className="text-xs text-slate-300">
                 Apunta la cámara de tu teléfono móvil a este código para abrir la app al instante:
               </p>
 
-              <div className="p-4 bg-white rounded-2xl inline-block shadow-md mx-auto">
-                <svg className="w-48 h-48 text-slate-950 mx-auto" viewBox="0 0 100 100" fill="currentColor">
-                  {/* QR Pattern visual */}
-                  <rect x="5" y="5" width="26" height="26" rx="3" fill="#0F172A" />
-                  <rect x="9" y="9" width="18" height="18" fill="white" />
-                  <rect x="13" y="13" width="10" height="10" fill="#0F172A" />
-
-                  <rect x="69" y="5" width="26" height="26" rx="3" fill="#0F172A" />
-                  <rect x="73" y="9" width="18" height="18" fill="white" />
-                  <rect x="77" y="13" width="10" height="10" fill="#0F172A" />
-
-                  <rect x="5" y="69" width="26" height="26" rx="3" fill="#0F172A" />
-                  <rect x="9" y="73" width="18" height="18" fill="white" />
-                  <rect x="13" y="77" width="10" height="10" fill="#0F172A" />
-
-                  {/* Data Modules */}
-                  <rect x="36" y="8" width="6" height="6" fill="#2563EB" />
-                  <rect x="46" y="8" width="6" height="6" fill="#0F172A" />
-                  <rect x="56" y="8" width="6" height="6" fill="#2563EB" />
-                  <rect x="36" y="18" width="6" height="6" fill="#0F172A" />
-                  <rect x="46" y="18" width="6" height="6" fill="#2563EB" />
-                  <rect x="56" y="18" width="6" height="6" fill="#0F172A" />
-
-                  {/* Center branding */}
-                  <rect x="35" y="35" width="30" height="30" rx="6" fill="#2563EB" />
-                  <circle cx="50" cy="50" r="9" fill="white" />
-                  <circle cx="50" cy="50" r="5" fill="#10B981" />
-
-                  <rect x="12" y="42" width="6" height="6" fill="#0F172A" />
-                  <rect x="22" y="42" width="6" height="6" fill="#2563EB" />
-                  <rect x="72" y="42" width="6" height="6" fill="#0F172A" />
-                  <rect x="82" y="42" width="6" height="6" fill="#2563EB" />
-
-                  <rect x="40" y="72" width="6" height="6" fill="#2563EB" />
-                  <rect x="50" y="72" width="6" height="6" fill="#0F172A" />
-                  <rect x="60" y="72" width="6" height="6" fill="#2563EB" />
-                  <rect x="72" y="72" width="6" height="6" fill="#0F172A" />
-                  <rect x="82" y="72" width="6" height="6" fill="#2563EB" />
-                  <rect x="40" y="82" width="6" height="6" fill="#0F172A" />
-                  <rect x="60" y="82" width="6" height="6" fill="#0F172A" />
-                </svg>
+              <div className="p-3 bg-white rounded-2xl inline-block shadow-lg mx-auto border-2 border-blue-400">
+                {qrCodeDataUrl ? (
+                  <img
+                    src={qrCodeDataUrl}
+                    alt="Código QR de Acceso Móvil"
+                    className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
+                  />
+                ) : (
+                  <div className="w-48 h-48 flex items-center justify-center text-slate-400">
+                    <QrCode className="w-16 h-16 animate-pulse" />
+                  </div>
+                )}
               </div>
 
-              <div className="text-xs font-mono text-slate-300">
+              <div className="text-xs font-mono font-bold text-blue-300">
                 https://xentra-two.vercel.app/
               </div>
+              <p className="text-[11px] text-slate-400">
+                Escanea con la app de Cámara o Google Lens de tu celular para abrir directamente el portal comunitario.
+              </p>
             </div>
           )}
 

@@ -49,10 +49,14 @@ export const PrintableStatementModal: React.FC<PrintableStatementModalProps> = (
 
   useEffect(() => {
     const generateQR = async () => {
-      const baseUrl =
-        typeof window !== 'undefined' && window.location.origin
-          ? window.location.origin
-          : 'https://xentra-two.vercel.app';
+      const isLocal =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const baseUrl = isLocal
+        ? 'https://xentra-two.vercel.app'
+        : (typeof window !== 'undefined' && window.location.origin
+            ? window.location.origin
+            : 'https://xentra-two.vercel.app');
 
       const verificationUrl = `${baseUrl}/verificar-recibo?token=${encodeURIComponent(
         data.tokenHash || '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4'

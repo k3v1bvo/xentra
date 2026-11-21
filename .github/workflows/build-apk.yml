@@ -90,6 +90,6 @@ jobs:
           echo "### 🏆 XENTRA OTB v3.0 - Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Plataforma:** Android Standalone APK (SDK 24-34)" >> $GITHUB_STEP_SUMMARY
           echo "- **Web Deployment:** https://xentra-two.vercel.app/" >> $GITHUB_STEP_SUMMARY
-          echo "- **Innovación:** Criptografía comunitaria TRACE + Modo Lectura Fácil A+" >> $GITHUB_STEP_SUMMARY
+          echo "- **Innovación:** Criptografía comunitaria TRACE + Talonario con QR Dinámico + Libro Mayor Inmutable" >> $GITHUB_STEP_SUMMARY
           echo "- **Seguridad Barrial:** Conexión directa 110, 119, 165 y Reportes Vecinales 24/7" >> $GITHUB_STEP_SUMMARY
           echo "- **Archivo Generado:** \`xentra-otb-v3.0.apk\`" >> $GITHUB_STEP_SUMMARY

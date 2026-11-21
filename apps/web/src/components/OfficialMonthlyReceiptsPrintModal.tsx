@@ -189,10 +189,14 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
   useEffect(() => {
     const generateQRs = async () => {
       const qrs: Record<string, string> = {};
-      const baseUrl =
-        typeof window !== 'undefined' && window.location.origin
-          ? window.location.origin
-          : 'https://xentra-two.vercel.app';
+      const isLocal =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const baseUrl = isLocal
+        ? 'https://xentra-two.vercel.app'
+        : (typeof window !== 'undefined' && window.location.origin
+            ? window.location.origin
+            : 'https://xentra-two.vercel.app');
 
       for (const r of receipts) {
         // Enlace enriquecido con parámetros para que el celular del vecino lo abra directamente y verifique al 100%

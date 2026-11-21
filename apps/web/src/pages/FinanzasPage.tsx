@@ -242,27 +242,27 @@ export const FinanzasPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black uppercase tracking-wider mb-1">
-            <Building className="w-3 h-3" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black uppercase tracking-wider mb-1.5">
+            <Building className="w-3.5 h-3.5" />
             <span>Mesa Directiva & Tesorería Comunal</span>
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             Tesorería & Verificación de Pagos QR
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-1 font-medium">
             Carga el QR bancario de tu OTB, verifica comprobantes de vecinos manualmente y emite recibos con QR personalizado.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Botón Imprimir Recibos Mensuales con QR */}
           <button
             onClick={() => setIsPrintReceiptsOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black text-slate-900 bg-emerald-400 hover:bg-emerald-300 shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
           >
             <Printer className="w-4 h-4 text-slate-950" />
             <span>Imprimir Recibos con QR</span>
@@ -271,7 +271,7 @@ export const FinanzasPage: React.FC = () => {
           {/* Botón Registrar Cobro Directo */}
           <button
             onClick={() => setShowPayModal(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Registrar Cobranza Manual</span>
@@ -280,13 +280,13 @@ export const FinanzasPage: React.FC = () => {
       </div>
 
       {/* Tabs con scroll horizontal en móvil */}
-      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto whitespace-nowrap pb-1">
+      <div className="flex items-center gap-2 border-b border-slate-800 overflow-x-auto whitespace-nowrap pb-1">
         <button
           onClick={() => setActiveTab('verificaciones')}
-          className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
             activeTab === 'verificaciones'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-blue-400 text-blue-400 font-black'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
           <span>Verificaciones Pendientes</span>
@@ -299,10 +299,10 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('config_qr')}
-          className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 cursor-pointer ${
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'config_qr'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-blue-400 text-blue-400 font-black'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
           <Settings className="w-3.5 h-3.5" />
@@ -311,10 +311,10 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('pagos')}
-          className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
             activeTab === 'pagos'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-blue-400 text-blue-400 font-black'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
           Historial de Recibos Emitidos
@@ -322,10 +322,10 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('cuotas')}
-          className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
             activeTab === 'cuotas'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-blue-400 text-blue-400 font-black'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
           Tarifario de Cuotas
@@ -333,10 +333,10 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('arqueo')}
-          className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
             activeTab === 'arqueo'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-blue-400 text-blue-400 font-black'
+              : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
           Arqueo de Caja Central
@@ -348,28 +348,28 @@ export const FinanzasPage: React.FC = () => {
       {/* ======================================================== */}
       {activeTab === 'verificaciones' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-blue-950">
+          <div className="p-4 rounded-2xl bg-blue-950/40 border-2 border-blue-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-blue-200">
             <div className="flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <ShieldCheck className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="block font-black text-sm">
+                <strong className="block font-black text-sm text-white">
                   Flujo de Verificación Manual de Tesorería
                 </strong>
-                <span className="text-blue-800 text-xs">
+                <span className="text-slate-300 text-xs">
                   Los vecinos transfieren por QR Simple y suben su comprobante. El Tesorero revisa el extracto de{' '}
-                  <strong>{otbPaymentConfig.bankName}</strong> y aprueba manualmente con un clic para emitir el recibo TRACE inmutable.
+                  <strong className="text-white">{otbPaymentConfig.bankName}</strong> y aprueba manualmente con un clic para emitir el recibo TRACE inmutable.
                 </span>
               </div>
             </div>
-            <span className="px-3 py-1 rounded-xl bg-white font-mono font-bold text-blue-700 shadow-sm border border-blue-200 self-start sm:self-auto">
+            <span className="px-3 py-1 rounded-xl bg-slate-900 font-mono font-bold text-blue-300 shadow-sm border border-blue-500/30 self-start sm:self-auto">
               {pendingCount} comprobante(s) por revisar
             </span>
           </div>
 
-          <div className="rounded-2xl bg-white border border-slate-200/80 shadow-fintech overflow-hidden">
+          <div className="rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px]">
+                <thead className="bg-[#030712] border-b-2 border-slate-700 text-slate-300 uppercase tracking-wider text-[10px]">
                   <tr>
                     <th className="px-5 py-3.5 font-bold">Fecha / Hora</th>
                     <th className="px-5 py-3.5 font-bold">Socio / Lote</th>
@@ -380,44 +380,44 @@ export const FinanzasPage: React.FC = () => {
                     <th className="px-5 py-3.5 font-bold text-center">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-800">
                   {submissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="px-5 py-3.5 font-mono text-slate-600 whitespace-nowrap">
+                    <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="px-5 py-3.5 font-mono text-slate-400 whitespace-nowrap">
                         {sub.submittedAt}
                       </td>
                       <td className="px-5 py-3.5">
-                        <strong className="text-slate-900 block">{sub.neighborName}</strong>
+                        <strong className="text-white block font-bold">{sub.neighborName}</strong>
                         <span className="text-[10px] text-slate-400 font-mono">
                           {sub.neighborSocioCode} • {sub.block}, {sub.lot}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-700">{sub.concept}</td>
+                      <td className="px-5 py-3.5 text-slate-200">{sub.concept}</td>
                       <td className="px-5 py-3.5">
                         <button
                           onClick={() => setInspectingVoucher(sub)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/30 transition-colors cursor-pointer"
                         >
-                          <Eye className="w-3.5 h-3.5" />
+                          <Eye className="w-3.5 h-3.5 text-blue-400" />
                           <span className="truncate max-w-[120px]">{sub.evidenceName}</span>
                         </button>
                       </td>
-                      <td className="px-5 py-3.5 text-right font-mono font-black text-slate-900 text-sm">
+                      <td className="px-5 py-3.5 text-right font-mono font-black text-white text-sm">
                         {formatBOB(sub.amount)}
                       </td>
                       <td className="px-5 py-3.5">
                         {sub.status === 'PendingVerification' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">
                             Por Verificar
                           </span>
                         )}
                         {sub.status === 'Confirmed' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                             Aprobado ✓
                           </span>
                         )}
                         {sub.status === 'Rejected' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/40">
                             Rechazado ✕
                           </span>
                         )}
@@ -427,7 +427,7 @@ export const FinanzasPage: React.FC = () => {
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               onClick={() => handleApprove(sub.id)}
-                              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                              className="px-3.5 py-1.5 rounded-xl text-xs font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-sm transition-all cursor-pointer flex items-center gap-1"
                               title="Confirmar ingreso en extracto y emitir recibo TRACE"
                             >
                               <Check className="w-3.5 h-3.5" />
@@ -438,7 +438,7 @@ export const FinanzasPage: React.FC = () => {
                                 setInspectingVoucher(sub);
                                 setShowRejectForm(true);
                               }}
-                              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/40 transition-colors cursor-pointer"
                               title="Rechazar comprobante observado"
                             >
                               Rechazar
@@ -451,9 +451,9 @@ export const FinanzasPage: React.FC = () => {
                                 `/verificar-recibo?token=${sub.traceToken}&receipt=${sub.officialReceiptNumber}`
                               )
                             }
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[11px] font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/30 transition-colors"
                           >
-                            <QrCode className="w-3.5 h-3.5" />
+                            <QrCode className="w-3.5 h-3.5 text-blue-400" />
                             <span>Ver Recibo</span>
                           </button>
                         ) : (
@@ -475,16 +475,16 @@ export const FinanzasPage: React.FC = () => {
       {activeTab === 'config_qr' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Formulario de Configuración */}
-          <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200 shadow-fintech space-y-5">
+          <div className="lg:col-span-2 p-6 sm:p-8 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-5 text-white">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-black border border-blue-200 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-black mb-2">
                 <Settings className="w-3.5 h-3.5" />
                 <span>Gestión de Recaudación Bancaria Oficial</span>
               </div>
-              <h2 className="text-lg font-black text-slate-900">
+              <h2 className="text-xl font-black text-white">
                 Configuración del Código QR y Cuenta Bancaria de la OTB
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-300 mt-1">
                 Los datos e imagen configurados aquí se mostrarán inmediatamente a todos los vecinos en la Landing Page y en sus aplicaciones móviles al pulsar "Pagar con QR".
               </p>
             </div>
@@ -492,93 +492,93 @@ export const FinanzasPage: React.FC = () => {
             <form onSubmit={handleSaveConfig} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Entidad Bancaria Oficial:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Entidad Bancaria Oficial:</label>
                   <select
                     value={formBank}
                     onChange={(e) => setFormBank(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                   >
-                    <option value="Banco Unión">Banco Unión (Cuenta Fiscal / Institucional)</option>
-                    <option value="BancoSol">BancoSol</option>
-                    <option value="Banco de Crédito BCP">Banco de Crédito BCP</option>
-                    <option value="Banco Nacional de Bolivia BNB">Banco Nacional de Bolivia BNB</option>
-                    <option value="Banco FIE">Banco FIE</option>
-                    <option value="Banco Mercantil Santa Cruz">Banco Mercantil Santa Cruz</option>
-                    <option value="Banco Prodem">Banco Prodem</option>
-                    <option value="Cooperativa Jesús Nazareno">Cooperativa Jesús Nazareno</option>
+                    <option value="Banco Unión" className="bg-slate-900 text-white">Banco Unión (Cuenta Fiscal / Institucional)</option>
+                    <option value="BancoSol" className="bg-slate-900 text-white">BancoSol</option>
+                    <option value="Banco de Crédito BCP" className="bg-slate-900 text-white">Banco de Crédito BCP</option>
+                    <option value="Banco Nacional de Bolivia BNB" className="bg-slate-900 text-white">Banco Nacional de Bolivia BNB</option>
+                    <option value="Banco FIE" className="bg-slate-900 text-white">Banco FIE</option>
+                    <option value="Banco Mercantil Santa Cruz" className="bg-slate-900 text-white">Banco Mercantil Santa Cruz</option>
+                    <option value="Banco Prodem" className="bg-slate-900 text-white">Banco Prodem</option>
+                    <option value="Cooperativa Jesús Nazareno" className="bg-slate-900 text-white">Cooperativa Jesús Nazareno</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Tipo de Cuenta:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Tipo de Cuenta:</label>
                   <input
                     type="text"
                     required
                     value={formAccountType}
                     onChange={(e) => setFormAccountType(e.target.value)}
                     placeholder="ej. Caja de Ahorros Fiscal"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Número de Cuenta Bancaria:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Número de Cuenta Bancaria:</label>
                   <input
                     type="text"
                     required
                     value={formAccountNumber}
                     onChange={(e) => setFormAccountNumber(e.target.value)}
                     placeholder="ej. 10000034891230"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold text-sm"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 font-mono font-bold text-white text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Titular de la Cuenta / OTB:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Titular de la Cuenta / OTB:</label>
                   <input
                     type="text"
                     required
                     value={formAccountHolder}
                     onChange={(e) => setFormAccountHolder(e.target.value)}
                     placeholder="ej. OTB Villa Esperanza - Tesorería"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">NIT / CI del Titular:</label>
+                  <label className="font-bold text-slate-200 block mb-1">NIT / CI del Titular:</label>
                   <input
                     type="text"
                     value={formNitOrCi}
                     onChange={(e) => setFormNitOrCi(e.target.value)}
                     placeholder="ej. NIT 1028374021"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Teléfono / WhatsApp de Tesorería:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Teléfono / WhatsApp de Tesorería:</label>
                   <input
                     type="text"
                     value={formWhatsapp}
                     onChange={(e) => setFormWhatsapp(e.target.value)}
                     placeholder="ej. 76543210"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">
+                <label className="font-bold text-slate-200 block mb-1">
                   Cargar Imagen Oficial del Código QR Simple:
                 </label>
-                <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50/50">
-                  <Upload className="w-7 h-7 text-blue-500 mb-1" />
-                  <span className="font-bold text-slate-800 text-xs">
+                <div className="border-2 border-dashed border-slate-700 hover:border-blue-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#030712]">
+                  <Upload className="w-7 h-7 text-blue-400 mb-1" />
+                  <span className="font-bold text-white text-xs">
                     Toca para seleccionar la imagen del QR de tu banco (JPG / PNG)
                   </span>
                   <span className="text-[10px] text-slate-400 mt-0.5">
@@ -593,7 +593,7 @@ export const FinanzasPage: React.FC = () => {
                   />
                   <label
                     htmlFor="qr-upload-input"
-                    className="mt-2.5 px-4 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs cursor-pointer hover:bg-slate-800"
+                    className="mt-2.5 px-4 py-2 rounded-xl bg-blue-600 text-white font-black text-xs cursor-pointer hover:bg-blue-500 shadow-sm"
                   >
                     Examinar archivo
                   </label>
@@ -601,7 +601,7 @@ export const FinanzasPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">
+                <label className="font-bold text-slate-200 block mb-1">
                   Instrucciones o Glosa para el Vecino:
                 </label>
                 <textarea
@@ -609,20 +609,20 @@ export const FinanzasPage: React.FC = () => {
                   value={formInstructions}
                   onChange={(e) => setFormInstructions(e.target.value)}
                   placeholder="ej. Indicar código de lote en la glosa de la transferencia"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                  className="w-full px-3 py-2 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                 />
               </div>
 
               {configSavedNotice && (
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400" />
                   <span>¡Datos guardados correctamente y sincronizados con toda la comunidad!</span>
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
               >
                 <Check className="w-4 h-4" />
                 <span>Guardar Configuración Oficial de Cobro</span>
@@ -694,10 +694,10 @@ export const FinanzasPage: React.FC = () => {
       {/* TAB 3: HISTORIAL DE RECIBOS EMITIDOS                    */}
       {/* ======================================================== */}
       {activeTab === 'pagos' && (
-        <div className="rounded-2xl bg-white border border-slate-200/80 shadow-fintech overflow-hidden">
+        <div className="rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px]">
+              <thead className="bg-[#030712] border-b-2 border-slate-700 text-slate-300 uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="px-5 py-3.5 font-bold">N° Recibo / Fecha</th>
                   <th className="px-5 py-3.5 font-bold">Vecino / Aportante</th>
@@ -708,41 +708,41 @@ export const FinanzasPage: React.FC = () => {
                   <th className="px-5 py-3.5 font-bold text-center">Validación QR</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-800">
                 {payments.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="font-bold font-mono text-slate-900">{p.receiptNumber}</p>
-                      <p className="text-[10px] text-slate-400">{p.date}</p>
+                      <p className="font-bold font-mono text-white">{p.receiptNumber}</p>
+                      <p className="text-[10px] text-slate-400 font-mono">{p.date}</p>
                     </td>
-                    <td className="px-5 py-3.5 font-semibold text-slate-800">{p.neighborName}</td>
-                    <td className="px-5 py-3.5 text-slate-600">{p.concept}</td>
+                    <td className="px-5 py-3.5 font-bold text-slate-200">{p.neighborName}</td>
+                    <td className="px-5 py-3.5 text-slate-300">{p.concept}</td>
                     <td className="px-5 py-3.5">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600">
-                        {p.method === 'Efectivo' && <Banknote className="w-3.5 h-3.5 text-emerald-600" />}
-                        {p.method === 'Transferencia' && <CreditCard className="w-3.5 h-3.5 text-blue-600" />}
-                        {p.method === 'QR' && <QrCode className="w-3.5 h-3.5 text-purple-600" />}
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-300">
+                        {p.method === 'Efectivo' && <Banknote className="w-3.5 h-3.5 text-emerald-400" />}
+                        {p.method === 'Transferencia' && <CreditCard className="w-3.5 h-3.5 text-blue-400" />}
+                        {p.method === 'QR' && <QrCode className="w-3.5 h-3.5 text-purple-400" />}
                         {p.method}
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
                       {p.status === 'Confirmed' && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                           Confirmado
                         </span>
                       )}
                       {p.status === 'PendingVerification' && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/40">
                           Verificación Pendiente
                         </span>
                       )}
                       {p.status === 'Reversed' && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/40">
                           Revertido
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900">
+                    <td className="px-5 py-3.5 text-right font-mono font-black text-white text-sm">
                       {formatBOB(p.amount)}
                     </td>
                     <td className="px-5 py-3.5 text-center">
@@ -751,10 +751,10 @@ export const FinanzasPage: React.FC = () => {
                           navigate(`/verificar-recibo?token=${p.token}&receipt=${p.receiptNumber}`)
                         }
                         title="Verificar Recibo Oficial QR"
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/40 transition-colors cursor-pointer"
                       >
-                        <QrCode className="w-3.5 h-3.5" />
-                        Ver QR
+                        <QrCode className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Ver QR</span>
                       </button>
                     </td>
                   </tr>
@@ -770,37 +770,37 @@ export const FinanzasPage: React.FC = () => {
       {/* ======================================================== */}
       {activeTab === 'cuotas' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-fintech">
+          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
                 Ordinaria
               </span>
               <span className="text-xs text-slate-400 font-mono">Vence: 30/11/2026</span>
             </div>
-            <h3 className="font-bold text-slate-900 text-sm">Cuota Ordinaria Noviembre 2026</h3>
-            <p className="text-xs text-slate-500 mt-1">
+            <h3 className="font-extrabold text-white text-base">Cuota Ordinaria Noviembre 2026</h3>
+            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
               Fondo operativo para pago de alumbrado público, recojo de basura comunal y mantenimiento.
             </p>
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500">Monto asignado por vivienda:</span>
-              <span className="text-lg font-extrabold font-mono text-slate-900">{formatBOB(25.0)}</span>
+            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+              <span className="text-xs text-slate-400 font-medium">Monto asignado por vivienda:</span>
+              <span className="text-xl font-black font-mono text-white">{formatBOB(25.0)}</span>
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-fintech">
+          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
                 Aporte Especial
               </span>
               <span className="text-xs text-slate-400 font-mono">Vence: 15/12/2026</span>
             </div>
-            <h3 className="font-bold text-slate-900 text-sm">Aporte Pro-Tinglado (Cuota 1 de 2)</h3>
-            <p className="text-xs text-slate-500 mt-1">
+            <h3 className="font-extrabold text-white text-base">Aporte Pro-Tinglado (Cuota 1 de 2)</h3>
+            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
               Fondo exclusivo con destino a la compra de perfiles y tinglado de la cancha polifuncional.
             </p>
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500">Monto asignado por vivienda:</span>
-              <span className="text-lg font-extrabold font-mono text-purple-700">{formatBOB(100.0)}</span>
+            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+              <span className="text-xs text-slate-400 font-medium">Monto asignado por vivienda:</span>
+              <span className="text-xl font-black font-mono text-purple-400">{formatBOB(100.0)}</span>
             </div>
           </div>
         </div>
@@ -810,26 +810,26 @@ export const FinanzasPage: React.FC = () => {
       {/* TAB 5: ARQUEO DE CAJA CENTRAL                           */}
       {/* ======================================================== */}
       {activeTab === 'arqueo' && (
-        <div className="max-w-2xl p-6 rounded-2xl bg-white border border-slate-200/80 shadow-fintech space-y-4">
-          <h2 className="text-sm font-bold text-slate-900">Arqueo y Cierre Diario de Caja</h2>
+        <div className="max-w-2xl p-6 sm:p-8 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-5">
+          <h2 className="text-lg font-black text-white">Arqueo y Cierre Diario de Caja</h2>
           <div className="grid grid-cols-2 gap-4 text-xs">
-            <div className="p-3 rounded-xl bg-slate-50">
-              <span className="text-slate-500">Saldo Inicial:</span>
-              <p className="text-sm font-mono font-bold text-slate-800">{formatBOB(3500.0)}</p>
+            <div className="p-4 rounded-2xl bg-[#030712] border border-slate-700 space-y-1">
+              <span className="text-slate-400 font-bold uppercase text-[10px]">Saldo Inicial:</span>
+              <p className="text-lg font-mono font-black text-white">{formatBOB(3500.0)}</p>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-50">
-              <span className="text-emerald-700">Ingresos del Día:</span>
-              <p className="text-sm font-mono font-bold text-emerald-800">{formatBOB(750.0)}</p>
+            <div className="p-4 rounded-2xl bg-[#030712] border border-slate-700 space-y-1">
+              <span className="text-emerald-400 font-bold uppercase text-[10px]">Ingresos del Día:</span>
+              <p className="text-lg font-mono font-black text-emerald-400">{formatBOB(750.0)}</p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-700">Saldo Contable Esperado:</span>
-            <span className="text-lg font-extrabold font-mono text-blue-600">{formatBOB(4250.0)}</span>
+          <div className="p-5 rounded-2xl bg-[#030712] border-2 border-slate-700 flex items-center justify-between">
+            <span className="text-xs sm:text-sm font-bold text-slate-300">Saldo Contable Esperado:</span>
+            <span className="text-xl sm:text-2xl font-black font-mono text-blue-400">{formatBOB(4250.0)}</span>
           </div>
 
-          <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <div className="text-xs text-slate-300 flex items-center gap-2 bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-500/30">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
             <span>Arqueo cuadrado al 100%. Sin discrepancias entre conteo físico y sistema.</span>
           </div>
         </div>
@@ -839,14 +839,14 @@ export const FinanzasPage: React.FC = () => {
       {/* MODAL 1: INSPECCIONAR VOUCHER Y APROBAR / RECHAZAR      */}
       {/* ======================================================== */}
       {inspectingVoucher && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-lg rounded-3xl bg-white shadow-2xl border border-slate-200 p-6 space-y-5 my-auto">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-slate-700 p-6 sm:p-8 space-y-5 my-auto text-white">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-700 block">
+                <span className="text-[10px] font-black uppercase text-blue-400 block tracking-wider">
                   Verificación Manual de Tesorería
                 </span>
-                <h3 className="text-base font-black text-slate-900">
+                <h3 className="text-lg font-black text-white">
                   Comprobante de {inspectingVoucher.neighborName}
                 </h3>
               </div>
@@ -855,15 +855,15 @@ export const FinanzasPage: React.FC = () => {
                   setInspectingVoucher(null);
                   setShowRejectForm(false);
                 }}
-                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl"
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Simulación del Comprobante / Voucher */}
-            <div className="p-4 rounded-2xl bg-slate-100 border border-slate-300 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-full max-w-xs bg-white p-4 rounded-xl shadow-md border border-slate-200 font-mono text-xs text-left space-y-1.5">
+            <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 flex flex-col items-center justify-center text-center space-y-3">
+              <div className="w-full max-w-xs bg-white text-slate-900 p-4 rounded-xl shadow-md border border-slate-200 font-mono text-xs text-left space-y-1.5">
                 <div className="text-center pb-2 border-b border-slate-200 font-sans">
                   <strong className="text-sm text-slate-900 block font-black">BANCO UNIÓN S.A.</strong>
                   <span className="text-[10px] text-slate-500">Comprobante de Transferencia QR Simple</span>
@@ -881,15 +881,15 @@ export const FinanzasPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <span className="text-[10px] text-slate-500">
-                Archivo: <code className="text-slate-800 font-bold">{inspectingVoucher.evidenceName}</code>
+              <span className="text-[11px] text-slate-400 font-mono">
+                Archivo: <code className="text-emerald-400 font-bold">{inspectingVoucher.evidenceName}</code>
               </span>
             </div>
 
             {/* Formulario de Rechazo */}
             {showRejectForm ? (
-              <div className="space-y-3 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl text-xs">
-                <strong className="text-rose-950 font-bold block">
+              <div className="space-y-3 p-4 bg-rose-950/30 border border-rose-500/40 rounded-2xl text-xs">
+                <strong className="text-rose-200 font-bold block">
                   Indicar Motivo de Observación / Rechazo:
                 </strong>
                 <textarea
@@ -897,18 +897,18 @@ export const FinanzasPage: React.FC = () => {
                   value={rejectionReasonInput}
                   onChange={(e) => setRejectionReasonInput(e.target.value)}
                   placeholder="ej. El número de transacción no figura en el extracto de Banco Unión..."
-                  className="w-full p-2.5 bg-white border border-rose-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 text-slate-900 text-xs"
+                  className="w-full p-3 bg-[#030712] border-2 border-rose-500/40 rounded-xl focus:outline-none focus:border-rose-400 text-white text-xs"
                 />
                 <div className="flex justify-end gap-2">
                   <button
                     onClick={() => setShowRejectForm(false)}
-                    className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-xl"
+                    className="px-3.5 py-1.5 text-xs text-slate-300 hover:bg-slate-800 rounded-xl cursor-pointer"
                   >
                     Volver
                   </button>
                   <button
                     onClick={() => handleReject(inspectingVoucher.id)}
-                    className="px-4 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm"
+                    className="px-4 py-1.5 text-xs font-black text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm cursor-pointer"
                   >
                     Confirmar Rechazo
                   </button>
@@ -918,20 +918,20 @@ export const FinanzasPage: React.FC = () => {
               <div className="flex gap-2.5 pt-2">
                 <button
                   onClick={() => setShowRejectForm(true)}
-                  className="flex-1 py-3 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer"
+                  className="flex-1 py-3.5 text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/40 rounded-2xl transition-colors cursor-pointer"
                 >
                   Observar / Rechazar
                 </button>
                 <button
                   onClick={() => handleApprove(inspectingVoucher.id)}
-                  className="flex-1 py-3 text-xs font-black text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-lg shadow-emerald-600/25 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3.5 text-xs font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-2xl shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>Aprobar & Emitir Recibo TRACE</span>
                 </button>
               </div>
             ) : (
-              <div className="text-center py-2 text-xs text-slate-500 font-bold">
+              <div className="text-center py-2 text-xs text-slate-400 font-bold">
                 Este comprobante ya fue procesado ({inspectingVoucher.status === 'Confirmed' ? 'Aprobado ✓' : 'Rechazado ✕'}).
               </div>
             )}
@@ -951,76 +951,76 @@ export const FinanzasPage: React.FC = () => {
       {/* MODAL 3: REGISTRO COBRANZA EN CAJA                       */}
       {/* ======================================================== */}
       {showPayModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="text-sm font-bold text-slate-900">Registrar Cobranza & Emitir Recibo</h2>
-              <p className="text-xs text-slate-500">Genera recibo oficial con token de validación QR.</p>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-slate-700 overflow-hidden text-white">
+            <div className="p-5 border-b border-slate-800 bg-[#030712]">
+              <h2 className="text-base font-black text-white">Registrar Cobranza & Emitir Recibo</h2>
+              <p className="text-xs text-slate-400">Genera recibo oficial con token de validación QR.</p>
             </div>
 
-            <form onSubmit={handleRegisterPayment} className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleRegisterPayment} className="p-6 space-y-4 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Vecino / Aportante</label>
+                <label className="font-bold text-slate-200 block mb-1">Vecino / Aportante</label>
                 <select
                   value={neighborName}
                   onChange={(e) => setNeighborName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                 >
-                  <option value="Juan José Flores Morales">Juan José Flores Morales (Lote 12 - Deuda: Bs. 50)</option>
-                  <option value="Silvia Rojas Torrico">Silvia Rojas Torrico (Lote 05 - Deuda: Bs. 125)</option>
-                  <option value="Roberto Fernández Vargas">Roberto Fernández Vargas (Lote 01 - Al Día)</option>
-                  <option value="Marina Condori Rocha">Marina Condori Rocha (Lote 08 - Al Día)</option>
+                  <option value="Juan José Flores Morales" className="bg-slate-900 text-white">Juan José Flores Morales (Lote 12 - Deuda: Bs. 50)</option>
+                  <option value="Silvia Rojas Torrico" className="bg-slate-900 text-white">Silvia Rojas Torrico (Lote 05 - Deuda: Bs. 125)</option>
+                  <option value="Roberto Fernández Vargas" className="bg-slate-900 text-white">Roberto Fernández Vargas (Lote 01 - Al Día)</option>
+                  <option value="Marina Condori Rocha" className="bg-slate-900 text-white">Marina Condori Rocha (Lote 08 - Al Día)</option>
                 </select>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Concepto de Cobro</label>
+                <label className="font-bold text-slate-200 block mb-1">Concepto de Cobro</label>
                 <input
                   type="text"
                   required
                   value={payConcept}
                   onChange={(e) => setPayConcept(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Monto (BOB / Bs.)</label>
+                  <label className="font-bold text-slate-200 block mb-1">Monto (BOB / Bs.)</label>
                   <input
                     type="number"
                     step="0.50"
                     required
                     value={payAmount}
                     onChange={(e) => setPayAmount(e.target.value)}
-                    className="w-full font-mono font-bold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full font-mono font-black text-white px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Método de Cobro</label>
+                  <label className="font-bold text-slate-200 block mb-1">Método de Cobro</label>
                   <select
                     value={payMethod}
                     onChange={(e) => setPayMethod(e.target.value as PaymentMethod)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                   >
-                    <option value="Efectivo">Efectivo en Caja</option>
-                    <option value="QR">QR Simple (Bolivia)</option>
-                    <option value="Transferencia">Transferencia Bancaria</option>
+                    <option value="Efectivo" className="bg-slate-900 text-white">Efectivo en Caja</option>
+                    <option value="QR" className="bg-slate-900 text-white">QR Simple (Bolivia)</option>
+                    <option value="Transferencia" className="bg-slate-900 text-white">Transferencia Bancaria</option>
                   </select>
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-2 border-t border-slate-100">
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowPayModal(false)}
-                  className="px-3.5 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                  className="px-4 py-2 font-bold text-slate-300 hover:text-white rounded-xl cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm cursor-pointer"
+                  className="px-5 py-2.5 font-black text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 cursor-pointer"
                 >
                   Confirmar & Emitir Recibo QR
                 </button>
@@ -1034,21 +1034,21 @@ export const FinanzasPage: React.FC = () => {
       {/* MODAL 4: ÉXITO RECIBO EMITIDO                           */}
       {/* ======================================================== */}
       {generatedReceipt && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-slate-200 p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0B132B] shadow-2xl border-2 border-slate-700 p-6 text-center space-y-4 text-white">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">¡Recibo Oficial Emitido!</h3>
-              <p className="text-xs text-slate-500 mt-1">El cobro ha sido registrado e impactado en tesorería.</p>
+              <h3 className="font-black text-white text-lg">¡Recibo Oficial Emitido!</h3>
+              <p className="text-xs text-slate-400 mt-1">El cobro ha sido registrado e impactado en tesorería.</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-left text-xs space-y-1.5 font-mono">
-              <p className="text-slate-500">Recibo: <span className="font-bold text-slate-900">{generatedReceipt.receiptNumber}</span></p>
-              <p className="text-slate-500">Vecino: <span className="font-bold text-slate-900">{generatedReceipt.neighborName}</span></p>
-              <p className="text-slate-500">Monto: <span className="font-bold text-emerald-600 text-sm">{formatBOB(generatedReceipt.amount)}</span></p>
-              <p className="text-slate-500">Método: <span className="text-slate-900">{generatedReceipt.method}</span></p>
+            <div className="p-4 rounded-2xl bg-[#030712] border border-slate-700 text-left text-xs space-y-1.5 font-mono">
+              <p className="text-slate-400">Recibo: <span className="font-bold text-white">{generatedReceipt.receiptNumber}</span></p>
+              <p className="text-slate-400">Vecino: <span className="font-bold text-white">{generatedReceipt.neighborName}</span></p>
+              <p className="text-slate-400">Monto: <span className="font-black text-emerald-400 text-sm">{formatBOB(generatedReceipt.amount)}</span></p>
+              <p className="text-slate-400">Método: <span className="text-white">{generatedReceipt.method}</span></p>
             </div>
 
             <div className="flex gap-2">
@@ -1057,13 +1057,13 @@ export const FinanzasPage: React.FC = () => {
                   navigate(`/verificar-recibo?token=${generatedReceipt.token}&receipt=${generatedReceipt.receiptNumber}`);
                   setGeneratedReceipt(null);
                 }}
-                className="flex-1 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm"
+                className="flex-1 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 cursor-pointer"
               >
                 Abrir Verificación QR
               </button>
               <button
                 onClick={() => setGeneratedReceipt(null)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                className="px-4 py-2.5 text-xs font-bold text-slate-300 hover:text-white rounded-xl cursor-pointer"
               >
                 Cerrar
               </button>

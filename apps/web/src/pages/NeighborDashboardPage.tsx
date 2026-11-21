@@ -20,7 +20,8 @@ import {
   Smartphone,
   Sparkles,
   AlertTriangle,
-  ShieldCheck
+  ShieldCheck,
+  MapPin
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
@@ -31,6 +32,8 @@ import { PrintableStatementModal } from '../components/PrintableStatementModal';
 import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
 import { CommunityTransparencyModal } from '../components/CommunityTransparencyModal';
 import { InstallAppModal } from '../components/InstallAppModal';
+import { TiltCard3D } from '../components/TiltCard3D';
+import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 
 interface NeighborFee {
   id: string;
@@ -224,30 +227,30 @@ export const NeighborDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Encabezado Vecino */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-6 text-white">
+      {/* Encabezado Vecino con 3D Depth */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B]/90 border-2 border-blue-500/40 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/30 text-blue-100 text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-500/30">
             <Home className="w-3.5 h-3.5" />
             <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             Hola, {profile?.first_name || 'Juan'} {profile?.last_name || 'Flores'}
           </h1>
-          <p className="text-xs text-blue-200/90 max-w-md">
+          <p className="text-xs text-slate-300 max-w-md font-medium leading-relaxed">
             Consulta tus cuotas asignadas, realiza tus pagos por QR Simple y descarga tus recibos oficiales con código de verificación.
           </p>
         </div>
 
         {/* Tarjeta Deuda y Botón de Pago Rápido */}
-        <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 flex flex-col sm:flex-row sm:items-center gap-4 flex-shrink-0">
+        <div className="bg-[#030712] p-5 rounded-2xl border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center gap-4 flex-shrink-0 shadow-xl">
           <div className="text-left sm:text-right">
-            <span className="text-[11px] text-blue-200 block font-medium">Deuda Pendiente</span>
+            <span className="text-[11px] text-slate-400 block font-bold uppercase tracking-wider">Deuda Pendiente</span>
             <span className="text-2xl sm:text-3xl font-black font-mono text-white">
               {formatBOB(totalDebt)}
             </span>
-            <span className="block text-[10px] text-amber-300 mt-0.5">
+            <span className="block text-[11px] font-bold text-amber-400 mt-0.5">
               {totalDebt > 0 ? '1 cuota con saldo pendiente' : '¡Felicidades! Estás al día'}
             </span>
           </div>
@@ -255,7 +258,7 @@ export const NeighborDashboardPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-2">
             <button
               onClick={() => setIsQrModalOpen(true)}
-              className="py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+              className="py-3 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
             >
               <QrCode className="w-4 h-4 text-slate-950" />
               <span>Pagar con QR</span>
@@ -263,9 +266,9 @@ export const NeighborDashboardPage: React.FC = () => {
 
             <button
               onClick={() => setIsPrintModalOpen(true)}
-              className="py-3 px-4 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/30 backdrop-blur-sm transition-all cursor-pointer"
+              className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-600 transition-all cursor-pointer"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-4 h-4 text-blue-400" />
               <span>Imprimir Ficha</span>
             </button>
           </div>
@@ -279,104 +282,105 @@ export const NeighborDashboardPage: React.FC = () => {
             setAlertModalTab('emergencias');
             setIsAlertModalOpen(true);
           }}
-          className="p-4 rounded-2xl bg-rose-50 border-2 border-rose-200 hover:bg-rose-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-rose-600/30 border border-rose-500/50 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
               <PhoneCall className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <strong className="text-rose-950 font-black text-sm block">🚨 Auxilio & Reportes 24/7</strong>
-              <span className="text-rose-700 text-xs">Radio Patrullas 110, SAMU 165 y Alerta</span>
+              <strong className="text-white font-black text-sm block">🚨 Auxilio & Reportes 24/7</strong>
+              <span className="text-rose-300 text-xs font-semibold">Radio Patrullas 110, SAMU 165 y Alerta</span>
             </div>
           </div>
-          <span className="text-xs font-black text-rose-600 group-hover:translate-x-1 transition-transform">Llamar →</span>
+          <span className="text-xs font-black text-rose-400 group-hover:translate-x-1 transition-transform">Llamar →</span>
         </button>
 
         <button
           onClick={() => setIsTransparencyModalOpen(true)}
-          className="p-4 rounded-2xl bg-purple-50 border-2 border-purple-200 hover:bg-purple-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-500/50 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <strong className="text-purple-950 font-black text-sm block">🔍 Transparencia & Asamblea</strong>
-              <span className="text-purple-700 text-xs">¿En qué se gastó? y Convocatoria 29 Nov</span>
+              <strong className="text-white font-black text-sm block">🔍 Transparencia & Asamblea</strong>
+              <span className="text-purple-300 text-xs font-semibold">¿En qué se gastó? y Asamblea 29 Nov</span>
             </div>
           </div>
-          <span className="text-xs font-black text-purple-600 group-hover:translate-x-1 transition-transform">Ver Cuentas →</span>
+          <span className="text-xs font-black text-purple-400 group-hover:translate-x-1 transition-transform">Ver Cuentas →</span>
         </button>
 
         <button
           onClick={() => setIsInstallModalOpen(true)}
-          className="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 hover:bg-emerald-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-500/50 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
               <Smartphone className="w-5 h-5" />
             </div>
             <div>
-              <strong className="text-emerald-950 font-black text-sm block">📲 Instalar App Android</strong>
-              <span className="text-emerald-700 text-xs">Instala el APK para avisos y cuotas</span>
+              <strong className="text-white font-black text-sm block">📲 Instalar App Android</strong>
+              <span className="text-emerald-300 text-xs font-semibold">Instala el APK para avisos y cuotas</span>
             </div>
           </div>
-          <span className="text-xs font-black text-emerald-600 group-hover:translate-x-1 transition-transform">Ver App →</span>
+          <span className="text-xs font-black text-emerald-400 group-hover:translate-x-1 transition-transform">Ver App →</span>
         </button>
       </div>
 
       {/* Mis Cuotas Asignadas */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <FileCheck className="w-4 h-4 text-blue-600" />
+          <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+            <FileCheck className="w-4 h-4 text-blue-400" />
             <span>Mis Cuotas y Obligaciones Comunitarias</span>
           </h2>
-          <span className="text-xs text-slate-500 font-mono">Total asignado: {formatBOB(totalAssigned)}</span>
+          <span className="text-xs text-slate-400 font-mono font-bold">Total asignado: {formatBOB(totalAssigned)}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {fees.map((fee) => (
-            <div
+            <TiltCard3D
               key={fee.id}
-              className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3"
+              intensity={5}
+              className="p-5 rounded-2xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 uppercase">
                   {fee.type}
                 </span>
                 {fee.isSettled ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Pagada
+                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Pagada
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
-                    <AlertCircle className="w-3.5 h-3.5" /> Saldo Pendiente
+                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 rounded-full">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" /> Saldo Pendiente
                   </span>
                 )}
               </div>
 
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">{fee.title}</h3>
+                <h3 className="font-extrabold text-white text-base">{fee.title}</h3>
                 <p className="text-xs text-slate-400 font-mono mt-0.5 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
                   <span>Vencimiento: {fee.dueDate}</span>
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-3 gap-2 text-xs text-center font-mono">
+              <div className="p-3.5 rounded-xl bg-[#030712] border border-slate-700 grid grid-cols-3 gap-2 text-xs text-center font-mono">
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Asignado</span>
-                  <strong className="text-slate-800">{formatBOB(fee.amountAssigned)}</strong>
+                  <span className="text-[10px] text-slate-400 block font-bold">Asignado</span>
+                  <strong className="text-slate-200 font-black">{formatBOB(fee.amountAssigned)}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Abonado</span>
-                  <strong className="text-emerald-600">{formatBOB(fee.amountPaid)}</strong>
+                  <span className="text-[10px] text-slate-400 block font-bold">Abonado</span>
+                  <strong className="text-emerald-400 font-black">{formatBOB(fee.amountPaid)}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Resta</span>
-                  <strong className="text-rose-600">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
+                  <span className="text-[10px] text-slate-400 block font-bold">Resta</span>
+                  <strong className="text-rose-400 font-black">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
                 </div>
               </div>
 
@@ -386,33 +390,52 @@ export const NeighborDashboardPage: React.FC = () => {
                     setPayAmount((fee.amountAssigned - fee.amountPaid).toFixed(2));
                     setIsQrModalOpen(true);
                   }}
-                  className="w-full py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/20 transition-colors cursor-pointer"
                 >
-                  <QrCode className="w-3.5 h-3.5" />
+                  <QrCode className="w-4 h-4" />
                   <span>Pagar saldo de esta cuota</span>
                 </button>
               )}
-            </div>
+            </TiltCard3D>
           ))}
         </div>
       </div>
 
+      {/* Mapa Interactivo de la OTB y Ubicación del Inmueble */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-emerald-400" />
+            <span>Plano Comunal Interactivo & Sede de la OTB</span>
+          </h2>
+          <span className="text-xs text-slate-400 font-mono font-bold">Manzana A, Lote 12</span>
+        </div>
+        <CommunityInteractiveMap
+          centerLat={-17.41325}
+          centerLng={-66.16543}
+          zoom={16}
+          heightClass="h-56 sm:h-64"
+          otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+          selectedLotName="Lote 12"
+        />
+      </div>
+
       {/* Historial de Pagos y Comprobantes Enviados */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-emerald-600" />
+            <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-emerald-400" />
               <span>Historial de Pagos y Recibos Oficiales</span>
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400 mt-0.5">
               Revisa si tus pagos fueron confirmados por la tesorería o descarga tu recibo con código QR.
             </p>
           </div>
 
           <button
             onClick={() => setIsQrModalOpen(true)}
-            className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
+            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-blue-600/20"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Reportar Nuevo Pago</span>
@@ -423,38 +446,38 @@ export const NeighborDashboardPage: React.FC = () => {
           {submissions.map((sub) => (
             <div
               key={sub.id}
-              className="p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 hover:bg-white transition-all"
+              className="p-4 rounded-2xl border-2 border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#030712] hover:border-slate-500 transition-all shadow-md"
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
                     sub.status === 'Confirmed'
-                      ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                      : 'bg-amber-100 text-amber-700 border border-amber-200'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                   }`}
                 >
                   {sub.status === 'Confirmed' ? (
-                    <CheckCircle2 className="w-5 h-5" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   ) : (
-                    <Clock className="w-5 h-5" />
+                    <Clock className="w-5 h-5 text-amber-400" />
                   )}
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-900">{sub.concept}</span>
+                    <span className="text-xs font-bold text-white">{sub.concept}</span>
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
                         sub.status === 'Confirmed'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}
                     >
                       {sub.status === 'Confirmed' ? 'Confirmado ✓' : 'Pendiente de Verificación'}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-slate-400 mt-0.5">
                     {sub.submittedAt} • Método: {sub.method}
                     {sub.receiptNumber && ` • Recibo: ${sub.receiptNumber}`}
                   </p>
@@ -462,20 +485,20 @@ export const NeighborDashboardPage: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-3 justify-between sm:justify-end">
-                <span className="text-sm font-black font-mono text-slate-900">
+                <span className="text-sm font-black font-mono text-white">
                   {formatBOB(sub.amount)}
                 </span>
 
                 {sub.status === 'Confirmed' && sub.receiptNumber ? (
                   <button
                     onClick={() => navigate(`/verificar-recibo?receipt=${sub.receiptNumber}`)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/30 transition-colors cursor-pointer"
                   >
                     <span>Ver Recibo QR</span>
                     <ExternalLink className="w-3 h-3" />
                   </button>
                 ) : (
-                  <span className="text-[11px] text-amber-600 font-medium italic">
+                  <span className="text-[11px] text-amber-400 font-medium italic">
                     En revisión por Tesorería
                   </span>
                 )}
@@ -485,30 +508,30 @@ export const NeighborDashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL: Pagar con Código QR Simple */}
+      {/* MODAL: Pagar con Código QR Simple (Dark Fintech Harmonized) */}
       {isQrModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0B132B] text-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto border-2 border-slate-700">
             <button
               onClick={() => setIsQrModalOpen(false)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              className="absolute right-5 top-5 p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
-                <QrCode className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold mb-2">
+                <QrCode className="w-3.5 h-3.5 text-emerald-400" />
                 <span>QR Simple • Transferencia Bancaria Directa</span>
               </div>
-              <h3 className="text-lg font-black text-slate-900">Pagar Cuotas por Código QR</h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <h3 className="text-xl font-black text-white">Pagar Cuotas por Código QR</h3>
+              <p className="text-xs text-slate-300 mt-1">
                 Escanea el código QR desde cualquier aplicación bancaria de Bolivia (Banco Unión, BCP, BNB, Banco Sol, etc.) y adjunta tu comprobante.
               </p>
             </div>
 
             {/* Código QR Visual */}
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
+            <div className="p-4 bg-[#030712] border-2 border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
               <div className="w-48 h-48 bg-white border-2 border-slate-800 rounded-2xl p-2.5 shadow-sm flex items-center justify-center relative overflow-hidden">
                 {otbPaymentConfig.qrImageUrl ? (
                   <img
@@ -564,34 +587,34 @@ export const NeighborDashboardPage: React.FC = () => {
 
               {/* 4 Pasos Didácticos para el Vecino de 40 a 60 años */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[10px] w-full pt-1">
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
                   <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">1</span>
-                  <span className="font-bold text-slate-800 block">Guarda el QR</span>
-                  <span className="text-[9px] text-slate-500">Toca botón verde</span>
+                  <span className="font-bold text-white block">Guarda el QR</span>
+                  <span className="text-[9px] text-slate-400">Toca botón verde</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
                   <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">2</span>
-                  <span className="font-bold text-slate-800 block">Abre tu Banco</span>
-                  <span className="text-[9px] text-slate-500">Unión, Sol, BCP</span>
+                  <span className="font-bold text-white block">Abre tu Banco</span>
+                  <span className="text-[9px] text-slate-400">Unión, Sol, BCP</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
                   <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">3</span>
-                  <span className="font-bold text-slate-800 block">Pagar QR</span>
-                  <span className="text-[9px] text-slate-500">Cargar de Galería</span>
+                  <span className="font-bold text-white block">Pagar QR</span>
+                  <span className="text-[9px] text-slate-400">Cargar de Galería</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
-                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">4</span>
-                  <span className="font-bold text-slate-800 block">Sube Voucher</span>
-                  <span className="text-[9px] text-slate-500">Adjunta captura</span>
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] flex items-center justify-center mx-auto">4</span>
+                  <span className="font-bold text-white block">Sube Voucher</span>
+                  <span className="text-[9px] text-slate-400">Adjunta captura</span>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm font-black text-slate-900">Monto a pagar: <span className="text-emerald-600 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
-                <p className="text-xs text-blue-700 font-bold font-mono mt-0.5">
+                <p className="text-sm font-black text-white">Monto a pagar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
+                <p className="text-xs text-blue-400 font-bold font-mono mt-0.5">
                   {otbPaymentConfig.bankName} • Cta Fiscal: {otbPaymentConfig.accountNumber}
                 </p>
-                <p className="text-[10px] text-slate-500 mt-0.5">
+                <p className="text-[10px] text-slate-400 mt-0.5">
                   Titular: {otbPaymentConfig.accountHolder} ({otbPaymentConfig.nitOrCi})
                 </p>
               </div>
@@ -601,7 +624,7 @@ export const NeighborDashboardPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleDownloadQrImage}
-                  className="flex-1 py-2.5 px-3 rounded-xl text-xs font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="flex-1 py-3 px-3 rounded-xl text-xs font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-slate-950" />
                   <span>Guardar QR en Galería</span>
@@ -610,24 +633,24 @@ export const NeighborDashboardPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleCopyAccount}
-                  className="py-2.5 px-3 rounded-xl text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="py-3 px-4 rounded-xl text-xs font-bold text-slate-200 bg-slate-800 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedAccount ? '¡Copiado!' : 'Copiar Cta.'}</span>
                 </button>
               </div>
 
               {/* Badges Bancos Bolivianos */}
-              <div className="pt-2 border-t border-slate-200 w-full text-center">
+              <div className="pt-2 border-t border-slate-800 w-full text-center">
                 <span className="text-[10px] text-slate-400 block mb-1 font-semibold">
                   Acepta todos los bancos de Bolivia:
                 </span>
                 <div className="flex flex-wrap justify-center gap-1 text-[10px] font-bold">
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">Banco Unión</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BancoSol</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BCP</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BNB</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">FIE</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Banco Unión</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BancoSol</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BCP</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BNB</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">FIE</span>
                 </div>
               </div>
             </div>
@@ -635,22 +658,22 @@ export const NeighborDashboardPage: React.FC = () => {
             {/* Formulario de Confirmación y Subida de Voucher */}
             <form onSubmit={handleSendProof} className="space-y-4 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Monto Depositado (Bs.):</label>
+                <label className="font-bold text-slate-200 block mb-1">Monto Depositado (Bs.):</label>
                 <input
                   type="number"
                   step="0.50"
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full bg-[#030712] border-2 border-slate-700 rounded-xl px-3 py-2.5 font-mono text-white font-bold focus:outline-none focus:border-blue-500 text-sm"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Adjuntar Captura o Foto del Depósito:</label>
-                <label className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50/50 hover:bg-emerald-50/30">
-                  <Upload className="w-6 h-6 text-emerald-600 mb-1" />
-                  <span className="text-xs font-semibold text-slate-700">
+                <label className="font-bold text-slate-200 block mb-1">Adjuntar Captura o Foto del Depósito:</label>
+                <label className="border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#030712] hover:bg-emerald-950/20">
+                  <Upload className="w-6 h-6 text-emerald-400 mb-1" />
+                  <span className="text-xs font-semibold text-slate-200">
                     {selectedFileName ? selectedFileName : 'Toca aquí para seleccionar foto o voucher'}
                   </span>
                   <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG o PDF hasta 5MB</span>
@@ -663,7 +686,7 @@ export const NeighborDashboardPage: React.FC = () => {
                 </label>
               </div>
 
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+              <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-600/40 text-[11px] text-amber-200">
                 <p className="font-bold">⚠️ Nota de seguridad:</p>
                 <p>Tu comprobante será verificado por el Tesorero de la OTB en el extracto bancario. Una vez validado, se emitirá automáticamente tu Recibo Oficial con código QR.</p>
               </div>
@@ -671,7 +694,7 @@ export const NeighborDashboardPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isUploading}
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
               >
                 <Upload className="w-4 h-4 text-slate-950" />
                 <span>{isUploading ? 'Enviando a Tesorería...' : 'Enviar Comprobante para Verificación'}</span>

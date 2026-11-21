@@ -8,9 +8,14 @@ import {
   AlertCircle,
   Phone,
   FileCheck,
-  Printer
+  Printer,
+  FileText,
+  QrCode,
+  ShieldCheck
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
+import { TiltCard3D } from '../components/TiltCard3D';
+import { PrintableStatementModal, StatementData } from '../components/PrintableStatementModal';
 
 interface NeighborMock {
   id: string;
@@ -37,6 +42,10 @@ export const VecinosPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [neighbors, setNeighbors] = useState(INITIAL_NEIGHBORS);
 
+  // Estado para la Ficha Oficial Imprimible
+  const [selectedStatement, setSelectedStatement] = useState<StatementData | null>(null);
+  const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
+
   // Formulario nuevo vecino
   const [newName, setNewName] = useState('');
   const [newCi, setNewCi] = useState('');
@@ -52,6 +61,49 @@ export const VecinosPage: React.FC = () => {
       n.block.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.house.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleOpenStatement = (vecino: NeighborMock) => {
+    const isAlDia = vecino.debt === 0;
+    const statement: StatementData = {
+      otbName: 'OTB Villa Esperanza',
+      otbCode: 'OTB-CBBA-001',
+      department: 'Cochabamba',
+      municipality: 'Cochabamba (Cercado)',
+      zone: 'Distrito 4 - Noroeste',
+      socioCode: vecino.socioCode,
+      socioName: vecino.name,
+      ciNumber: vecino.ci,
+      block: vecino.block,
+      lot: vecino.house,
+      phone: vecino.phone,
+      totalAssigned: isAlDia ? 125 : 125 + vecino.debt,
+      totalPaid: isAlDia ? 125 : 125,
+      totalDebt: vecino.debt,
+      lastReceiptNumber: `OTB-CBBA-001-2026-${vecino.socioCode.replace('SOC-', '000')}`,
+      tokenHash: `b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef${vecino.socioCode.slice(-3)}`,
+      fees: [
+        {
+          period: 'Nov 2026',
+          concept: 'Cuota Ordinaria Noviembre 2026',
+          assigned: 25.0,
+          paid: isAlDia ? 25.0 : (vecino.debt >= 25 ? 0 : 25),
+          balance: isAlDia ? 0 : Math.min(vecino.debt, 25),
+          status: isAlDia || vecino.debt < 25 ? 'Pagado' : 'Pendiente'
+        },
+        {
+          period: 'Nov 2026',
+          concept: 'Aporte Pro-Tinglado Cancha (Cuota 1)',
+          assigned: 100.0,
+          paid: isAlDia ? 100.0 : (vecino.debt > 25 ? 100 - (vecino.debt - 25) : 100),
+          balance: isAlDia ? 0 : Math.max(0, vecino.debt - 25),
+          status: isAlDia ? 'Pagado' : (vecino.debt > 25 ? 'Pendiente' : 'Pagado')
+        }
+      ]
+    };
+
+    setSelectedStatement(statement);
+    setIsStatementModalOpen(true);
+  };
 
   const handleCreateNeighbor = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,202 +130,272 @@ export const VecinosPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Padrón de Vecinos y Viviendas
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Registro censal de residentes, afiliaciones y asignación domiciliaria.
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Padrón de Vecinos y Viviendas
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              Censo Oficial OTB
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Registro oficial de familias censadas, lotes asignados y estado de solvencia comunitaria.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
+            className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-slate-300 bg-[#0B132B]/90 border border-slate-700 hover:border-slate-500 hover:text-white shadow-lg transition-all flex items-center gap-2.5 cursor-pointer"
           >
-            <Printer className="w-4 h-4 text-slate-500" />
+            <Printer className="w-4 h-4 text-slate-400" />
             <span>Imprimir Padrón</span>
           </button>
 
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
+            className="h-12 px-6 rounded-2xl text-xs sm:text-sm font-black text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 cursor-pointer"
           >
-            <UserPlus className="w-4 h-4" />
-            Registrar Vecino
+            <UserPlus className="w-5 h-5" />
+            <span>Registrar Nuevo Vecino</span>
           </button>
         </div>
       </div>
 
-      {/* Buscador */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-fintech flex items-center gap-3">
-        <Search className="w-4 h-4 text-slate-400" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por código de socio (ej. SOC-012), nombre, carnet (CI) o manzano/lote..."
-          className="w-full text-xs bg-transparent focus:outline-none text-slate-800 placeholder-slate-400 font-mono"
-        />
-      </div>
-
-      {/* Tabla de Vecinos */}
-      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-fintech overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50/75 border-b border-slate-200/80 text-slate-500 uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="px-5 py-3.5 font-bold">Cód. Socio</th>
-                <th className="px-5 py-3.5 font-bold">Vecino / Residente</th>
-                <th className="px-5 py-3.5 font-bold">Manzano & Lote</th>
-                <th className="px-5 py-3.5 font-bold">Contacto</th>
-                <th className="px-5 py-3.5 font-bold">Estado</th>
-                <th className="px-5 py-3.5 font-bold text-right">Deuda Pendiente</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((vecino) => (
-                <tr key={vecino.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="px-5 py-3.5 font-mono font-bold text-blue-700">
-                    <span className="px-2 py-0.5 rounded bg-blue-50 border border-blue-200/60">
-                      {vecino.socioCode}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center">
-                        {vecino.name[0]}
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-900">{vecino.name}</p>
-                        <p className="text-[10px] text-slate-400 font-mono">CI: {vecino.ci}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-1.5 text-slate-700">
-                      <Home className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{vecino.block}, {vecino.house}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-600 font-mono">
-                    <div className="flex items-center gap-1">
-                      <Phone className="w-3 h-3 text-slate-400" />
-                      {vecino.phone}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    {vecino.status === 'Al Día' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                        <CheckCircle2 className="w-3 h-3" /> Al Día
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
-                        <AlertCircle className="w-3 h-3" /> En Mora
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900">
-                    {formatBOB(vecino.debt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Buscador de Alto Contraste */}
+      <TiltCard3D>
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl flex items-center gap-4">
+          <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
+            <Search className="w-5 h-5 text-blue-400" />
+          </div>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por código (SOC-012), nombre completo, carnet (CI) o lote..."
+            className="w-full text-sm sm:text-base bg-transparent focus:outline-none text-white placeholder-slate-500 font-semibold"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 rounded-lg cursor-pointer"
+            >
+              Limpiar
+            </button>
+          )}
         </div>
-      </div>
+      </TiltCard3D>
 
-      {/* Modal Registrar Vecino */}
+      {/* Tabla de Vecinos en Dark Navy Fintech */}
+      <TiltCard3D>
+        <div className="rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Users className="w-5 h-5 text-blue-400" />
+              <h2 className="text-sm sm:text-base font-black text-white">
+                Lista de Socios Activos ({filtered.length})
+              </h2>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">
+              OTB Villa Esperanza • Código: OTB-CBBA-001
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="bg-[#030712]/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px] font-black">
+                <tr>
+                  <th className="px-5 py-4">Cód. Socio</th>
+                  <th className="px-5 py-4">Vecino / Titular</th>
+                  <th className="px-5 py-4">Ubicación Inmueble</th>
+                  <th className="px-5 py-4">Contacto</th>
+                  <th className="px-5 py-4 text-center">Estado de Solvencia</th>
+                  <th className="px-5 py-4 text-right">Saldo Deuda</th>
+                  <th className="px-5 py-4 text-center">Acciones Oficiales</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/80">
+                {filtered.map((vecino) => (
+                  <tr key={vecino.id} className="hover:bg-slate-900/60 transition-colors">
+                    <td className="px-5 py-4 font-mono font-black text-blue-400">
+                      <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 inline-block text-xs">
+                        {vecino.socioCode}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600/30 to-indigo-600/30 border border-blue-500/30 text-white font-black flex items-center justify-center text-sm">
+                          {vecino.name[0]}
+                        </div>
+                        <div>
+                          <p className="font-bold text-white text-sm">{vecino.name}</p>
+                          <p className="text-xs text-slate-400 font-mono">CI: {vecino.ci}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-2 text-slate-300">
+                        <Home className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                        <span className="font-semibold">{vecino.block}, {vecino.house}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 font-mono text-slate-300">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{vecino.phone}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-center">
+                      {vecino.status === 'Al Día' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Al Día
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                          <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> En Mora
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-right font-mono font-black text-sm">
+                      {vecino.debt === 0 ? (
+                        <span className="text-slate-500">Bs. 0,00</span>
+                      ) : (
+                        <span className="text-amber-400">{formatBOB(vecino.debt)}</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-center">
+                      <button
+                        onClick={() => handleOpenStatement(vecino)}
+                        className="h-10 px-4 rounded-xl text-xs font-black bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 hover:border-blue-500 transition-all flex items-center gap-2 mx-auto cursor-pointer"
+                        title="Abrir e imprimir Ficha Oficial & Estado de Cuenta"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Ver Ficha Oficial</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </TiltCard3D>
+
+      {/* Modal Registrar Vecino en Dark Mode */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="text-sm font-bold text-slate-900">Registrar Nuevo Vecino</h2>
-              <p className="text-xs text-slate-500">Afiliación comunal en la OTB activa.</p>
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-3xl bg-[#0B132B] border-2 border-slate-700 shadow-2xl overflow-hidden text-white">
+            <div className="p-6 border-b border-slate-800 bg-[#030712]/90 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-black text-white">Registrar Nuevo Vecino</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Afiliación comunal en la OTB activa.</p>
+              </div>
+              <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                Nuevo Registro
+              </span>
             </div>
 
-            <form onSubmit={handleCreateNeighbor} className="p-5 space-y-4">
+            <form onSubmit={handleCreateNeighbor} className="p-6 space-y-4">
               <div>
-                <label className="text-[11px] font-bold text-slate-600 block mb-1">Nombre Completo</label>
+                <label className="text-xs font-black text-slate-300 block mb-1.5 uppercase tracking-wider">
+                  Nombre Completo del Titular
+                </label>
                 <input
                   type="text"
                   required
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Ej. Mario Guzmán Aguilar"
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500 font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Cédula (CI)</label>
+                  <label className="text-xs font-black text-slate-300 block mb-1.5 uppercase tracking-wider">
+                    Cédula de Identidad (CI)
+                  </label>
                   <input
                     type="text"
                     required
                     value={newCi}
                     onChange={(e) => setNewCi(e.target.value)}
                     placeholder="Ej. 6541230 CBBA"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Celular</label>
+                  <label className="text-xs font-black text-slate-300 block mb-1.5 uppercase tracking-wider">
+                    Celular de Contacto
+                  </label>
                   <input
                     type="text"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
                     placeholder="Ej. 76543210"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Manzana</label>
+                  <label className="text-xs font-black text-slate-300 block mb-1.5 uppercase tracking-wider">
+                    Manzana
+                  </label>
                   <input
                     type="text"
                     value={newBlock}
                     onChange={(e) => setNewBlock(e.target.value)}
                     placeholder="Ej. Manzana D"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Lote / Casa</label>
+                  <label className="text-xs font-black text-slate-300 block mb-1.5 uppercase tracking-wider">
+                    Lote / Vivienda
+                  </label>
                   <input
                     type="text"
                     value={newHouse}
                     onChange={(e) => setNewHouse(e.target.value)}
                     placeholder="Ej. Lote 09"
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-2 border-t border-slate-100">
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                  className="h-12 px-5 text-xs font-black text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm"
+                  className="h-12 px-6 text-xs font-black text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl shadow-xl shadow-blue-600/30 transition-all cursor-pointer"
                 >
-                  Guardar Vecino
+                  Guardar Vecino en Padrón
                 </button>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal de Ficha Oficial Imprimible de Alta Calidad */}
+      {isStatementModalOpen && selectedStatement && (
+        <PrintableStatementModal
+          isOpen={isStatementModalOpen}
+          onClose={() => setIsStatementModalOpen(false)}
+          data={selectedStatement}
+        />
       )}
     </div>
   );

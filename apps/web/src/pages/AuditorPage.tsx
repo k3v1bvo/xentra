@@ -9,9 +9,11 @@ import {
   Search,
   MessageSquare,
   ShieldCheck,
-  RefreshCw
+  RefreshCw,
+  X
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
+import { TiltCard3D } from '../components/TiltCard3D';
 
 interface AlertMock {
   id: string;
@@ -31,7 +33,7 @@ const INITIAL_ALERTS: AlertMock[] = [
     severity: 'warning',
     title: 'Egreso ejecutado sin factura o comprobante adjunto',
     description: 'El gasto por Bs. 850,00 registrado como "Compra de Arena y Grava" no cuenta con comprobante digital respaldatorio.',
-    suggestedAction: 'El tesorero debe solicitar al proveedor la nota de entrega firmada o recibo oficial.',
+    suggestedAction: 'El tesorero debe solicitar al proveedor la nota de entrega firmada o recibo oficial con C.I.',
     isResolved: false
   },
   {
@@ -40,7 +42,7 @@ const INITIAL_ALERTS: AlertMock[] = [
     severity: 'warning',
     title: 'Posible cobro duplicado detectado',
     description: 'Se registraron dos pagos idénticos de Bs. 25,00 para la misma vivienda con 4 horas de diferencia.',
-    suggestedAction: 'Verificar si corresponde a dos meses distintos o a un error de digitación.',
+    suggestedAction: 'Verificar si corresponde a dos meses distintos o a un error involuntario de digitación en caja.',
     isResolved: false
   }
 ];
@@ -70,203 +72,243 @@ export const AuditorPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               XENTRA AI Auditor
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">
-              Reglas Deterministas + IA
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              Reglas Deterministas + IA Fiscalizadora
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Detección preventiva de inconsistencias contables, sobregiros y apoyo al comité fiscalizador.
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Detección preventiva de inconsistencias contables, sobregiros y apoyo técnico al Comité de Vigilancia.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <button
             onClick={handleRunAudit}
             disabled={isScanning}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all disabled:opacity-50"
+            className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-500 shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
-            {isScanning ? 'Auditando...' : 'Ejecutar Auditoría'}
+            <span>{isScanning ? 'Auditando...' : 'Ejecutar Auditoría'}</span>
           </button>
           <button
             onClick={() => setShowAiReport(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-all"
+            className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-purple-300 bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/40 transition-all flex items-center gap-2.5 cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-purple-600" />
-            Generar Informe Asamblea
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span>Generar Informe Asamblea</span>
           </button>
         </div>
       </div>
 
-      {/* Resumen de Hallazgos */}
+      {/* Resumen de Hallazgos en TiltCard3D */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-fintech">
-          <span className="text-xs font-medium text-slate-500">Reglas Deterministas Evaluadas</span>
-          <p className="text-2xl font-extrabold text-slate-900 mt-1 font-mono">14 reglas</p>
-          <span className="text-[11px] text-emerald-600 font-medium">100% de cobertura contable</span>
-        </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-fintech">
-          <span className="text-xs font-medium text-slate-500">Alertas Activas</span>
-          <p className="text-2xl font-extrabold text-amber-600 mt-1 font-mono">
-            {alerts.filter((a) => !a.isResolved).length}
-          </p>
-          <span className="text-[11px] text-slate-400">Sin alertas críticas de sobregiro</span>
-        </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-fintech">
-          <span className="text-xs font-medium text-slate-500">Alertas Subsanadas</span>
-          <p className="text-2xl font-extrabold text-emerald-600 mt-1 font-mono">
-            {alerts.filter((a) => a.isResolved).length}
-          </p>
-          <span className="text-[11px] text-emerald-700 font-medium">Descargos registrados</span>
-        </div>
+        <TiltCard3D>
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl space-y-1">
+            <span className="text-xs font-black text-slate-400 uppercase tracking-wider block">
+              Reglas Evaluadas
+            </span>
+            <p className="text-3xl font-black text-white font-mono">14 reglas</p>
+            <span className="text-xs text-emerald-400 font-bold block pt-1">
+              ✓ 100% de cobertura contable OTB
+            </span>
+          </div>
+        </TiltCard3D>
+
+        <TiltCard3D>
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-amber-500/40 shadow-2xl space-y-1">
+            <span className="text-xs font-black text-amber-400 uppercase tracking-wider block">
+              Alertas Activas
+            </span>
+            <p className="text-3xl font-black text-amber-400 font-mono">
+              {alerts.filter((a) => !a.isResolved).length}
+            </p>
+            <span className="text-xs text-slate-400 font-bold block pt-1">
+              Sin alertas críticas de sobregiro
+            </span>
+          </div>
+        </TiltCard3D>
+
+        <TiltCard3D>
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-emerald-500/40 shadow-2xl space-y-1">
+            <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">
+              Alertas Subsanadas
+            </span>
+            <p className="text-3xl font-black text-emerald-400 font-mono">
+              {alerts.filter((a) => a.isResolved).length}
+            </p>
+            <span className="text-xs text-emerald-300 font-bold block pt-1">
+              Descargos registrados formalmente
+            </span>
+          </div>
+        </TiltCard3D>
       </div>
 
-      {/* Lista de Alertas */}
-      <div className="space-y-3">
-        <h2 className="text-sm font-bold text-slate-900">Inconsistencias Detectadas por el Motor</h2>
+      {/* Lista de Alertas en Dark Mode */}
+      <div className="space-y-4">
+        <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-amber-400" />
+          <span>Inconsistencias Detectadas por el Motor</span>
+        </h2>
+
         {alerts.map((alert) => (
-          <div
-            key={alert.id}
-            className={`p-5 rounded-2xl border transition-all ${
-              alert.isResolved
-                ? 'bg-slate-50/70 border-slate-200/80 opacity-75'
-                : 'bg-white border-amber-200/90 shadow-fintech'
-            }`}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    alert.isResolved
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : alert.severity === 'critical'
-                      ? 'bg-rose-100 text-rose-700'
-                      : 'bg-amber-100 text-amber-700'
-                  }`}
-                >
-                  {alert.isResolved ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                      {alert.ruleCode}
-                    </span>
-                    <h3 className="text-xs font-bold text-slate-900">{alert.title}</h3>
+          <TiltCard3D key={alert.id}>
+            <div
+              className={`p-6 rounded-3xl border-2 transition-all ${alert.isResolved
+                  ? 'bg-[#0B132B]/60 border-slate-800 opacity-80'
+                  : 'bg-[#0B132B]/90 border-amber-500/50 shadow-2xl'
+                }`}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 ${alert.isResolved
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                      }`}
+                  >
+                    {alert.isResolved ? (
+                      <CheckCircle2 className="w-6 h-6" />
+                    ) : (
+                      <AlertTriangle className="w-6 h-6" />
+                    )}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">{alert.description}</p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    <strong className="text-slate-700">Recomendación preventiva:</strong> {alert.suggestedAction}
-                  </p>
-
-                  {alert.isResolved && (
-                    <div className="mt-2 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800">
-                      <strong>Resolución registrada:</strong> {alert.resolution}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold border border-slate-700">
+                        {alert.ruleCode}
+                      </span>
+                      {alert.isResolved && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          Subsanado
+                        </span>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                    <h3 className="text-base font-black text-white">{alert.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      {alert.description}
+                    </p>
 
-              {!alert.isResolved && (
-                <button
-                  onClick={() => setResolvingAlertId(alert.id)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors flex-shrink-0"
-                >
-                  Registrar Descargo
-                </button>
-              )}
+                    <div className="p-3 rounded-xl bg-[#030712]/90 border border-slate-800 mt-2">
+                      <span className="text-[10px] font-black uppercase text-amber-400 block">
+                        Acción Recomendada:
+                      </span>
+                      <p className="text-xs text-slate-300 mt-0.5">{alert.suggestedAction}</p>
+                    </div>
+
+                    {alert.isResolved && alert.resolution && (
+                      <p className="text-xs text-emerald-400 font-bold mt-2">
+                        ✓ Descargo: {alert.resolution}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {!alert.isResolved && (
+                  <div className="flex-shrink-0 pt-2 sm:pt-0">
+                    {resolvingAlertId === alert.id ? (
+                      <div className="space-y-2 w-full sm:w-64">
+                        <textarea
+                          value={resolutionText}
+                          onChange={(e) => setResolutionText(e.target.value)}
+                          placeholder="Nota o comprobante de descargo..."
+                          rows={2}
+                          className="w-full text-xs p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-blue-500"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleResolveAlert(alert.id)}
+                            className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                          >
+                            Confirmar Descargo
+                          </button>
+                          <button
+                            onClick={() => setResolvingAlertId(null)}
+                            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setResolvingAlertId(alert.id)}
+                        className="h-11 px-5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-black transition-all cursor-pointer"
+                      >
+                        Subsanar Alerta
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-
-            {/* Modal de Descargo Inline */}
-            {resolvingAlertId === alert.id && (
-              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={resolutionText}
-                  onChange={(e) => setResolutionText(e.target.value)}
-                  placeholder="Detalle el descargo o comprobante regularizado..."
-                  className="flex-1 text-xs px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleResolveAlert(alert.id)}
-                    className="px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg"
-                  >
-                    Confirmar Subsanación
-                  </button>
-                  <button
-                    onClick={() => setResolvingAlertId(null)}
-                    className="px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-100 rounded-lg"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          </TiltCard3D>
         ))}
       </div>
 
-      {/* Modal Informe Narrativo IA */}
+      {/* Modal Informe para Asamblea General */}
       {showAiReport && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <h3 className="font-bold text-sm text-slate-900">Informe de Auditoría para la Asamblea General</h3>
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl rounded-3xl bg-[#0B132B] border-2 border-slate-700 shadow-2xl overflow-hidden text-white">
+            <div className="p-6 border-b border-slate-800 bg-[#030712]/90 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-6 h-6 text-purple-400" />
+                <div>
+                  <h2 className="text-lg font-black text-white">Informe Técnico para Asamblea Ordinaria</h2>
+                  <p className="text-xs text-slate-400">Generado por motor XENTRA AI Auditor</p>
+                </div>
               </div>
               <button
                 onClick={() => setShowAiReport(false)}
-                className="text-xs text-slate-500 hover:text-slate-800 font-semibold"
+                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
               >
-                Cerrar
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto text-xs text-slate-700 space-y-4 leading-relaxed">
-              <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 font-medium">
-                Este informe ha sido redactado de forma objetiva por XENTRA AI AUDITOR a partir de los datos contables verificados del mes de Noviembre de 2026.
-              </div>
-
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1">1. Diagnóstico de Salud Financiera</h4>
-                <p>
-                  La OTB Villa Esperanza presenta un índice de recaudación del 84.1% sobre las cuotas emitidas en el periodo. Los fondos de la comunidad se encuentran depositados bajo custodia física en Caja Central y conciliados con el arqueo diario al 100%.
+            <div className="p-6 space-y-4 text-xs sm:text-sm text-slate-300 max-h-[70vh] overflow-y-auto">
+              <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30">
+                <h3 className="font-black text-purple-300 text-sm mb-1">
+                  Dictamen General: "Gestión Transparente con Salvedades Menores"
+                </h3>
+                <p className="text-slate-300 leading-relaxed text-xs">
+                  Se verificó la conciliación del 100% de los ingresos por cuotas ordinarias y aportes extraordinarios
+                  del mes de Noviembre de 2026. Los fondos destinados al "Proyecto Tinglado Cancha Polifuncional"
+                  se encuentran resguardados y ejecutados conforme a las decisiones tomadas en asamblea general.
                 </p>
               </div>
 
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1">2. Ejecución del Proyecto "Tinglado Comunitario"</h4>
-                <p>
-                  El proyecto cuenta con un presupuesto aprobado de Bs. 15,000.00, de los cuales se han ejecutado Bs. 6,200.00 (41.3%). Todos los materiales adquiridos cuentan con factura comercial verificada a nombre de la institución.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1">3. Recomendaciones para el Fiscalizador</h4>
-                <ul className="list-disc pl-5 space-y-1 text-slate-600">
-                  <li>Regularizar la boleta física pendiente del flete de áridos (Bs. 850.00).</li>
-                  <li>Notificar a las 6 familias con cuotas extraordinarias pendientes antes del cierre de gestión.</li>
-                  <li>Publicar la rendición de cuentas en la vitrina comunal antes del 30 de Noviembre.</li>
+              <div className="space-y-2">
+                <h4 className="font-bold text-white text-xs uppercase tracking-wider">
+                  Recomendaciones para la Mesa Directiva:
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-slate-400 text-xs">
+                  <li>Regularizar la factura pendiente por Bs. 850,00 de compra de agregados para cerrar el descargo.</li>
+                  <li>Reconocer a los 42 socios cumplidos que cuentan con certificación QR inmutable en sus recibos.</li>
+                  <li>Habilitar la opción de pago por QR Simple en el portal para facilitar el aporte de socios mayores.</li>
                 </ul>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+            <div className="p-4 sm:p-6 border-t border-slate-800 bg-[#030712]/90 flex justify-end gap-3">
+              <button
+                onClick={() => window.print()}
+                className="h-12 px-6 rounded-2xl text-xs font-black text-slate-300 bg-slate-800 hover:text-white transition-all"
+              >
+                Imprimir Dictamen
+              </button>
               <button
                 onClick={() => setShowAiReport(false)}
-                className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl"
+                className="h-12 px-6 rounded-2xl text-xs font-black text-white bg-purple-600 hover:bg-purple-500 shadow-xl shadow-purple-600/30 transition-all"
               >
-                Aceptar
+                Cerrar Informe
               </button>
             </div>
           </div>

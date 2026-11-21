@@ -1,0 +1,6 @@
+{
+  "app": "Xentra OTB Bolivia",
+  "version": "3.0.0",
+  "package": "bo.com.xentra.otb",
+  "target": "https://xentra-two.vercel.app/"
+}

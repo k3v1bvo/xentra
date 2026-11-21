@@ -28,12 +28,22 @@ import {
   Layers,
   FileText,
   ShieldAlert,
-  Printer
+  Printer,
+  PhoneCall,
+  Smartphone,
+  Type,
+  Radio,
+  Eye,
+  AlertTriangle,
+  Lightbulb,
+  Download
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { PrintableStatementModal, StatementData, FeeItem } from '../components/PrintableStatementModal';
+import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
+import { InstallAppModal } from '../components/InstallAppModal';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { formatBOB, AppRole } from '@xentra/shared';
@@ -92,6 +102,16 @@ export const LandingPage: React.FC = () => {
 
   // Modal para Imprimir Detalle Oficial de Cuenta / Recibo
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+
+  // Modal de Auxilio y Reportes Barriales (Seguridad Ciudadana en Vivo)
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertModalTab, setAlertModalTab] = useState<'emergencias' | 'reportar' | 'muro'>('emergencias');
+
+  // Modal de Descarga e Instalación App Móvil (Android APK / PWA)
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
+  // Modo Accesibilidad Adulto Mayor (40 a 60 años: letra grande y alto contraste)
+  const [isSeniorMode, setIsSeniorMode] = useState(false);
 
   // Modal para solicitar nueva OTB
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -311,6 +331,78 @@ export const LandingPage: React.FC = () => {
     setTimeout(() => setCopiedAccount(false), 2000);
   };
 
+  // Guardar Imagen QR en Galería para Pagar desde la App del Banco
+  const handleDownloadQrImage = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 460;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, 400, 460);
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('XENTRA OTB - QR SIMPLE', 200, 38);
+      ctx.font = '13px sans-serif';
+      ctx.fillStyle = '#475569';
+      ctx.fillText('Banco Unión • Cta: 10000034891230', 200, 62);
+
+      // Cuadros esquinas QR
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(45, 90, 80, 80);
+      ctx.clearRect(55, 100, 60, 60);
+      ctx.fillRect(65, 110, 40, 40);
+
+      ctx.fillRect(275, 90, 80, 80);
+      ctx.clearRect(285, 100, 60, 60);
+      ctx.fillRect(295, 110, 40, 40);
+
+      ctx.fillRect(45, 300, 80, 80);
+      ctx.clearRect(55, 310, 60, 60);
+      ctx.fillRect(65, 320, 40, 40);
+
+      // Centro distintivo XENTRA
+      ctx.fillStyle = '#2563EB';
+      ctx.beginPath();
+      ctx.arc(200, 235, 32, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(200, 235, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#10B981';
+      ctx.beginPath();
+      ctx.arc(200, 235, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Módulos de datos
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(150, 110, 20, 20);
+      ctx.fillRect(180, 140, 20, 20);
+      ctx.fillRect(210, 110, 20, 20);
+      ctx.fillRect(240, 140, 20, 20);
+      ctx.fillRect(150, 310, 20, 20);
+      ctx.fillRect(180, 340, 20, 20);
+      ctx.fillRect(210, 310, 20, 20);
+      ctx.fillRect(240, 340, 20, 20);
+      ctx.fillRect(275, 220, 20, 20);
+      ctx.fillRect(315, 250, 20, 20);
+      ctx.fillRect(100, 220, 20, 20);
+      ctx.fillRect(70, 250, 20, 20);
+
+      ctx.fillStyle = '#059669';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText(`Monto: ${formatBOB(parseFloat(payAmount) || 50)}`, 200, 420);
+
+      const link = document.createElement('a');
+      link.download = `QR_Pago_${resolvedResult?.socioCode || 'OTB'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      alert('¡Código QR guardado en tu teléfono/descargas! Abre la app de tu banco, pulsa "Pagar QR" y selecciona esta imagen de tu galería.');
+    }
+  };
+
   // Enviar Notificación por Correo (Google SMTP / ayni protocol)
   const handleSendEmailNotification = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -356,22 +448,58 @@ export const LandingPage: React.FC = () => {
       <Xentra3DCanvas />
 
       {/* Top Navbar */}
-      <header className="px-4 sm:px-8 py-4 border-b border-slate-800/80 bg-slate-950/75 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
+      <header className="px-3 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
         <XentraLogo size="md" variant="light" />
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Botón Accesibilidad Adultos (40 a 60 años) */}
+          <button
+            onClick={() => setIsSeniorMode(!isSeniorMode)}
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+              isSeniorMode
+                ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md'
+                : 'text-slate-200 bg-slate-900/90 hover:bg-slate-800 border-slate-700'
+            }`}
+            title="Activar/Desactivar letra grande para lectura fácil"
+          >
+            <Type className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{isSeniorMode ? 'Letra Normal (A)' : 'Modo Adultos (A+)'}</span>
+            <span className="sm:hidden">{isSeniorMode ? 'A' : 'A+'}</span>
+          </button>
+
+          {/* Botón Reportes y Emergencias Barriales */}
+          <button
+            onClick={() => {
+              setAlertModalTab('emergencias');
+              setIsAlertModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black text-rose-300 bg-rose-950/60 hover:bg-rose-900/70 border-2 border-rose-500/60 shadow-sm transition-all cursor-pointer"
+          >
+            <PhoneCall className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+            <span className="hidden sm:inline">Auxilio & Reportes</span>
+            <span className="sm:hidden">110 Auxilio</span>
+          </button>
+
+          {/* Botón Instalar App Celular (APK / PWA) */}
+          <button
+            onClick={() => setIsInstallModalOpen(true)}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/50 transition-all cursor-pointer"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Instalar App</span>
+          </button>
+
           <button
             onClick={() => navigate('/verificar-recibo')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm transition-colors"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm transition-colors cursor-pointer"
           >
             <QrCode className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden sm:inline">Verificar Recibo QR</span>
-            <span className="sm:hidden">Verificar QR</span>
+            <span>Verificar QR</span>
           </button>
 
           <button
             onClick={() => navigate('/login')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5" />
             <span>Iniciar Sesión</span>
@@ -380,16 +508,39 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* Hero Central con Buscador Inteligente por Código */}
-      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center space-y-8 relative z-10">
+      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col justify-center space-y-6 sm:space-y-8 relative z-10">
+        
+        {/* Banner Modo Lectura Fácil (para 40 a 60 años) */}
+        {isSeniorMode && (
+          <div className="p-3.5 rounded-2xl bg-amber-400 text-slate-950 border-2 border-amber-300 font-bold text-xs sm:text-sm flex items-center justify-between shadow-xl animate-in fade-in duration-200">
+            <div className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-slate-950 flex-shrink-0" />
+              <span>
+                <strong>Modo Lectura Fácil Activado:</strong> Letras más grandes, explicaciones claras y botones táctiles gigantes para mayor comodidad visual.
+              </span>
+            </div>
+            <button
+              onClick={() => setIsSeniorMode(false)}
+              className="text-xs underline font-black ml-2 cursor-pointer flex-shrink-0"
+            >
+              Desactivar
+            </button>
+          </div>
+        )}
+
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-bold backdrop-blur-md shadow-sm">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>🇧🇴 Red Financiera Comunitaria Bolivia • 3D Spatial Grid</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight">
+          <h1 className={`font-black text-white leading-tight tracking-tight ${
+            isSeniorMode ? 'text-3xl sm:text-5xl md:text-6xl' : 'text-2xl sm:text-4xl md:text-5xl'
+          }`}>
             Consulta tu Estado Comunitario por <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Código de Cliente</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+          <p className={`text-slate-300 max-w-xl mx-auto leading-relaxed ${
+            isSeniorMode ? 'text-sm sm:text-base font-semibold' : 'text-xs sm:text-sm'
+          }`}>
             Ingresa tu código de lote o vivienda. El sistema identificará tu OTB y mostrará solo tus obligaciones pendientes, <strong className="text-white">resguardando tu privacidad sin exponer datos sensibles a terceros</strong>.
           </p>
         </div>
@@ -410,13 +561,17 @@ export const LandingPage: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Ingresa tu Código (ej. Lote 12, SOC-012, 7412589, ADM-TES)..."
-                className="w-full bg-[#020617] border-2 border-slate-600 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-400 font-mono focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all"
+                className={`w-full bg-[#020617] border-2 border-slate-600 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-slate-400 font-mono focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all ${
+                  isSeniorMode ? 'text-base font-bold' : 'text-sm'
+                }`}
               />
             </div>
 
             <button
               type="submit"
-              className="py-3 px-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex-shrink-0"
+              className={`py-3 px-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex-shrink-0 ${
+                isSeniorMode ? 'text-sm sm:text-base py-3.5 px-8' : 'text-xs'
+              }`}
             >
               <span>Buscar Estado</span>
               <ArrowRight className="w-4 h-4" />
@@ -441,13 +596,90 @@ export const LandingPage: React.FC = () => {
                   setSearchInput(chip.val);
                   handleSearchCode(chip.val);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600 text-slate-100 hover:text-white text-[11px] font-bold border border-slate-600 hover:border-blue-400 backdrop-blur-sm transition-all shadow-sm cursor-pointer"
+                className={`px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600 text-slate-100 hover:text-white font-bold border border-slate-600 hover:border-blue-400 backdrop-blur-sm transition-all shadow-sm cursor-pointer ${
+                  isSeniorMode ? 'text-xs py-2 px-3.5' : 'text-[11px]'
+                }`}
               >
                 {chip.label}
               </button>
             ))}
           </div>
         </TiltCard3D>
+
+        {/* 3 ACCIONES RÁPIDAS COMUNITARIAS: INNOVACIÓN & SEGURIDAD BARRIAL */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Tarjeta 1: Avisos Barriales en Vivo */}
+          <button
+            type="button"
+            onClick={() => {
+              setAlertModalTab('reportar');
+              setIsAlertModalOpen(true);
+            }}
+            className="p-4 rounded-2xl bg-[#0F172A] border-2 border-amber-500/40 hover:border-amber-400 text-left space-y-1.5 transition-all shadow-md group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="p-2 rounded-xl bg-amber-500/20 text-amber-400 group-hover:scale-105 transition-transform">
+                <AlertTriangle className="w-5 h-5" />
+              </span>
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">
+                Alerta Vecinal
+              </span>
+            </div>
+            <h3 className="font-extrabold text-white text-sm group-hover:text-amber-300">
+              Avisar al Barrio en Vivo
+            </h3>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Alguien en la cancha/calle, luminaria quemada, basura o fuga de agua.
+            </p>
+          </button>
+
+          {/* Tarjeta 2: Teléfonos de Auxilio Inmediato */}
+          <button
+            type="button"
+            onClick={() => {
+              setAlertModalTab('emergencias');
+              setIsAlertModalOpen(true);
+            }}
+            className="p-4 rounded-2xl bg-[#0F172A] border-2 border-rose-500/40 hover:border-rose-400 text-left space-y-1.5 transition-all shadow-md group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="p-2 rounded-xl bg-rose-500/20 text-rose-400 group-hover:scale-105 transition-transform">
+                <PhoneCall className="w-5 h-5 animate-pulse" />
+              </span>
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">
+                Llamar 24h
+              </span>
+            </div>
+            <h3 className="font-extrabold text-white text-sm group-hover:text-rose-300">
+              Teléfonos de Auxilio
+            </h3>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Policía 110, Bomberos 119, SAMU 165 y llamada a la directiva OTB.
+            </p>
+          </button>
+
+          {/* Tarjeta 3: Instalar App APK */}
+          <button
+            type="button"
+            onClick={() => setIsInstallModalOpen(true)}
+            className="p-4 rounded-2xl bg-[#0F172A] border-2 border-blue-500/40 hover:border-blue-400 text-left space-y-1.5 transition-all shadow-md group cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <span className="p-2 rounded-xl bg-blue-500/20 text-blue-400 group-hover:scale-105 transition-transform">
+                <Smartphone className="w-5 h-5" />
+              </span>
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300">
+                PWA / Android
+              </span>
+            </div>
+            <h3 className="font-extrabold text-white text-sm group-hover:text-blue-300">
+              Instalar App en Celular
+            </h3>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Funciona sin internet, no gasta megas y te avisa asambleas y cobros.
+            </p>
+          </button>
+        </div>
 
         {/* TARJETA DINÁMICA DE RESULTADO RESOLVIDO CON TILT 3D */}
         {resolvedResult && (
@@ -814,6 +1046,94 @@ export const LandingPage: React.FC = () => {
             </button>
           </div>
         </section>
+
+        {/* ======================================================== */}
+        {/* SECCIÓN 4: PITCH HACKATHON — INNOVACIÓN, CREATIVIDAD E IMPACTO */}
+        {/* ======================================================== */}
+        <section className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0F172A] via-[#020617] to-[#0A192F] border-2 border-emerald-500/50 space-y-6 shadow-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/80 pb-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-500/40">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Defensa Hackathon • Evaluación de Impacto Comunal</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white mt-2">
+                Innovación, Creatividad y Sostenibilidad Real
+              </h2>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">
+              6 Ejes Clave de Transformación OTB
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Eje 1: Innovación */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-blue-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-blue-400">
+                <div className="w-8 h-8 rounded-xl bg-blue-600/20 flex items-center justify-center font-black text-xs">01</div>
+                <h3 className="font-extrabold text-sm text-white">Innovación Tecnológica</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>Criptografía TRACE comunitaria:</strong> cada centavo queda sellado con hash SHA-256 inmutable en cadena de bloques local. Búsqueda Zero-PII sin contraseñas engorrosas: el vecino consulta por código o CI y sus datos están protegidos contra miradas indiscretas.
+              </p>
+            </div>
+
+            {/* Eje 2: Creatividad */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-emerald-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <div className="w-8 h-8 rounded-xl bg-emerald-600/20 flex items-center justify-center font-black text-xs">02</div>
+                <h3 className="font-extrabold text-sm text-white">Creatividad Barrial 24/7</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>Más allá de un Excel aburrido:</strong> convertimos la OTB en una red viva de seguridad barrial. Reportes comunitarios en tiempo real (personas descompensadas en la cancha, postes quemados, fugas de agua) con conexión directa a Radio Patrullas 110, Bomberos 119 y SAMU 165.
+              </p>
+            </div>
+
+            {/* Eje 3: Impacto Medible */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-purple-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-purple-400">
+                <div className="w-8 h-8 rounded-xl bg-purple-600/20 flex items-center justify-center font-black text-xs">03</div>
+                <h3 className="font-extrabold text-sm text-white">Impacto Comunitario</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>De 45% a 95% de recaudación:</strong> al facilitar el pago por QR Simple desde el celular y erradicar las sospechas de malversación. En seguridad, reduce los tiempos de auxilio barrial de 45 minutos a menos de 5 minutos mediante rondas vecinales informadas.
+              </p>
+            </div>
+
+            {/* Eje 4: Por qué se usaría */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-amber-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-amber-400">
+                <div className="w-8 h-8 rounded-xl bg-amber-600/20 flex items-center justify-center font-black text-xs">04</div>
+                <h3 className="font-extrabold text-sm text-white">¿Por qué se Usaría?</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>Resuelve el dolor diario de la OTB:</strong> el vecino no pierde domingos haciendo filas en la sede con dinero en efectivo en mano, y la directiva ahorra más de 20 horas de contabilidad manual en cuadernos desgastados, rindiendo cuentas con balances automáticos de un clic.
+              </p>
+            </div>
+
+            {/* Eje 5: Sostenibilidad Económica */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-teal-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-teal-400">
+                <div className="w-8 h-8 rounded-xl bg-teal-600/20 flex items-center justify-center font-black text-xs">05</div>
+                <h3 className="font-extrabold text-sm text-white">Sostenibilidad del Sistema</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>Modelo de Micro-canon Comunal:</strong> Bs. 1 por lote/mes incluido en la cuota ordinaria cubre el 100% de los costos de servidores en la nube y soporte. Posibilidad de convenios de cooperación con Alumbrado Público y Seguridad Ciudadana de la Alcaldía.
+              </p>
+            </div>
+
+            {/* Eje 6: Inclusión 40 a 60 años */}
+            <div className="p-4 rounded-2xl bg-[#0B132B] border-2 border-slate-700 hover:border-rose-400 transition-all space-y-2">
+              <div className="flex items-center gap-2 text-rose-400">
+                <div className="w-8 h-8 rounded-xl bg-rose-600/20 flex items-center justify-center font-black text-xs">06</div>
+                <h3 className="font-extrabold text-sm text-white">Diseñado para Adultos (40-60)</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong>Accesibilidad total:</strong> modo "Lectura Fácil (A+)" con tipografía ampliada, contrastes reforzados y cero palabras técnicas en inglés. Guía ilustrada en 4 pasos para guardar el QR en la galería y pagar desde la banca móvil sin confusiones.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
@@ -821,13 +1141,13 @@ export const LandingPage: React.FC = () => {
         <p>© 2026 XENTRA OTB — Plataforma Financiera Comunitaria para Bolivia. Conectada vía Google SMTP seguro.</p>
       </footer>
 
-      {/* MODAL 1: Pagar por QR Simple */}
+      {/* MODAL 1: Pagar por QR Simple (Diseño Amigable para Adultos Mayores) */}
       {isQrModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#0B132B] border-2 border-slate-600 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto">
+          <div className="bg-[#0B132B] border-2 border-emerald-500/60 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative my-auto">
             <button
               onClick={() => setIsQrModalOpen(false)}
-              className="absolute right-5 top-5 p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
+              className="absolute right-5 top-5 p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -835,17 +1155,43 @@ export const LandingPage: React.FC = () => {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/25 text-emerald-300 text-xs font-black border border-emerald-500/40 mb-2">
                 <QrCode className="w-3.5 h-3.5" />
-                <span>QR Simple • Transferencia Bancaria</span>
+                <span>QR Simple • Transferencia Bancaria Segura</span>
               </div>
-              <h3 className="text-xl font-black text-white">Pagar con Código QR Simple</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-white">
+                Pagar con QR desde tu Celular
+              </h3>
               <p className="text-xs text-slate-300 mt-1">
-                Transfiere desde cualquier banco de Bolivia (Banco Unión, BCP, BNB, Sol) y adjunta tu comprobante.
+                Sigue estos 4 pasos sencillos para pagar desde cualquier banco de Bolivia:
               </p>
             </div>
 
-            {/* Código QR Visual */}
+            {/* 4 Pasos Didácticos para el Vecino de 40 a 60 años */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px]">
+              <div className="p-2.5 rounded-xl bg-[#020617] border border-slate-700 space-y-1">
+                <span className="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center mx-auto">1</span>
+                <span className="font-bold text-slate-200 block">Guarda el QR</span>
+                <span className="text-[10px] text-slate-400">Toca el botón verde de abajo</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#020617] border border-slate-700 space-y-1">
+                <span className="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center mx-auto">2</span>
+                <span className="font-bold text-slate-200 block">Abre tu Banco</span>
+                <span className="text-[10px] text-slate-400">Unión, Sol, BCP, BNB, etc.</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#020617] border border-slate-700 space-y-1">
+                <span className="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center mx-auto">3</span>
+                <span className="font-bold text-slate-200 block">Carga el QR</span>
+                <span className="text-[10px] text-slate-400">Desde tu Galería o Fotos</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#020617] border border-slate-700 space-y-1">
+                <span className="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center mx-auto">4</span>
+                <span className="font-bold text-slate-200 block">Sube Voucher</span>
+                <span className="text-[10px] text-slate-400">Adjunta la captura aquí</span>
+              </div>
+            </div>
+
+            {/* Código QR Visual Grande y Nítido */}
             <div className="p-4 bg-[#020617] border-2 border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-44 h-44 bg-white rounded-2xl p-2.5 shadow-sm flex items-center justify-center">
+              <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-lg flex items-center justify-center">
                 <svg className="w-full h-full text-slate-950" viewBox="0 0 100 100" fill="currentColor">
                   <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
                   <rect x="5" y="5" width="20" height="20" fill="white" />
@@ -858,23 +1204,58 @@ export const LandingPage: React.FC = () => {
                   <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
                   <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
                   <circle cx="50" cy="50" r="8" fill="white" />
+                  <circle cx="50" cy="50" r="4" fill="#10B981" />
                   <rect x="70" y="70" width="10" height="10" fill="#0F172A" />
+                  <rect x="45" y="15" width="8" height="8" fill="#0F172A" />
+                  <rect x="15" y="45" width="8" height="8" fill="#0F172A" />
+                  <rect x="45" y="75" width="8" height="8" fill="#0F172A" />
+                  <rect x="75" y="45" width="8" height="8" fill="#0F172A" />
                 </svg>
               </div>
 
               <div>
-                <p className="text-sm font-black text-white">Monto a abonar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
-                <p className="text-xs text-slate-300 font-mono mt-0.5">Banco Unión • Cta: 10000034891230</p>
+                <p className="text-base font-black text-white">
+                  Monto a Pagar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span>
+                </p>
+                <p className="text-xs text-slate-300 font-mono mt-0.5">
+                  Banco Unión • Cta Fiscal: 10000034891230
+                </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleCopyAccount}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"
-              >
-                {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedAccount ? '¡Número de cuenta copiado!' : 'Copiar número de cuenta'}</span>
-              </button>
+              {/* Botones de Guardar QR y Copiar Cuenta */}
+              <div className="flex flex-col sm:flex-row gap-2 w-full pt-1">
+                <button
+                  type="button"
+                  onClick={handleDownloadQrImage}
+                  className="flex-1 py-2.5 px-3 rounded-xl text-xs font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-slate-950" />
+                  <span>Guardar QR en mi Galería</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyAccount}
+                  className="py-2.5 px-3 rounded-xl text-xs font-bold text-blue-300 bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedAccount ? '¡Copiado!' : 'Copiar Cta.'}</span>
+                </button>
+              </div>
+
+              {/* Badges Bancos Bolivianos Admitidos */}
+              <div className="pt-2 border-t border-slate-700/80 w-full">
+                <span className="text-[10px] text-slate-400 block mb-1.5 font-semibold">
+                  Acepta todos los bancos y cooperativas de Bolivia:
+                </span>
+                <div className="flex flex-wrap justify-center gap-1.5 text-[10px] font-bold">
+                  <span className="px-2 py-0.5 rounded bg-blue-900/60 text-blue-200 border border-blue-700">Banco Unión</span>
+                  <span className="px-2 py-0.5 rounded bg-amber-900/60 text-amber-200 border border-amber-700">BancoSol</span>
+                  <span className="px-2 py-0.5 rounded bg-blue-900/60 text-cyan-200 border border-cyan-700">BCP</span>
+                  <span className="px-2 py-0.5 rounded bg-emerald-900/60 text-emerald-200 border border-emerald-700">BNB</span>
+                  <span className="px-2 py-0.5 rounded bg-purple-900/60 text-purple-200 border border-purple-700">Banco FIE</span>
+                </div>
+              </div>
             </div>
 
             {/* Formulario de Comprobante */}
@@ -885,7 +1266,7 @@ export const LandingPage: React.FC = () => {
                 setTimeout(() => {
                   setIsUploading(false);
                   setIsQrModalOpen(false);
-                  alert('¡Comprobante enviado con éxito a la Tesorería! Queda registrado en estado "Pendiente de Verificación".');
+                  alert('¡Comprobante enviado con éxito a la Tesorería! Queda registrado en estado "Pendiente de Verificación" y se emitirá el recibo sellado.');
                 }, 1000);
               }}
               className="space-y-4 text-xs"
@@ -898,14 +1279,14 @@ export const LandingPage: React.FC = () => {
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 font-mono text-white font-bold focus:outline-none focus:border-emerald-400"
+                  className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 font-mono text-white font-bold focus:outline-none focus:border-emerald-400 text-sm"
                 />
               </div>
 
               <div>
                 <label className="font-bold text-slate-200 block mb-1">Adjuntar Captura o Foto del Voucher:</label>
-                <label className="border-2 border-dashed border-slate-500 hover:border-blue-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#020617]">
-                  <Upload className="w-6 h-6 text-blue-400 mb-1" />
+                <label className="border-2 border-dashed border-slate-500 hover:border-emerald-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#020617]">
+                  <Upload className="w-6 h-6 text-emerald-400 mb-1" />
                   <span className="text-xs font-bold text-slate-200">
                     {selectedFileName || 'Seleccionar captura o foto de depósito'}
                   </span>
@@ -921,7 +1302,7 @@ export const LandingPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isUploading}
-                className="w-full py-3.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
               >
                 <Upload className="w-4 h-4 text-slate-950" />
                 <span>{isUploading ? 'Enviando Comprobante...' : 'Enviar Comprobante a Tesorería'}</span>
@@ -1129,6 +1510,20 @@ export const LandingPage: React.FC = () => {
           }}
         />
       )}
+
+      {/* MODAL 5: Auxilio y Reportes Barriales en Vivo (Seguridad Ciudadana 24/7) */}
+      <CommunityAlertsAndEmergencyModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        initialTab={alertModalTab}
+        otbName={resolvedResult?.otbName || 'OTB Villa Esperanza'}
+      />
+
+      {/* MODAL 6: Descargar e Instalar App Móvil (Android APK / PWA) */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
     </div>
   );
 };

@@ -60,7 +60,10 @@ export const XentraLogo: React.FC<XentraLogoProps> = ({
         <div className="flex flex-col leading-none">
           <div className="flex items-center gap-1.5">
             <span
-              style={{ color: isLight ? '#FFFFFF' : '#0F172A' }}
+              style={{
+                color: isLight ? '#FFFFFF' : '#0F172A',
+                textShadow: isLight ? '0 1px 4px rgba(0,0,0,0.6)' : 'none'
+              }}
               className={`font-black tracking-tight ${textSizeMap[size]}`}
             >
               XENTRA
@@ -76,7 +79,7 @@ export const XentraLogo: React.FC<XentraLogoProps> = ({
             </span>
           </div>
           <span
-            style={{ color: isLight ? '#CBD5E1' : '#475569' }}
+            style={{ color: isLight ? '#E2E8F0' : '#475569' }}
             className="text-[10px] font-semibold tracking-tight mt-0.5"
           >
             Gestión Financiera Comunitaria

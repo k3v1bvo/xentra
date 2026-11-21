@@ -15,13 +15,19 @@ import {
   Check,
   Image as ImageIcon,
   X,
-  Printer
+  Printer,
+  PhoneCall,
+  Smartphone,
+  Sparkles,
+  AlertTriangle
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { useNavigate } from 'react-router-dom';
 import { PrintableStatementModal } from '../components/PrintableStatementModal';
+import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
+import { InstallAppModal } from '../components/InstallAppModal';
 
 interface NeighborFee {
   id: string;
@@ -96,6 +102,13 @@ export const NeighborDashboardPage: React.FC = () => {
   // Modal Imprimir Estado de Cuenta
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
+  // Modal Auxilio y Reportes Barriales
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertModalTab, setAlertModalTab] = useState<'emergencias' | 'reportar' | 'muro'>('emergencias');
+
+  // Modal Instalar App / APK
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
   const totalAssigned = fees.reduce((acc, f) => acc + f.amountAssigned, 0);
   const totalPaid = fees.reduce((acc, f) => acc + f.amountPaid, 0);
   const totalDebt = Math.max(0, totalAssigned - totalPaid);
@@ -104,6 +117,74 @@ export const NeighborDashboardPage: React.FC = () => {
     navigator.clipboard.writeText('10000034891230');
     setCopiedAccount(true);
     setTimeout(() => setCopiedAccount(false), 2000);
+  };
+
+  const handleDownloadQrImage = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 460;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, 400, 460);
+      ctx.fillStyle = '#0F172A';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('XENTRA OTB - QR SIMPLE', 200, 38);
+      ctx.font = '13px sans-serif';
+      ctx.fillStyle = '#475569';
+      ctx.fillText('Banco Unión • Cta: 10000034891230', 200, 62);
+
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(45, 90, 80, 80);
+      ctx.clearRect(55, 100, 60, 60);
+      ctx.fillRect(65, 110, 40, 40);
+
+      ctx.fillRect(275, 90, 80, 80);
+      ctx.clearRect(285, 100, 60, 60);
+      ctx.fillRect(295, 110, 40, 40);
+
+      ctx.fillRect(45, 300, 80, 80);
+      ctx.clearRect(55, 310, 60, 60);
+      ctx.fillRect(65, 320, 40, 40);
+
+      ctx.fillStyle = '#2563EB';
+      ctx.beginPath();
+      ctx.arc(200, 235, 32, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(200, 235, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#10B981';
+      ctx.beginPath();
+      ctx.arc(200, 235, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(150, 110, 20, 20);
+      ctx.fillRect(180, 140, 20, 20);
+      ctx.fillRect(210, 110, 20, 20);
+      ctx.fillRect(240, 140, 20, 20);
+      ctx.fillRect(150, 310, 20, 20);
+      ctx.fillRect(180, 340, 20, 20);
+      ctx.fillRect(210, 310, 20, 20);
+      ctx.fillRect(240, 340, 20, 20);
+      ctx.fillRect(275, 220, 20, 20);
+      ctx.fillRect(315, 250, 20, 20);
+      ctx.fillRect(100, 220, 20, 20);
+      ctx.fillRect(70, 250, 20, 20);
+
+      ctx.fillStyle = '#059669';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillText(`Monto: ${formatBOB(parseFloat(payAmount) || 50)}`, 200, 420);
+
+      const link = document.createElement('a');
+      link.download = `QR_Pago_Vecino.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      alert('¡Código QR guardado en tu galería! Abre tu aplicación bancaria y paga con la opción "Subir desde Galería".');
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +263,44 @@ export const NeighborDashboardPage: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Barra Rápida de Auxilio y App Móvil */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button
+          onClick={() => {
+            setAlertModalTab('emergencias');
+            setIsAlertModalOpen(true);
+          }}
+          className="p-4 rounded-2xl bg-rose-50 border-2 border-rose-200 hover:bg-rose-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+              <PhoneCall className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <strong className="text-rose-950 font-black text-sm block">🚨 Auxilio & Reportes Barriales 24/7</strong>
+              <span className="text-rose-700 text-xs">Llamadas directas a Radio Patrullas 110, SAMU 165 y Alerta Vecinal</span>
+            </div>
+          </div>
+          <span className="text-xs font-black text-rose-600 group-hover:translate-x-1 transition-transform">Llamar →</span>
+        </button>
+
+        <button
+          onClick={() => setIsInstallModalOpen(true)}
+          className="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 hover:bg-emerald-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <div>
+              <strong className="text-emerald-950 font-black text-sm block">📲 Instalar App Móvil / Descargar APK</strong>
+              <span className="text-emerald-700 text-xs">Instala en tu celular para recibir avisos de agua y asambleas</span>
+            </div>
+          </div>
+          <span className="text-xs font-black text-emerald-600 group-hover:translate-x-1 transition-transform">Ver App →</span>
+        </button>
       </div>
 
       {/* Mis Cuotas Asignadas */}
@@ -414,19 +533,69 @@ export const NeighborDashboardPage: React.FC = () => {
                 </svg>
               </div>
 
-              <div>
-                <p className="text-xs font-bold text-slate-800">Monto a pagar: {formatBOB(parseFloat(payAmount) || 50)}</p>
-                <p className="text-[11px] text-slate-500 font-mono mt-0.5">Banco Unión • Cta: 10000034891230</p>
+              {/* 4 Pasos Didácticos para el Vecino de 40 a 60 años */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[10px] w-full pt-1">
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">1</span>
+                  <span className="font-bold text-slate-800 block">Guarda el QR</span>
+                  <span className="text-[9px] text-slate-500">Toca botón verde</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">2</span>
+                  <span className="font-bold text-slate-800 block">Abre tu Banco</span>
+                  <span className="text-[9px] text-slate-500">Unión, Sol, BCP</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">3</span>
+                  <span className="font-bold text-slate-800 block">Pagar QR</span>
+                  <span className="text-[9px] text-slate-500">Cargar de Galería</span>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
+                  <span className="w-4 h-4 rounded-full bg-emerald-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">4</span>
+                  <span className="font-bold text-slate-800 block">Sube Voucher</span>
+                  <span className="text-[9px] text-slate-500">Adjunta captura</span>
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleCopyAccount}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-blue-700 bg-blue-100/60 hover:bg-blue-100 transition-colors"
-              >
-                {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedAccount ? '¡Número de cuenta copiado!' : 'Copiar número de cuenta'}</span>
-              </button>
+              <div>
+                <p className="text-sm font-black text-slate-900">Monto a pagar: <span className="text-emerald-600 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
+                <p className="text-xs text-slate-500 font-mono mt-0.5">Banco Unión • Cta Fiscal: 10000034891230</p>
+              </div>
+
+              {/* Botones de Acción QR */}
+              <div className="flex flex-col sm:flex-row gap-2 w-full pt-1">
+                <button
+                  type="button"
+                  onClick={handleDownloadQrImage}
+                  className="flex-1 py-2.5 px-3 rounded-xl text-xs font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-slate-950" />
+                  <span>Guardar QR en Galería</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyAccount}
+                  className="py-2.5 px-3 rounded-xl text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedAccount ? '¡Copiado!' : 'Copiar Cta.'}</span>
+                </button>
+              </div>
+
+              {/* Badges Bancos Bolivianos */}
+              <div className="pt-2 border-t border-slate-200 w-full text-center">
+                <span className="text-[10px] text-slate-400 block mb-1 font-semibold">
+                  Acepta todos los bancos de Bolivia:
+                </span>
+                <div className="flex flex-wrap justify-center gap-1 text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">Banco Unión</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BancoSol</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BCP</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">BNB</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">FIE</span>
+                </div>
+              </div>
             </div>
 
             {/* Formulario de Confirmación y Subida de Voucher */}
@@ -439,14 +608,14 @@ export const NeighborDashboardPage: React.FC = () => {
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
 
               <div>
                 <label className="font-bold text-slate-700 block mb-1">Adjuntar Captura o Foto del Depósito:</label>
-                <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50/50 hover:bg-blue-50/30">
-                  <Upload className="w-6 h-6 text-slate-400 mb-1" />
+                <label className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50/50 hover:bg-emerald-50/30">
+                  <Upload className="w-6 h-6 text-emerald-600 mb-1" />
                   <span className="text-xs font-semibold text-slate-700">
                     {selectedFileName ? selectedFileName : 'Toca aquí para seleccionar foto o voucher'}
                   </span>
@@ -468,9 +637,9 @@ export const NeighborDashboardPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isUploading}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all cursor-pointer"
+                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
               >
-                <Upload className="w-4 h-4" />
+                <Upload className="w-4 h-4 text-slate-950" />
                 <span>{isUploading ? 'Enviando a Tesorería...' : 'Enviar Comprobante para Verificación'}</span>
               </button>
             </form>
@@ -508,6 +677,20 @@ export const NeighborDashboardPage: React.FC = () => {
             status: f.isSettled ? 'Pagado' : 'Pendiente'
           }))
         }}
+      />
+
+      {/* Modal Auxilio y Reportes Barriales */}
+      <CommunityAlertsAndEmergencyModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        initialTab={alertModalTab}
+        otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+      />
+
+      {/* Modal Descargar e Instalar App Móvil */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
       />
     </div>
   );

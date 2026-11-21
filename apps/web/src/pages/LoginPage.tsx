@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { XentraLogo } from '../components/XentraLogo';
+import { TiltCard3D } from '../components/TiltCard3D';
 import { useAuthStore } from '../stores/authStore';
 import { AppRole } from '@xentra/shared';
 import { Lock, Mail, ArrowRight, ShieldCheck, User } from 'lucide-react';
@@ -51,17 +52,21 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <XentraLogo size="lg" className="justify-center" />
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 pt-2">
-            Iniciar Sesión
-          </h1>
-          <p className="text-xs text-slate-500">
-            Ingresa a la plataforma de gestión financiera de tu OTB
-          </p>
-        </div>
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Resplandor ambiental 3D */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+        <TiltCard3D intensity={8} className="w-full bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 space-y-6 border border-white/20">
+          <div className="text-center space-y-2">
+            <XentraLogo size="lg" className="justify-center" />
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 pt-2">
+              Iniciar Sesión
+            </h1>
+            <p className="text-xs text-slate-500">
+              Ingresa a la plataforma de gestión financiera de tu OTB
+            </p>
+          </div>
 
         <form onSubmit={handleLogin} className="space-y-4 text-xs">
           <div>
@@ -145,7 +150,8 @@ export const LoginPage: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
+      </TiltCard3D>
     </div>
-  );
+  </div>
+);
 };

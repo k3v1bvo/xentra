@@ -42,64 +42,31 @@
 }
 
 /* =========================================================================
-   DISEÑO CÓMODO DIRECTO POR DEFECTO (WCAG AAA & ELDER ACCESSIBILITY STANDARD)
-   - Contraste Alto 7:1 (Nivel AAA)
-   - Tipografía Base Cómoda (≥ 18px base móvil y desktop directo por defecto)
-   - Interlineado Cómodo ≥ 1.6x
-   - Objetivos Táctiles Nativos ≥ 52-60px
-   - Cero necesidad de botones para activar o desactivar: VISTA CÓMODA NATIVA
+   TIPOGRAFÍA NATIVA ACCESIBLE Y RESPONSIVE (WCAG AAA STANDARD)
+   - Escala estándar base 16px para preservar comportamiento fluido de Tailwind
+   - Interlineado legible
+   - Alto contraste nativo en modo oscuro
    ========================================================================= */
 
 :root {
-  font-size: 18px;
-}
-
-@media (min-width: 640px) {
-  :root {
-    font-size: 18px;
-  }
-}
-
-@media (min-width: 1024px) {
-  :root {
-    font-size: 19px;
-  }
+  font-size: 16px;
 }
 
 body {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 p, span, label, li {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* Evitar textos demasiado oscuros o atenuados que cansen la vista */
+/* Evitar textos atenuados que cansen la vista */
 .text-slate-400 {
-  color: #CBD5E1;
-}
-
-.text-slate-500 {
   color: #94A3B8;
 }
 
-/* Soporte y refuerzo para clase senior-mode activa por defecto */
-.senior-mode {
-  font-size: 18px;
-}
-
-.senior-mode p,
-.senior-mode span,
-.senior-mode label,
-.senior-mode li {
-  line-height: 1.6;
-}
-
-.senior-mode button,
-.senior-mode .btn-touch,
-.senior-mode a[role="button"],
-.senior-mode select {
-  min-height: 52px;
+.text-slate-300 {
+  color: #CBD5E1;
 }

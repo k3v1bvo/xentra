@@ -247,199 +247,230 @@ export const NeighborDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 text-white">
-      {/* Encabezado Vecino con Máxima Comodidad y Letra Grande Directa */}
-      <div className="p-6 sm:p-9 rounded-3xl bg-[#0B132B] border-2 border-blue-500/60 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-3 max-w-xl">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/25 text-blue-200 text-sm sm:text-base font-black border-2 border-blue-400/50 shadow-sm">
-              <Home className="w-5 h-5 text-blue-300" />
-              <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
+      {/* Encabezado Vecino con Máxima Comodidad y Totalmente Responsivo */}
+      <div className="p-5 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-blue-500/50 text-white shadow-2xl backdrop-blur-xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          {/* Lado Izquierdo: Saludo y Datos de Vivienda (7 cols) */}
+          <div className="lg:col-span-7 space-y-3.5 text-left">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-500/20 text-blue-200 text-xs sm:text-sm font-bold border border-blue-400/40 shadow-sm">
+                <Home className="w-4 h-4 text-blue-300 flex-shrink-0" />
+                <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
+              </div>
+              <span className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                ✓ Socio Registrado
+              </span>
             </div>
-            <span className="px-3.5 py-2 rounded-xl text-sm sm:text-base font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-              Socio Registrado
-            </span>
+
+            <div className="space-y-1.5">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+                Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
+              </h1>
+              <p className="text-xs sm:text-sm md:text-base text-slate-300 font-normal leading-relaxed">
+                Portal oficial y directo de tu OTB: consulta tus aportes comunales, realiza pagos con QR Simple y descarga tus comprobantes certificados.
+              </p>
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-            Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
-          </h1>
-          <p className="text-base sm:text-lg text-slate-100 font-medium leading-relaxed">
-            Portal oficial y directo de tu OTB: consulta tus aportes comunales, realiza pagos con QR Simple y descarga tus comprobantes certificados.
-          </p>
-        </div>
+          {/* Lado Derecho: Estado de Deuda y Acciones Directas (5 cols) */}
+          <div className="lg:col-span-5 bg-[#030712] p-5 rounded-2xl border-2 border-slate-700/80 shadow-xl space-y-3.5">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span className="text-[11px] text-slate-400 uppercase font-mono font-bold tracking-wider block">
+                  Deuda Pendiente
+                </span>
+                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 block mt-0.5">
+                  {formatBOB(totalDebt)}
+                </span>
+              </div>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border ${
+                totalDebt > 0
+                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                  : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+              }`}>
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                <span>{totalDebt > 0 ? '1 cuota pendiente' : 'Al Día ✓'}</span>
+              </span>
+            </div>
 
-        {/* Tarjeta Deuda y Botón de Pago Rápido (Target Size ≥ 60px) */}
-        <div className="bg-[#030712] p-6 sm:p-7 rounded-3xl border-2 border-slate-600 flex flex-col sm:flex-row sm:items-center gap-6 flex-shrink-0 shadow-2xl">
-          <div className="text-left sm:text-right space-y-1">
-            <span className="text-sm sm:text-base text-slate-200 block font-black uppercase tracking-wider">Deuda Pendiente</span>
-            <span className="text-4xl sm:text-5xl font-black font-mono text-emerald-400 block">
-              {formatBOB(totalDebt)}
-            </span>
-            <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-amber-300">
-              <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
-              <span>{totalDebt > 0 ? '1 cuota pendiente de abono' : '¡Excelente! Estás al día'}</span>
-            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                onClick={() => setIsQrModalOpen(true)}
+                className="w-full h-11 sm:h-12 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              >
+                <QrCode className="w-4 h-4 text-slate-950" />
+                <span>Pagar con QR</span>
+              </button>
+
+              <button
+                onClick={() => setIsPrintModalOpen(true)}
+                className="w-full h-11 sm:h-12 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-600 transition-all cursor-pointer"
+              >
+                <Printer className="w-4 h-4 text-blue-300" />
+                <span>Imprimir Ficha</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => setIsQrModalOpen(true)}
-              className="min-h-[62px] py-4 px-7 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base sm:text-lg flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/30 transition-all cursor-pointer scale-100 hover:scale-[1.02]"
-            >
-              <QrCode className="w-6 h-6 text-slate-950" />
-              <span>Pagar con QR</span>
-            </button>
-
-            <button
-              onClick={() => setIsPrintModalOpen(true)}
-              className="min-h-[62px] py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-base sm:text-lg flex items-center justify-center gap-2.5 border-2 border-slate-600 transition-all cursor-pointer"
-            >
-              <Printer className="w-6 h-6 text-blue-300" />
-              <span>Imprimir Ficha</span>
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Barra Rápida de Auxilio, Transparencia y App Móvil (Targets Generosos ≥ 80px) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Barra Rápida de Auxilio, Transparencia y App Móvil */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         <button
           onClick={() => {
             setAlertModalTab('emergencias');
             setIsAlertModalOpen(true);
           }}
-          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-rose-500/60 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/20"
+          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/20"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-rose-600/30 border-2 border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <PhoneCall className="w-7 h-7 animate-pulse" />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-rose-600/20 border border-rose-500/50 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
             </div>
             <div>
-              <strong className="text-white font-black text-lg sm:text-xl block">🚨 Auxilio & Reportes 24/7</strong>
-              <span className="text-rose-200 text-sm sm:text-base font-bold block mt-0.5">Policía 110, SAMU 168 y Alerta Barrial</span>
+              <strong className="text-white font-bold text-sm sm:text-base block">🚨 Central de Auxilio 24/7</strong>
+              <span className="text-rose-200 text-xs font-medium block mt-0.5">Policía 110, SAMU 168 y Alerta Barrial</span>
             </div>
           </div>
-          <span className="text-base font-black text-rose-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Llamar →</span>
+          <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Llamar →</span>
         </button>
 
         <button
           onClick={() => setIsTransparencyModalOpen(true)}
-          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-purple-500/60 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/20"
+          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/20"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <ShieldCheck className="w-7 h-7" />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-purple-600/20 border border-purple-500/50 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <ShieldCheck className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <strong className="text-white font-black text-lg sm:text-xl block">🔍 Transparencia & Asamblea</strong>
-              <span className="text-purple-200 text-sm sm:text-base font-bold block mt-0.5">¿En qué se gastó? y Asamblea 29 Nov</span>
+              <strong className="text-white font-bold text-sm sm:text-base block">🔍 Transparencia & Asamblea</strong>
+              <span className="text-purple-200 text-xs font-medium block mt-0.5">Rendición de cuentas y próximas fechas</span>
             </div>
           </div>
-          <span className="text-base font-black text-purple-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver Cuentas →</span>
+          <span className="text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Ver →</span>
         </button>
 
         <button
           onClick={() => setIsInstallModalOpen(true)}
-          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-emerald-500/60 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/20"
+          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/20"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Smartphone className="w-7 h-7" />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-emerald-600/20 border border-emerald-500/50 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Smartphone className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <strong className="text-white font-black text-lg sm:text-xl block">📲 Instalar App Android</strong>
-              <span className="text-emerald-200 text-sm sm:text-base font-bold block mt-0.5">APK oficial para Xiaomi, Samsung y más</span>
+              <strong className="text-white font-bold text-sm sm:text-base block">📲 App Móvil Oficial (APK)</strong>
+              <span className="text-emerald-200 text-xs font-medium block mt-0.5">Versión 3.0.0 para Xiaomi, Samsung y más</span>
             </div>
           </div>
-          <span className="text-base font-black text-emerald-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver App →</span>
+          <span className="text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Descargar →</span>
         </button>
       </div>
 
-      {/* Mis Cuotas Asignadas (Legibilidad Alta y Letras Grandes) */}
+      {/* Mis Cuotas Asignadas */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
-            <FileCheck className="w-6 h-6 text-blue-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+            <FileCheck className="w-5 h-5 text-blue-400" />
             <span>Mis Cuotas y Obligaciones Comunitarias</span>
           </h2>
-          <span className="text-base sm:text-lg text-slate-100 font-mono font-bold">Total asignado: <strong className="text-white">{formatBOB(totalAssigned)}</strong></span>
+          <span className="text-xs sm:text-sm text-slate-300 font-mono">
+            Total asignado: <strong className="text-white font-bold">{formatBOB(totalAssigned)}</strong>
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {fees.map((fee) => (
             <TiltCard3D
               key={fee.id}
-              intensity={5}
-              className="p-6 sm:p-7 rounded-3xl bg-[#0B132B] border-2 border-slate-700 shadow-2xl backdrop-blur-xl space-y-5"
+              intensity={4}
+              className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 hover:border-slate-700 shadow-xl backdrop-blur-xl flex flex-col justify-between h-full space-y-4"
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-black px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-100 border border-slate-600 uppercase tracking-wide">
-                  {fee.type}
-                </span>
-                {fee.isSettled ? (
-                  <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 px-3.5 py-1.5 rounded-full">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Pagada al Día
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-slate-800 text-blue-300 border border-slate-700 uppercase tracking-wider">
+                    {fee.type === 'AporteEspecial' ? 'Aporte Especial' : 'Cuota Ordinaria'}
                   </span>
+                  {fee.isSettled ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Pagada al Día</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                      <AlertCircle className="w-4 h-4 text-amber-400" />
+                      <span>Saldo Pendiente</span>
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-white text-lg sm:text-xl leading-snug">{fee.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 font-mono mt-1 flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <span>Vencimiento: {fee.dueDate}</span>
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-[#030712] border border-slate-800 grid grid-cols-3 gap-2 text-center font-mono">
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-bold uppercase">Asignado</span>
+                    <strong className="text-white font-bold text-sm sm:text-base block mt-0.5">{formatBOB(fee.amountAssigned)}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-bold uppercase">Abonado</span>
+                    <strong className="text-emerald-400 font-bold text-sm sm:text-base block mt-0.5">{formatBOB(fee.amountPaid)}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-bold uppercase">Resta</span>
+                    <strong className={fee.amountAssigned - fee.amountPaid > 0 ? 'text-amber-400 font-bold text-sm sm:text-base block mt-0.5' : 'text-slate-400 font-bold text-sm sm:text-base block mt-0.5'}>
+                      {formatBOB(fee.amountAssigned - fee.amountPaid)}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botón de acción uniforme en ambas tarjetas */}
+              <div className="pt-2">
+                {!fee.isSettled ? (
+                  <button
+                    onClick={() => {
+                      setPayAmount((fee.amountAssigned - fee.amountPaid).toFixed(2));
+                      setIsQrModalOpen(true);
+                    }}
+                    className="w-full h-11 sm:h-12 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+                  >
+                    <QrCode className="w-4 h-4" />
+                    <span>Pagar saldo de esta cuota</span>
+                  </button>
                 ) : (
-                  <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-amber-300 bg-amber-500/20 border border-amber-500/50 px-3.5 py-1.5 rounded-full">
-                    <AlertCircle className="w-5 h-5 text-amber-400" /> Saldo Pendiente
-                  </span>
+                  <div className="w-full h-11 sm:h-12 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>Aporte al Día • Recibo Oficial Emitido</span>
+                  </div>
                 )}
               </div>
-
-              <div>
-                <h3 className="font-black text-white text-xl sm:text-2xl leading-snug">{fee.title}</h3>
-                <p className="text-base text-amber-300 font-bold font-mono mt-1.5 flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-amber-400" />
-                  <span>Vencimiento: {fee.dueDate}</span>
-                </p>
-              </div>
-
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-700 grid grid-cols-3 gap-3 text-center font-mono">
-                <div>
-                  <span className="text-sm sm:text-base text-slate-200 block font-black uppercase">Asignado</span>
-                  <strong className="text-white font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountAssigned)}</strong>
-                </div>
-                <div>
-                  <span className="text-sm sm:text-base text-slate-200 block font-black uppercase">Abonado</span>
-                  <strong className="text-emerald-400 font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountPaid)}</strong>
-                </div>
-                <div>
-                  <span className="text-sm sm:text-base text-slate-200 block font-black uppercase">Resta</span>
-                  <strong className="text-rose-400 font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
-                </div>
-              </div>
-
-              {!fee.isSettled && (
-                <button
-                  onClick={() => {
-                    setPayAmount((fee.amountAssigned - fee.amountPaid).toFixed(2));
-                    setIsQrModalOpen(true);
-                  }}
-                  className="w-full min-h-[60px] py-4 px-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-base sm:text-lg font-black flex items-center justify-center gap-2.5 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
-                >
-                  <QrCode className="w-6 h-6" />
-                  <span>Pagar saldo de esta cuota</span>
-                </button>
-              )}
             </TiltCard3D>
           ))}
         </div>
       </div>
 
       {/* Mapa Interactivo de la OTB y Ubicación del Inmueble */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-xl backdrop-blur-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
+            <h2 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
               <MapPin className="w-5 h-5 text-emerald-400" />
               <span>Plano Comunal Interactivo & Sede de la OTB</span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-200 mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
               Ubicación de tu vivienda en el catastro comunal de {currentOtb?.name || 'la OTB'}.
             </p>
           </div>
-          <span className="text-sm sm:text-base text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-2 rounded-xl font-mono font-black self-start sm:self-auto">
+          <span className="text-xs sm:text-sm text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-mono font-bold self-start sm:self-auto">
             Manzana A, Lote 12
           </span>
         </div>
@@ -447,7 +478,7 @@ export const NeighborDashboardPage: React.FC = () => {
           centerLat={-17.41325}
           centerLng={-66.16543}
           zoom={16}
-          heightClass="h-64 sm:h-72"
+          heightClass="h-72 sm:h-80"
           otbName={currentOtb?.name || 'OTB Villa Esperanza'}
           selectedLotName="Lote 12"
         />

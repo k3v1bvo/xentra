@@ -1392,3 +1392,11 @@ END $$;
 
 -- Habilitar Supabase Realtime para notificaciones en vivo
 ALTER PUBLICATION supabase_realtime ADD TABLE notifications, announcements, payments;
+
+-- ==============================================================================
+-- 12. PERMISOS DE ESQUEMA PARA POSTGREST (ANON Y AUTHENTICATED)
+-- ==============================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;

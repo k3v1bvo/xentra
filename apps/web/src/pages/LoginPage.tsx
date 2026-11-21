@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
       updated_at: new Date().toISOString()
     });
     setCurrentRole('tesorero');
-    navigate('/');
+    navigate('/admin');
   };
 
   const handleQuickDemo = (role: AppRole, name: string, ci: string) => {
@@ -43,8 +43,10 @@ export const LoginPage: React.FC = () => {
     setCurrentRole(role);
     if (role === 'vecino') {
       navigate('/vecino');
+    } else if (role === 'superadmin') {
+      navigate('/superadmin');
     } else {
-      navigate('/');
+      navigate('/admin');
     }
   };
 
@@ -131,6 +133,15 @@ export const LoginPage: React.FC = () => {
             >
               <strong className="block text-emerald-800">Vecino</strong>
               <span className="text-[10px] text-slate-500">Portal & Recibos QR</span>
+            </button>
+          </div>
+
+          <div className="pt-2 text-center">
+            <button
+              onClick={() => navigate('/')}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline"
+            >
+              ← Volver a la Portada Principal
             </button>
           </div>
         </div>

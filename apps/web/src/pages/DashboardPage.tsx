@@ -51,14 +51,14 @@ export const DashboardPage: React.FC = () => {
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => navigate('/finanzas')}
+            onClick={() => navigate('/admin/finanzas')}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/25 transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             Registrar Cobro
           </button>
           <button
-            onClick={() => navigate('/trace')}
+            onClick={() => navigate('/admin/trace')}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
           >
             <FileSpreadsheet className="w-4 h-4 text-slate-500" />
@@ -213,7 +213,7 @@ export const DashboardPage: React.FC = () => {
               <span>Auditoría transparente al día</span>
             </div>
             <button
-              onClick={() => navigate('/trace')}
+              onClick={() => navigate('/admin/trace')}
               className="text-xs text-blue-600 hover:text-blue-800 font-semibold"
             >
               Ver Trazabilidad →

@@ -64,7 +64,7 @@ interface SearchResult {
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { setUser, setProfile, setCurrentRole } = useAuthStore();
-  const { currentOtb, availableOtbs, setCurrentOtb } = useTenantStore();
+  const { currentOtb } = useTenantStore();
   const { config: otbPaymentConfig, submitVoucher } = usePaymentVerificationStore();
 
   // Buscador de socio / lote

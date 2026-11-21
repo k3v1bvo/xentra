@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
+import { useTenantStore } from '../stores/tenantStore';
 
 export const TracePage: React.FC = () => {
+  const { currentOtb } = useTenantStore();
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Cabecera */}
@@ -73,7 +75,7 @@ export const TracePage: React.FC = () => {
                 Cadena de Trazabilidad Comunal
               </span>
               <h2 className="text-base sm:text-lg font-black text-white">
-                Grafo de Destino de Recursos — "Proyecto Tinglado Cancha Polifuncional"
+                Grafo de Destino de Recursos — "Proyecto Tinglado Cancha Polifuncional" ({currentOtb?.name || 'Villa Esperanza'})
               </h2>
             </div>
             <span className="text-xs font-mono px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold self-start sm:self-auto">

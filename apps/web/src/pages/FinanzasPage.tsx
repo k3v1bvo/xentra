@@ -248,7 +248,7 @@ export const FinanzasPage: React.FC = () => {
       // También agregarlo al historial de pagos
       const newPay: PaymentMock = {
         id: approved.id,
-        receiptNumber: approved.officialReceiptNumber || 'OTB-CBBA-001-2026-00043',
+        receiptNumber: approved.officialReceiptNumber || `${currentOtb?.code || 'OTB-CBBA-001'}-2026-00043`,
         neighborName: approved.neighborName,
         amount: approved.amount,
         method: approved.method,
@@ -439,12 +439,14 @@ export const FinanzasPage: React.FC = () => {
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black uppercase tracking-wider mb-1.5">
             <Building className="w-3.5 h-3.5" />
             <span>Mesa Directiva & Tesorería Comunal</span>
+            <span className="text-slate-500">•</span>
+            <span className="text-emerald-400 font-bold">{currentOtb?.name || 'OTB Villa Esperanza'} ({currentOtb?.code || 'OTB-CBBA-001'})</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             Tesorería & Verificación de Pagos QR
           </h1>
           <p className="text-xs text-slate-400 mt-1 font-medium">
-            Carga el QR bancario de tu OTB, verifica comprobantes de vecinos manualmente y emite recibos con QR personalizado.
+            Carga el QR bancario de tu OTB ({currentOtb?.name}), verifica comprobantes de vecinos manualmente y emite recibos con QR personalizado.
           </p>
         </div>
 

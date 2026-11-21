@@ -280,16 +280,14 @@ export const AdminLayout: React.FC = () => {
               >
                 Vecino
               </button>
-              <button
-                onClick={() => handleRoleChange('superadmin')}
-                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
-                  currentRole === 'superadmin'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Superadmin
-              </button>
+              {isSuperadmin && (
+                <button
+                  onClick={() => handleRoleChange('superadmin')}
+                  className="px-2.5 py-1 rounded-lg font-black bg-purple-600 text-white shadow-sm"
+                >
+                  Superadmin
+                </button>
+              )}
             </div>
 
             {/* Notificaciones */}

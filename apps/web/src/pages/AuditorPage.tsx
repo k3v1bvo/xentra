@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
+import { useTenantStore } from '../stores/tenantStore';
 
 interface AlertMock {
   id: string;
@@ -48,6 +49,7 @@ const INITIAL_ALERTS: AlertMock[] = [
 ];
 
 export const AuditorPage: React.FC = () => {
+  const { currentOtb } = useTenantStore();
   const [alerts, setAlerts] = useState(INITIAL_ALERTS);
   const [isScanning, setIsScanning] = useState(false);
   const [showAiReport, setShowAiReport] = useState(false);
@@ -84,9 +86,16 @@ export const AuditorPage: React.FC = () => {
               Reglas Deterministas + IA Fiscalizadora
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Detección preventiva de inconsistencias contables, sobregiros y apoyo técnico al Comité de Vigilancia.
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <p className="text-xs sm:text-sm text-slate-400">
+              Detección preventiva de inconsistencias contables, sobregiros y apoyo técnico al Comité de Vigilancia.
+            </p>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-300">
+              <span>Jurisdicción:</span>
+              <strong className="text-white">{currentOtb?.name || 'OTB Villa Esperanza'}</strong>
+              <span className="font-mono text-[10px] text-purple-400">({currentOtb?.code || 'OTB-CBBA-001'})</span>
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -261,8 +270,12 @@ export const AuditorPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Sparkles className="w-6 h-6 text-purple-400" />
                 <div>
-                  <h2 className="text-lg font-black text-white">Informe Técnico para Asamblea Ordinaria</h2>
-                  <p className="text-xs text-slate-400">Generado por motor XENTRA AI Auditor</p>
+                  <h2 className="text-lg font-black text-white">
+                    Informe Técnico para Asamblea — {currentOtb?.name || 'OTB Villa Esperanza'}
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Jurisdicción: {currentOtb?.zone || 'Distrito 4'}, {currentOtb?.municipality || 'Cochabamba'} • Código: {currentOtb?.code || 'OTB-CBBA-001'}
+                  </p>
                 </div>
               </div>
               <button

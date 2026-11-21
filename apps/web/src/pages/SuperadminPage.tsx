@@ -69,7 +69,28 @@ const INITIAL_REQUESTS: OtbRequest[] = [
 export const SuperadminPage: React.FC = () => {
   const navigate = useNavigate();
   const { availableOtbs, currentOtb, setCurrentOtb, updateOtb, setAvailableOtbs } = useTenantStore();
-  const { profile, logout } = useAuthStore();
+  const { profile, currentRole, logout } = useAuthStore();
+
+  // Control de Acceso Estricto Multi-Tenant: Solo el Superadministrador puede acceder
+  React.useEffect(() => {
+    if (currentRole !== 'superadmin') {
+      alert('Acceso restringido: Solo el Superadministrador de la plataforma puede ver y gestionar todas las OTBs a nivel nacional.');
+      navigate('/admin');
+    }
+  }, [currentRole, navigate]);
+
+  if (currentRole !== 'superadmin') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 text-white">
+        <div className="p-6 rounded-3xl bg-[#0B132B] border border-rose-500/50 text-center space-y-3 max-w-md">
+          <p className="font-black text-rose-400 text-lg">Acceso Denegado</p>
+          <p className="text-xs text-slate-300">
+            Tu cuenta pertenece a una OTB específica. No tienes permisos de Superadministrador Nacional para ver datos de otras OTBs.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const [otbList, setOtbList] = useState(availableOtbs);
   const [requests, setRequests] = useState<OtbRequest[]>(INITIAL_REQUESTS);

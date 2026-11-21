@@ -28,6 +28,7 @@ import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { PrintableStatementModal, StatementData } from '../components/PrintableStatementModal';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
+import { useTenantStore } from '../stores/tenantStore';
 
 interface NeighborMock {
   id: string;
@@ -112,6 +113,7 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
 ];
 
 export const VecinosPage: React.FC = () => {
+  const { currentOtb } = useTenantStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showMapSection, setShowMapSection] = useState(true);
@@ -169,12 +171,18 @@ export const VecinosPage: React.FC = () => {
 
   const handleOpenStatement = (vecino: NeighborMock) => {
     const isAlDia = vecino.debt === 0;
+    const otbName = currentOtb?.name || 'OTB Villa Esperanza';
+    const otbCode = currentOtb?.code || 'OTB-CBBA-001';
+    const dept = currentOtb?.department || 'Cochabamba';
+    const muni = currentOtb?.municipality || 'Cochabamba (Cercado)';
+    const zone = currentOtb?.zone || 'Distrito 4 - Noroeste';
+
     const statement: StatementData = {
-      otbName: 'OTB Villa Esperanza',
-      otbCode: 'OTB-CBBA-001',
-      department: 'Cochabamba',
-      municipality: 'Cochabamba (Cercado)',
-      zone: 'Distrito 4 - Noroeste',
+      otbName,
+      otbCode,
+      department: dept,
+      municipality: muni,
+      zone,
       socioCode: vecino.socioCode,
       socioName: vecino.name,
       ciNumber: vecino.ci,
@@ -184,7 +192,7 @@ export const VecinosPage: React.FC = () => {
       totalAssigned: isAlDia ? 125 : 125 + vecino.debt,
       totalPaid: isAlDia ? 125 : 125,
       totalDebt: vecino.debt,
-      lastReceiptNumber: `OTB-CBBA-001-2026-${vecino.socioCode.replace('SOC-', '000')}`,
+      lastReceiptNumber: `${otbCode}-2026-${vecino.socioCode.replace('SOC-', '000')}`,
       tokenHash: `b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef${vecino.socioCode.slice(-3)}`,
       fees: [
         {
@@ -307,9 +315,16 @@ export const VecinosPage: React.FC = () => {
               Censo Oficial OTB
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Registro de socios, localización de viviendas en el mapa comunal y estado de solvencia.
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <p className="text-xs sm:text-sm text-slate-400">
+              Registro de socios, localización de viviendas en el mapa comunal y estado de solvencia.
+            </p>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-300">
+              <span>Jurisdicción:</span>
+              <strong className="text-white">{currentOtb?.name || 'OTB Villa Esperanza'}</strong>
+              <span className="font-mono text-[10px] text-blue-400">({currentOtb?.code || 'OTB-CBBA-001'})</span>
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -354,10 +369,10 @@ export const VecinosPage: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-sm sm:text-base font-black text-white">
-                      Plano Georreferenciado de Viviendas y Lotes Censados
+                      Plano Georreferenciado — {currentOtb?.name || 'OTB Villa Esperanza'}
                     </h2>
                     <p className="text-xs text-slate-400">
-                      Ubica la casa de cada vecino en la OTB. Haz clic en "Ubicar en Mapa" en cualquier fila para enfocarla.
+                      Ubica la casa de cada vecino en {currentOtb?.zone || 'la OTB'}. Haz clic en "Ubicar en Mapa" en cualquier fila para enfocarla.
                     </p>
                   </div>
                 </div>

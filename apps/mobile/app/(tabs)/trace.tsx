@@ -1,22 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 
 export default function NeighborTraceScreen() {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.banner}>
         <Text style={styles.bannerTitle}>XENTRA TRACE — Trazabilidad Contable</Text>
         <Text style={styles.bannerSub}>
-          Grafo verificado de fondos públicos: Cada boliviano recaudado tiene asignación clara y comprobante digital auditado.
+          Grafo verificado de fondos comunales: Cada boliviano recaudado tiene asignación clara y comprobante digital auditado.
         </Text>
       </View>
 
       {/* Resumen de Fondos */}
       <View style={styles.fundsCard}>
-        <Text style={styles.sectionHeader}>Fondos de la Comunidad (OTB Villa Esperanza)</Text>
-        
+        <Text style={styles.sectionHeader}>Fondos Comunitarios Oficiales (OTB Villa Esperanza)</Text>
+
         <View style={styles.fundRow}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.fundName}>Fondo General / Caja Central</Text>
             <Text style={styles.fundType}>Operaciones corrientes y mantenimiento</Text>
           </View>
@@ -26,11 +26,11 @@ export default function NeighborTraceScreen() {
         <View style={styles.divider} />
 
         <View style={styles.fundRow}>
-          <View>
-            <Text style={styles.fundName}>Fondo Pro-Cámaras de Seguridad</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.fundName}>Fondo Pro-Tinglado Cancha</Text>
             <Text style={styles.fundType}>Aportes extraordinarios específicos</Text>
           </View>
-          <Text style={styles.fundBalance}>Bs. 8.200,00</Text>
+          <Text style={styles.fundBalance}>Bs. 8.500,00</Text>
         </View>
       </View>
 
@@ -41,13 +41,13 @@ export default function NeighborTraceScreen() {
         <View style={styles.dot} />
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
-            <Text style={styles.itemTitle}>Compra de Cable UTP Cat6 y Conectores</Text>
-            <Text style={styles.itemAmount}>Bs. 480,00</Text>
+            <Text style={styles.itemTitle}>Compra de Perfiles de Acero y Calaminas</Text>
+            <Text style={styles.itemAmount}>Bs. 3.800,00</Text>
           </View>
-          <Text style={styles.itemMeta}>Fondo: Cámaras de Seguridad • 18 de Abril, 2026</Text>
-          <Text style={styles.itemInvoice}>Factura Comercial: F-003491 (Ferretería El Cóndor)</Text>
+          <Text style={styles.itemMeta}>Fondo: Pro-Tinglado • 21 de Noviembre, 2026</Text>
+          <Text style={styles.itemInvoice}>Factura Comercial: F-004819 (Ferretería El Tornillo)</Text>
           <View style={styles.verifiedTag}>
-            <Text style={styles.verifiedTagText}>✓ Comprobante Digital Auditado</Text>
+            <Text style={styles.verifiedTagText}>✓ Comprobante Digital Verificado</Text>
           </View>
         </View>
       </View>
@@ -56,13 +56,13 @@ export default function NeighborTraceScreen() {
         <View style={styles.dot} />
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
-            <Text style={styles.itemTitle}>Pago Servicio de Desmalezado de Áreas Verdes</Text>
-            <Text style={styles.itemAmount}>Bs. 350,00</Text>
+            <Text style={styles.itemTitle}>Mano de Obra Estructura Metálica y Soldadura</Text>
+            <Text style={styles.itemAmount}>Bs. 2.400,00</Text>
           </View>
-          <Text style={styles.itemMeta}>Fondo: General • 12 de Abril, 2026</Text>
-          <Text style={styles.itemInvoice}>Recibo Oficial con Retención: R-0192</Text>
+          <Text style={styles.itemMeta}>Fondo: Pro-Tinglado • 19 de Noviembre, 2026</Text>
+          <Text style={styles.itemInvoice}>Recibo Oficial con Fotocopia CI (Faustino Choque)</Text>
           <View style={styles.verifiedTag}>
-            <Text style={styles.verifiedTagText}>✓ Comprobante Digital Auditado</Text>
+            <Text style={styles.verifiedTagText}>✓ Comprobante Digital Verificado</Text>
           </View>
         </View>
       </View>
@@ -73,39 +73,44 @@ export default function NeighborTraceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0B132B',
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: 110, // Evita solapamiento con la barra de navegación móvil
   },
   banner: {
     backgroundColor: '#1E293B',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 18,
     borderLeftWidth: 4,
     borderLeftColor: '#3B82F6',
+    borderWidth: 1,
+    borderColor: '#334155',
     marginBottom: 20,
   },
   bannerTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#60A5FA',
     marginBottom: 4,
   },
   bannerSub: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#CBD5E1',
     lineHeight: 18,
   },
   fundsCard: {
     backgroundColor: '#1E293B',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 18,
+    padding: 18,
     marginBottom: 24,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: '#334155',
   },
   sectionHeader: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 12,
   },
@@ -117,7 +122,7 @@ const styles = StyleSheet.create({
   },
   fundName: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#FFFFFF',
   },
   fundType: {
@@ -126,14 +131,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   fundBalance: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '900',
     color: '#34D399',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   divider: {
     height: 1,
     backgroundColor: '#334155',
-    marginVertical: 8,
+    marginVertical: 10,
   },
   timelineItem: {
     flexDirection: 'row',
@@ -150,49 +156,52 @@ const styles = StyleSheet.create({
   itemContent: {
     flex: 1,
     backgroundColor: '#1E293B',
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
     borderColor: '#334155',
   },
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: 4,
   },
   itemTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#FFFFFF',
     flex: 1,
-    marginRight: 8,
+    paddingRight: 8,
   },
   itemAmount: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#F87171',
+    fontWeight: '900',
+    color: '#34D399',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   itemMeta: {
     fontSize: 11,
     color: '#94A3B8',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   itemInvoice: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#CBD5E1',
+    fontWeight: '600',
     marginBottom: 8,
   },
   verifiedTag: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
   verifiedTagText: {
     color: '#34D399',
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
 });

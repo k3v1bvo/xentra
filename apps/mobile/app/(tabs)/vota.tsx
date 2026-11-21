@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 
 export default function NeighborVotaScreen() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -11,15 +11,19 @@ export default function NeighborVotaScreen() {
       return;
     }
     setHasVoted(true);
-    Alert.alert('Voto Registrado', 'Tu voto fue emitido y registrado de manera secreta y auditable en la base de datos.');
+    Alert.alert(
+      'Voto Registrado con Éxito',
+      'Tu voto fue computado de manera secreta e inmutable en el libro de actas comunal.',
+      [{ text: 'Entendido' }]
+    );
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Democracia Participativa OTB</Text>
         <Text style={styles.headerSub}>
-          1 Voto por Vivienda/Vecino registrado con C.I. verificado. Restricción única en base de datos.
+          1 Voto por Vivienda/Vecino censado con C.I. verificado. Restricción única en base de datos.
         </Text>
       </View>
 
@@ -28,19 +32,19 @@ export default function NeighborVotaScreen() {
           <View style={styles.activeBadge}>
             <Text style={styles.activeBadgeText}>Consulta Activa</Text>
           </View>
-          <Text style={styles.pollDeadline}>Cierra: 30 de Mayo, 2026</Text>
+          <Text style={styles.pollDeadline}>Cierre: 15 de Diciembre, 2026</Text>
         </View>
 
-        <Text style={styles.pollTitle}>Aprobación de Contratación de Servicio de Seguridad Privada</Text>
+        <Text style={styles.pollTitle}>Priorización de Obras Comunitarias — Gestión 2027</Text>
         <Text style={styles.pollDesc}>
-          Se somete a consulta la contratación de 2 guardias nocturnos para el perímetro de la OTB Villa Esperanza con costo adicional de Bs. 30 por vivienda al mes.
+          Consulta a los vecinos para definir el destino del fondo de inversión municipal y contraparte vecinal (Presupuesto Referencial: Bs. 35.000,00).
         </Text>
 
         <View style={styles.optionsContainer}>
           {[
-            { id: 'opt1', label: 'A FAVOR — Aprobar contratación e incremento de Bs. 30' },
-            { id: 'opt2', label: 'EN CONTRA — Mantener solo el sistema de cámaras actual' },
-            { id: 'opt3', label: 'EN BLANCO' },
+            { id: 'opt1', label: 'Pavimentado de Pasaje Los Álamos (Manzana A)' },
+            { id: 'opt2', label: 'Instalación de 8 Cámaras de Seguridad y Sirena Vecinal' },
+            { id: 'opt3', label: 'Refacción y Juegos Infantiles en la Plaza Central' },
           ].map((opt) => (
             <TouchableOpacity
               key={opt.id}
@@ -51,6 +55,7 @@ export default function NeighborVotaScreen() {
                 hasVoted && styles.optionDisabled,
               ]}
               onPress={() => setSelectedOption(opt.id)}
+              activeOpacity={0.8}
             >
               <View style={[styles.radio, selectedOption === opt.id && styles.radioActive]} />
               <Text style={styles.optionLabel}>{opt.label}</Text>
@@ -59,12 +64,12 @@ export default function NeighborVotaScreen() {
         </View>
 
         {!hasVoted ? (
-          <TouchableOpacity style={styles.voteBtn} onPress={handleVote}>
-            <Text style={styles.voteBtnText}>Emitir Voto Oficial</Text>
+          <TouchableOpacity style={styles.voteBtn} onPress={handleVote} activeOpacity={0.8}>
+            <Text style={styles.voteBtnText}>Emitir Mi Voto Oficial</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.votedBanner}>
-            <Text style={styles.votedText}>✓ Ya has participado en esta consulta con tu cédula de identidad.</Text>
+            <Text style={styles.votedText}>✓ Tu voto oficial ha sido registrado para esta consulta comunal.</Text>
           </View>
         )}
       </View>
@@ -75,15 +80,18 @@ export default function NeighborVotaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0B132B',
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: 110, // Margen para evitar que la barra de navegación tape las opciones
   },
   header: {
     marginBottom: 16,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 4,
   },
@@ -94,9 +102,9 @@ const styles = StyleSheet.create({
   },
   pollCard: {
     backgroundColor: '#1E293B',
-    borderRadius: 14,
-    padding: 18,
-    borderWidth: 1,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1.5,
     borderColor: '#334155',
   },
   badgeRow: {
@@ -106,91 +114,105 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   activeBadge: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
   activeBadgeText: {
     color: '#34D399',
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   pollDeadline: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#94A3B8',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   pollTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 8,
   },
   pollDesc: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: '#CBD5E1',
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   optionsContainer: {
     marginBottom: 20,
-    gap: 10,
+    gap: 12,
   },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#0F172A',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: '#334155',
-    borderRadius: 10,
-    padding: 14,
+    borderRadius: 14,
+    padding: 16,
+    minHeight: 56, // Altura táctil cómoda
   },
   optionSelected: {
     borderColor: '#3B82F6',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: 'rgba(59, 130, 246, 0.15)',
   },
   optionDisabled: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
   radio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: 2,
     borderColor: '#64748B',
-    marginRight: 12,
+    marginRight: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   radioActive: {
     borderColor: '#3B82F6',
     backgroundColor: '#3B82F6',
   },
   optionLabel: {
-    color: '#F8FAFC',
     fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '700',
     flex: 1,
+    lineHeight: 18,
   },
   voteBtn: {
     backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 10,
+    minHeight: 54, // Botón grande táctil senior
+    borderRadius: 14,
+    justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 5,
+    elevation: 4,
   },
   voteBtnText: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
     fontSize: 15,
+    fontWeight: '900',
   },
   votedBanner: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: 'rgba(16, 185, 129, 0.4)',
   },
   votedText: {
     color: '#34D399',
-    fontSize: 12,
+    fontSize: 13,
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontWeight: '500',
   },
 });

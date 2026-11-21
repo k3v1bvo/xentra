@@ -28,7 +28,7 @@ export const XentraLogo: React.FC<XentraLogoProps> = ({
   const isLight = variant === 'light';
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Símbolo Geométrico XENTRA */}
       <div className={`relative ${sizeMap[size]} flex-shrink-0 flex items-center justify-center`}>
         <svg viewBox="0 0 100 100" fill="none" className="w-full h-full drop-shadow-md">
@@ -60,26 +60,24 @@ export const XentraLogo: React.FC<XentraLogoProps> = ({
         <div className="flex flex-col leading-none">
           <div className="flex items-center gap-1.5">
             <span
-              className={`font-black tracking-tight ${
-                isLight ? 'text-white' : 'text-slate-900'
-              } ${textSizeMap[size]}`}
+              style={{ color: isLight ? '#FFFFFF' : '#0F172A' }}
+              className={`font-black tracking-tight ${textSizeMap[size]}`}
             >
               XENTRA
             </span>
             <span
-              className={`text-[11px] font-black px-2 py-0.5 rounded-full tracking-wider ${
-                isLight
-                  ? 'bg-blue-600 text-white shadow-sm border border-blue-400/40'
-                  : 'bg-blue-100 text-blue-700 border border-blue-200'
-              }`}
+              style={{
+                backgroundColor: isLight ? '#2563EB' : '#DBEAFE',
+                color: isLight ? '#FFFFFF' : '#1D4ED8'
+              }}
+              className="text-[11px] font-black px-2 py-0.5 rounded-full tracking-wider border border-blue-400/40 shadow-sm"
             >
               OTB
             </span>
           </div>
           <span
-            className={`text-[10px] font-semibold tracking-tight mt-0.5 ${
-              isLight ? 'text-slate-300' : 'text-slate-600'
-            }`}
+            style={{ color: isLight ? '#CBD5E1' : '#475569' }}
+            className="text-[10px] font-semibold tracking-tight mt-0.5"
           >
             Gestión Financiera Comunitaria
           </span>

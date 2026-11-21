@@ -1,5 +1,5 @@
 // Service Worker para Xentra OTB PWA (Estrategia Network-First con Fallback Seguro)
-const CACHE_NAME = 'xentra-otb-cache-v3';
+const CACHE_NAME = 'xentra-otb-cache-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

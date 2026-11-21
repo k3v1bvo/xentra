@@ -22,7 +22,12 @@ import {
   Clock,
   Upload,
   Sparkles,
-  Info
+  Info,
+  Vote,
+  EyeOff,
+  Layers,
+  FileText,
+  ShieldAlert
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
@@ -56,21 +61,8 @@ export const LandingPage: React.FC = () => {
   const { availableOtbs, setCurrentOtb } = useTenantStore();
 
   // Input de búsqueda
-  const [searchInput, setSearchInput] = useState('Lote 12');
-  const [resolvedResult, setResolvedResult] = useState<SearchResult | null>({
-    type: 'neighbor',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
-    department: 'Cochabamba',
-    code: 'Lote 12',
-    lotName: 'Manzana A, Lote 12',
-    maskedName: 'J*** J*** F*** M***',
-    maskedCi: '7412*** CBBA',
-    totalDebt: 50.00,
-    unsettledConcept: 'Aporte Pro-Tinglado (Cuota 1) - Vence 15/11/2026',
-    status: 'con_deuda',
-    lastReceipt: 'OTB-CBBA-001-2026-00042'
-  });
+  const [searchInput, setSearchInput] = useState('');
+  const [resolvedResult, setResolvedResult] = useState<SearchResult | null>(null);
 
   // Modal de Pago por QR
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -382,177 +374,351 @@ export const LandingPage: React.FC = () => {
 
         {/* TARJETA DINÁMICA DE RESULTADO RESOLVIDO CON TILT 3D */}
         {resolvedResult && (
-          <TiltCard3D intensity={6} className="bg-slate-900/85 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6 animate-in fade-in duration-300">
-            {/* Cabecera del Resultado */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold flex-shrink-0">
-                  {resolvedResult.type === 'neighbor' ? (
-                    <Home className="w-6 h-6" />
-                  ) : resolvedResult.type === 'admin' ? (
-                    <Building2 className="w-6 h-6 text-emerald-400" />
-                  ) : (
-                    <ShieldCheck className="w-6 h-6 text-purple-400" />
-                  )}
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400 font-mono">{resolvedResult.otbCode}</span>
-                    <span className="text-xs text-slate-600">•</span>
-                    <span className="text-xs font-bold text-blue-400">{resolvedResult.department}</span>
-                  </div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white">{resolvedResult.otbName}</h2>
-                </div>
-              </div>
-
-              {/* Badges de Estado */}
-              <div>
-                {resolvedResult.status === 'con_deuda' ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    <AlertCircle className="w-3.5 h-3.5" /> Saldo Pendiente de Pago
-                  </span>
-                ) : resolvedResult.status === 'al_dia' ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Al Día sin Deudas
-                  </span>
-                ) : resolvedResult.status === 'directiva' ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    <Building2 className="w-3.5 h-3.5" /> Mesa Directiva de la OTB
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Superadministrador Nacional
-                  </span>
-                )}
-              </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-2">
+              <span className="text-xs font-bold text-slate-400">Resultado de Consulta Privada:</span>
+              <button
+                onClick={() => {
+                  setResolvedResult(null);
+                  setSearchInput('');
+                }}
+                className="text-xs text-slate-400 hover:text-rose-400 underline flex items-center gap-1 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Cerrar resultado</span>
+              </button>
             </div>
 
-            {/* CASO 1: VECINO */}
-            {resolvedResult.type === 'neighbor' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Datos del Inmueble (Protegidos) */}
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inmueble Censado</span>
-                    <p className="text-sm font-bold text-white">{resolvedResult.lotName}</p>
-                    <div className="text-xs text-slate-400 space-y-0.5 pt-1">
-                      <p>Titular: <span className="font-mono text-slate-300">{resolvedResult.maskedName}</span></p>
-                      <p>Cédula: <span className="font-mono text-slate-300">{resolvedResult.maskedCi}</span></p>
-                    </div>
-                    <p className="text-[10px] text-slate-500 italic pt-1 flex items-center gap-1">
-                      <Lock className="w-3 h-3 text-slate-500" />
-                      <span>Identidad anonimizada por normativa de protección de datos.</span>
-                    </p>
+            <TiltCard3D intensity={6} className="bg-slate-900/85 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6 animate-in fade-in duration-300">
+              {/* Cabecera del Resultado */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold flex-shrink-0">
+                    {resolvedResult.type === 'neighbor' ? (
+                      <Home className="w-6 h-6" />
+                    ) : resolvedResult.type === 'admin' ? (
+                      <Building2 className="w-6 h-6 text-emerald-400" />
+                    ) : (
+                      <ShieldCheck className="w-6 h-6 text-purple-400" />
+                    )}
                   </div>
 
-                  {/* Estado Financiero */}
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2 flex flex-col justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Deuda Total Pendiente</span>
-                      <p className="text-2xl sm:text-3xl font-black font-mono text-white mt-1">
-                        {formatBOB(resolvedResult.totalDebt)}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-400 font-mono">{resolvedResult.otbCode}</span>
+                      <span className="text-xs text-slate-600">•</span>
+                      <span className="text-xs font-bold text-blue-400">{resolvedResult.department}</span>
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold text-white">{resolvedResult.otbName}</h2>
+                  </div>
+                </div>
+
+                {/* Badges de Estado */}
+                <div>
+                  {resolvedResult.status === 'con_deuda' ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      <AlertCircle className="w-3.5 h-3.5" /> Saldo Pendiente de Pago
+                    </span>
+                  ) : resolvedResult.status === 'al_dia' ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Al Día sin Deudas
+                    </span>
+                  ) : resolvedResult.status === 'directiva' ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <Building2 className="w-3.5 h-3.5" /> Mesa Directiva de la OTB
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Superadministrador Nacional
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* CASO 1: VECINO */}
+              {resolvedResult.type === 'neighbor' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Datos del Inmueble (Protegidos) */}
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inmueble Censado</span>
+                      <p className="text-sm font-bold text-white">{resolvedResult.lotName}</p>
+                      <div className="text-xs text-slate-400 space-y-0.5 pt-1">
+                        <p>Titular: <span className="font-mono text-slate-300">{resolvedResult.maskedName}</span></p>
+                        <p>Cédula: <span className="font-mono text-slate-300">{resolvedResult.maskedCi}</span></p>
+                      </div>
+                      <p className="text-[10px] text-slate-500 italic pt-1 flex items-center gap-1">
+                        <Lock className="w-3 h-3 text-slate-500" />
+                        <span>Identidad anonimizada por normativa de protección de datos.</span>
                       </p>
                     </div>
 
-                    <div className="text-xs">
-                      {resolvedResult.totalDebt > 0 ? (
-                        <p className="text-amber-400 font-medium">{resolvedResult.unsettledConcept}</p>
-                      ) : (
-                        <p className="text-emerald-400 font-medium">Todas tus cuotas comunitarias están cubiertas.</p>
-                      )}
+                    {/* Estado Financiero */}
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2 flex flex-col justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Deuda Total Pendiente</span>
+                        <p className="text-2xl sm:text-3xl font-black font-mono text-white mt-1">
+                          {formatBOB(resolvedResult.totalDebt)}
+                        </p>
+                      </div>
+
+                      <div className="text-xs">
+                        {resolvedResult.totalDebt > 0 ? (
+                          <p className="text-amber-400 font-medium">{resolvedResult.unsettledConcept}</p>
+                        ) : (
+                          <p className="text-emerald-400 font-medium">Todas tus cuotas comunitarias están cubiertas.</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Botones de Acción */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  {resolvedResult.totalDebt > 0 && (
+                  {/* Botones de Acción */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    {resolvedResult.totalDebt > 0 && (
+                      <button
+                        onClick={() => setIsQrModalOpen(true)}
+                        className="py-3 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                      >
+                        <QrCode className="w-4 h-4 text-slate-950" />
+                        <span>Pagar {formatBOB(resolvedResult.totalDebt)} con QR</span>
+                      </button>
+                    )}
+
                     <button
-                      onClick={() => setIsQrModalOpen(true)}
-                      className="py-3 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                      onClick={handleEnterNeighborPortal}
+                      className="py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
                     >
-                      <QrCode className="w-4 h-4 text-slate-950" />
-                      <span>Pagar {formatBOB(resolvedResult.totalDebt)} con QR</span>
+                      <FileCheck className="w-4 h-4" />
+                      <span>Ver Mi Portal Completo</span>
                     </button>
-                  )}
+
+                    <button
+                      onClick={() => setIsEmailModalOpen(true)}
+                      className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      <Mail className="w-4 h-4 text-blue-400" />
+                      <span>Recibir Recibo por Correo</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* CASO 2: ADMIN / DIRECTIVA */}
+              {resolvedResult.type === 'admin' && (
+                <div className="space-y-5">
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Acceso Autorizado de Directiva</span>
+                    <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
+                    <p className="text-xs text-slate-400">
+                      Has sido reconocido como parte de la mesa directiva de <strong>{resolvedResult.otbName}</strong>. Accede a tu panel para administrar cuotas, registrar cobros, verificar vouchers de vecinos y generar informes de asamblea.
+                    </p>
+                  </div>
 
                   <button
-                    onClick={handleEnterNeighborPortal}
-                    className="py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
+                    onClick={() => handleEnterAdminPanel(resolvedResult.code === 'ADM-PRES' ? 'presidente' : 'tesorero')}
+                    className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
                   >
-                    <FileCheck className="w-4 h-4" />
-                    <span>Ver Mi Portal Completo</span>
+                    <Building2 className="w-4 h-4" />
+                    <span>Ingresar al Panel Administrativo de tu OTB →</span>
                   </button>
+                </div>
+              )}
+
+              {/* CASO 3: SUPERADMIN */}
+              {resolvedResult.type === 'superadmin' && (
+                <div className="space-y-5">
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-purple-500/30 space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Privilegios Globales a Nivel de Servidor</span>
+                    <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
+                    <p className="text-xs text-slate-400">
+                      Supervisión multi-tenant de todas las organizaciones territoriales de base de Bolivia, creación de nuevas OTBs y aprobación de solicitudes barriales.
+                    </p>
+                  </div>
 
                   <button
-                    onClick={() => setIsEmailModalOpen(true)}
-                    className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                    onClick={handleEnterSuperadmin}
+                    className="w-full py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
                   >
-                    <Mail className="w-4 h-4 text-blue-400" />
-                    <span>Recibir Recibo por Correo</span>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Ingresar a la Consola Superadmin Nacional →</span>
                   </button>
                 </div>
-              </div>
-            )}
-
-            {/* CASO 2: ADMIN / DIRECTIVA */}
-            {resolvedResult.type === 'admin' && (
-              <div className="space-y-5">
-                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Acceso Autorizado de Directiva</span>
-                  <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
-                  <p className="text-xs text-slate-400">
-                    Has sido reconocido como parte de la mesa directiva de <strong>{resolvedResult.otbName}</strong>. Accede a tu panel para administrar cuotas, registrar cobros, verificar vouchers de vecinos y generar informes de asamblea.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleEnterAdminPanel(resolvedResult.code === 'ADM-PRES' ? 'presidente' : 'tesorero')}
-                  className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
-                >
-                  <Building2 className="w-4 h-4" />
-                  <span>Ingresar al Panel Administrativo de tu OTB →</span>
-                </button>
-              </div>
-            )}
-
-            {/* CASO 3: SUPERADMIN */}
-            {resolvedResult.type === 'superadmin' && (
-              <div className="space-y-5">
-                <div className="p-4 rounded-2xl bg-slate-950 border border-purple-500/30 space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Privilegios Globales a Nivel de Servidor</span>
-                  <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
-                  <p className="text-xs text-slate-400">
-                    Supervisión multi-tenant de todas las organizaciones territoriales de base de Bolivia, creación de nuevas OTBs y aprobación de solicitudes barriales.
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleEnterSuperadmin}
-                  className="w-full py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Ingresar a la Consola Superadmin Nacional →</span>
-                </button>
-              </div>
-            )}
-          </TiltCard3D>
+              )}
+            </TiltCard3D>
+          </div>
         )}
 
-        {/* Sección Informativa: Registrar Nueva OTB */}
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
-          <p className="text-xs text-slate-400">
-            ¿Eres dirigente o presidente barrial y tu OTB aún no está en Xentra?
-          </p>
-          <button
-            onClick={() => setIsRequestModalOpen(true)}
-            className="text-xs font-bold text-emerald-400 hover:text-emerald-300 underline inline-flex items-center gap-1"
-          >
-            <span>Solicitar Registro de mi OTB al Superadministrador Nacional</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        {/* ======================================================== */}
+        {/* SECCIÓN 1: PROPAGANDA Y LOS 4 PILARES DE XENTRA OTB      */}
+        {/* ======================================================== */}
+        <section className="space-y-6 pt-6">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold text-blue-400 uppercase tracking-widest block">
+              Tecnología Financiera Comunitaria
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">
+              ¿Por qué digitalizar tu OTB con Xentra?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+              Reemplazamos cuadernillos perdidos y desconfianza vecinal con una plataforma auditada que ordena tus cuentas y protege el patrimonio barrial.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Pilar 1: QR Simple */}
+            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-blue-500/40 transition-colors">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center">
+                <QrCode className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-white text-base">Recaudación QR Simple Bancario</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Los vecinos pagan desde cualquier banco o cooperativa de Bolivia (Banco Unión, BCP, BNB, Banco Sol, Fie). Se acabaron las filas los fines de semana en la sede: escanean, pagan y adjuntan su comprobante al instante.
+              </p>
+              <div className="pt-2 text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                <span>Recibo digital oficial con código de verificación antifraude.</span>
+              </div>
+            </div>
+
+            {/* Pilar 2: XENTRA TRACE */}
+            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-emerald-500/40 transition-colors">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-white text-base">Contabilidad Inmutable (XENTRA TRACE)</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Transparencia radical. Cada centavo que ingresa por cuotas ordinarias o aportes especiales para tinglados, alumbrado o seguridad tiene doble partida contable y respaldo fotográfico obligatorio de la factura o gasto.
+              </p>
+              <div className="pt-2 text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                <span>Cero gastos sin justificar. Historial permanente auditado.</span>
+              </div>
+            </div>
+
+            {/* Pilar 3: XENTRA VOTA */}
+            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-purple-500/40 transition-colors">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center">
+                <Vote className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-white text-base">Asambleas y Democracia Digital (XENTRA VOTA)</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Convoca asambleas ordinarias y extraordinarias con orden del día formal. Registra el quórum de vecinos presentes y somete a votación proyectos barriales con actas digitales inviolables que evitan impugnaciones.
+              </p>
+              <div className="pt-2 text-[11px] font-bold text-purple-400 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                <span>Actas emitidas con firma de directiva y validación comunitaria.</span>
+              </div>
+            </div>
+
+            {/* Pilar 4: AI Auditor */}
+            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-amber-500/40 transition-colors">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-white text-base">Auditoría Algorítmica Preventiva</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Entrega de gestión sin conflictos. El motor auditor analiza los balances mensuales, detecta anomalías y emite informes técnicos claros para que la directiva saliente entregue su gestión con total tranquilidad y respaldo.
+              </p>
+              <div className="pt-2 text-[11px] font-bold text-amber-400 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" />
+                <span>Informes periciales descargables en PDF para asambleas generales.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* SECCIÓN 2: POLÍTICA DE BLINDAJE Y PRIVACIDAD TOTAL       */}
+        {/* ======================================================== */}
+        <section className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-emerald-500/30 backdrop-blur-xl space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <EyeOff className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                Blindaje de Privacidad: Cero Exposición de Datos entre Vecinos
+              </h3>
+              <p className="text-xs text-slate-400">
+                Por qué en Xentra no verás listas públicas de vecinos ni deudores expuestos.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 space-y-2">
+            <p>
+              En muchas comunidades se acostumbra pegar listas impresas en la puerta de la sede barrial o difundir planillas con nombres completos y montos en grupos abiertos de WhatsApp. Esta práctica <strong className="text-white">vulnera la seguridad física y económica de las familias</strong>.
+            </p>
+            <p>
+              En <strong>XENTRA OTB</strong>, la privacidad es prioritaria:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1">
+              <li>Cada vecino consulta exclusivamente su propio lote utilizando su código privado o cédula.</li>
+              <li>Los nombres y documentos de identidad se muestran anonimizados (<code className="text-emerald-400">J*** J*** F***</code>) para evitar usurpación o espionaje vecinal.</li>
+              <li>Ningún vecino puede ver las deudas de otros vecinos, ni explorar padrones de otras OTBs.</li>
+              <li>Únicamente la mesa directiva acreditada y el superadministrador tienen visibilidad de la tesorería global de su respectiva OTB.</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* SECCIÓN 3: CÓMO SOLICITAR ACCESO PARA MANEJAR TU OTB     */}
+        {/* ======================================================== */}
+        <section className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950/70 border border-blue-500/30 space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block">
+              Para Dirigentes, Presidentes y Mesas Directivas
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-white">
+              ¿Cómo solicitar acceso para digitalizar y manejar tu OTB?
+            </h2>
+            <p className="text-xs text-slate-300 max-w-lg mx-auto">
+              Sigue estos 3 pasos para incorporar tu comunidad a la Red Nacional de Xentra:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
+              <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+                1
+              </span>
+              <h4 className="font-bold text-white text-xs">Postula tu OTB</h4>
+              <p className="text-[11px] text-slate-400">
+                Llena el formulario con los datos de tu comunidad, departamento, municipio y teléfono del presidente o tesorero.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
+              <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+                2
+              </span>
+              <h4 className="font-bold text-white text-xs">Validación & Código Único</h4>
+              <p className="text-[11px] text-slate-400">
+                El Superadministrador Nacional revisa la solicitud vecinal y emite el código institucional oficial (ej. <code className="text-emerald-400">OTB-CBBA-001</code>).
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
+              <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+                3
+              </span>
+              <h4 className="font-bold text-white text-xs">Padrón y Recaudación QR</h4>
+              <p className="text-[11px] text-slate-400">
+                La directiva recibe acceso a su panel privado, registra los lotes y comienza a recaudar por QR Simple con recibos oficiales inmediatos.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center pt-2">
+            <button
+              onClick={() => setIsRequestModalOpen(true)}
+              className="py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs inline-flex items-center gap-2 shadow-xl shadow-emerald-500/25 transition-all cursor-pointer"
+            >
+              <Building2 className="w-4 h-4 text-slate-950" />
+              <span>Solicitar Registro de mi OTB al Superadministrador Nacional →</span>
+            </button>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}

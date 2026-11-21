@@ -27,7 +27,10 @@ import {
   ExternalLink,
   Download,
   Flame,
-  Award
+  Award,
+  Scale,
+  Cpu,
+  RefreshCw
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
@@ -90,7 +93,7 @@ export const LandingPage: React.FC = () => {
     const query = searchInput.trim().toUpperCase();
     if (!query) return;
 
-    if (query.includes('005') || query.includes('SILVIA') || query.includes('8521479')) {
+    if (query.includes('005') || query.includes('SILVIA') || query.includes('8521479') || query.includes('LOTE 05') || query.includes('05')) {
       setResolvedResult({
         otbName: 'OTB Villa Esperanza',
         otbCode: 'OTB-CBBA-001',
@@ -111,6 +114,52 @@ export const LandingPage: React.FC = () => {
         ]
       });
     } else {
+      setResolvedResult({
+        otbName: 'OTB Villa Esperanza',
+        otbCode: 'OTB-CBBA-001',
+        department: 'Cochabamba',
+        socioCode: 'SOC-012',
+        fullName: 'Juan José Flores Morales',
+        ciNumber: '7412589 CBBA',
+        blockName: 'Manzana A',
+        lotName: 'Lote 12',
+        totalDebt: 0.0,
+        status: 'al_dia',
+        unsettledConcept: 'Ninguna (Aportes al Día)',
+        lastReceipt: 'OTB-CBBA-001-2026-00042',
+        tokenHash: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
+        feesBreakdown: [
+          { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25, paid: 25, balance: 0, status: 'Pagado' },
+          { period: 'Nov 2026', concept: 'Aporte Pro-Tinglado Cancha', assigned: 100, paid: 100, balance: 0, status: 'Pagado' }
+        ]
+      });
+    }
+  };
+
+  const loadPresetSearch = (type: 'al_dia' | 'con_deuda') => {
+    if (type === 'con_deuda') {
+      setSearchInput('Lote 05 - Silvia Rojas');
+      setResolvedResult({
+        otbName: 'OTB Villa Esperanza',
+        otbCode: 'OTB-CBBA-001',
+        department: 'Cochabamba',
+        socioCode: 'SOC-005',
+        fullName: 'Silvia Rojas Torrico',
+        ciNumber: '8521479 CBBA',
+        blockName: 'Manzana B',
+        lotName: 'Lote 05',
+        totalDebt: 125.0,
+        status: 'con_deuda',
+        unsettledConcept: 'Cuota Noviembre 2026 + Aporte Pro-Tinglado',
+        lastReceipt: 'OTB-CBBA-001-2026-00041',
+        tokenHash: 'b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef012345678',
+        feesBreakdown: [
+          { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25, paid: 0, balance: 25, status: 'Pendiente' },
+          { period: 'Nov 2026', concept: 'Aporte Pro-Tinglado (Cuota 1 de 2)', assigned: 100, paid: 0, balance: 100, status: 'Pendiente' }
+        ]
+      });
+    } else {
+      setSearchInput('Lote 12 - Juan Flores');
       setResolvedResult({
         otbName: 'OTB Villa Esperanza',
         otbCode: 'OTB-CBBA-001',
@@ -208,143 +257,307 @@ export const LandingPage: React.FC = () => {
       <Xentra3DCanvas />
 
       {/* =================================================================== */}
-      {/* 1. BARRA SUPERIOR INSTITUCIONAL (Senior Friendly ≥ 48-56px)         */}
+      {/* 1. BARRA SUPERIOR INSTITUCIONAL ASIMÉTRICA (Senior Friendly ≥ 48px)  */}
       {/* =================================================================== */}
-      <header className="px-4 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <XentraLogo size="md" variant="light" />
-          <span className="hidden sm:inline-block px-3.5 py-1 rounded-full text-xs sm:text-sm font-black bg-blue-500/20 text-blue-200 border border-blue-500/40">
-            Plataforma Nacional OTB Bolivia
-          </span>
-        </div>
+      <header className="px-4 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          
+          {/* Lado Izquierdo: Identidad de Marca Institucional */}
+          <div className="flex items-center gap-3.5">
+            <XentraLogo size="md" variant="light" />
+            <div className="hidden sm:block border-l border-slate-800 pl-3">
+              <span className="block text-xs font-black text-white tracking-wider uppercase">
+                Plataforma Comunal Bolivia
+              </span>
+              <span className="block text-[11px] text-blue-400 font-medium">
+                Soberanía Digital Barrial • Ley N° 1551
+              </span>
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <button
-            onClick={() => setIsEmergencyModalOpen(true)}
-            className="min-h-[48px] px-4 rounded-2xl bg-rose-600/25 hover:bg-rose-600 text-rose-200 hover:text-white border-2 border-rose-500/50 text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer shadow-md"
-          >
-            <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
-            <span className="hidden sm:inline">🚨 Auxilio & Alertas</span>
-            <span className="sm:hidden">🚨 Alertas</span>
-          </button>
+          {/* Lado Derecho: Enlaces de Servicio & Acceso */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => navigate('/verificar-recibo')}
+              className="hidden md:inline-flex min-h-[44px] px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-bold text-slate-200 items-center gap-2 transition-all cursor-pointer"
+            >
+              <QrCode className="w-3.5 h-3.5 text-blue-400" />
+              <span>Verificar Recibo TRACE</span>
+            </button>
 
-          <button
-            onClick={() => navigate('/login')}
-            className="min-h-[48px] px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
-          >
-            Ingresar
-          </button>
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="hidden lg:inline-flex min-h-[44px] px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-bold text-slate-200 items-center gap-2 transition-all cursor-pointer"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+              <span>App Móvil APK</span>
+            </button>
+
+            <button
+              onClick={() => setIsEmergencyModalOpen(true)}
+              className="min-h-[44px] px-3.5 sm:px-4 rounded-xl bg-rose-950/50 hover:bg-rose-900/70 text-rose-200 hover:text-white border border-rose-500/50 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md"
+            >
+              <PhoneCall className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+              <span className="hidden sm:inline">🚨 Central de Auxilio</span>
+              <span className="sm:hidden">🚨 Auxilio</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/login')}
+              className="min-h-[44px] px-5 sm:px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            >
+              Ingresar
+            </button>
+          </div>
         </div>
       </header>
 
       {/* =================================================================== */}
-      {/* 2. HERO PRINCIPAL: IMPACTO VISUAL SIN TEXTO DENSO                   */}
+      {/* 2. HERO PRINCIPAL: GRID ASIMÉTRICO ALINEADO A LA IZQUIERDA (NO IA)   */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 text-center space-y-8 flex-1 flex flex-col justify-center">
-        
-        {/* Badge Cívico Nacional */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0B132B] border-2 border-slate-700 shadow-xl mx-auto">
-          <BoliviaCoatOfArms size={24} />
-          <span className="text-xs font-black text-slate-200 uppercase tracking-wider">
-            Gestión Financiera Transparente para Comunidades y Barrios
-          </span>
-        </div>
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-16 flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* =============================================================== */}
+          {/* COLUMNA IZQUIERDA (7 COLS): MENSAJE, BUSCADOR & GARANTÍAS       */}
+          {/* =============================================================== */}
+          <div className="lg:col-span-7 text-left space-y-6">
+            
+            {/* Badge Cívico Soberano */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#0B132B] border border-slate-700/80 shadow-md">
+              <BoliviaCoatOfArms size={22} />
+              <span className="text-xs font-black text-slate-200 uppercase tracking-wider">
+                Sistema Cívico de Gobernanza Barrial • Ley N° 1551
+              </span>
+            </div>
 
-        {/* Título de Alto Impacto (Directo, sin rodeos) */}
-        <div className="space-y-4 max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-            Cuentas Claras en tu OTB. <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
-              Sin Desvíos. Sin Papelitos Perdidos.
-            </span>
-          </h1>
+            {/* Titular Asimétrico de Alto Impacto */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+                Cuentas Claras en tu OTB. <br />
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
+                  Sin Desvíos ni Recibos Perdidos.
+                </span>
+              </h1>
 
-          <p className="text-base sm:text-xl text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed">
-            Paga tus cuotas con <strong>QR Simple</strong> desde tu celular, recibe tu <strong>recibo oficial digital</strong> y revisa en qué se gasta cada centavo en las asambleas.
-          </p>
-        </div>
+              <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed max-w-2xl">
+                Plataforma comunal boliviana diseñada para la <strong>trazabilidad inmutable de cuotas barriales</strong>. Paga por QR Simple desde tu celular, obtén <strong>recibos digitales certificados con código QR</strong> y ejerce control social directo en cada asamblea vecinal.
+              </p>
+            </div>
 
-        {/* ================================================================= */}
-        {/* BUSCADOR DIRECTO DE SOCIO / LOTE (Consulta inmediata)            */}
-        {/* ================================================================= */}
-        <div className="max-w-2xl mx-auto w-full">
-          <form onSubmit={handleSearch} className="p-2 sm:p-2.5 rounded-3xl bg-[#0B132B]/90 border-2 border-blue-500/40 shadow-2xl flex items-center gap-2">
-            <Search className="w-5 h-5 text-blue-400 ml-3 flex-shrink-0" />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Escribe tu Código (SOC-005), Nombre o Carnet (CI)..."
-              className="w-full bg-transparent text-sm sm:text-base font-semibold text-white placeholder-slate-400 focus:outline-none px-2"
-            />
-            <button
-              type="submit"
-              className="h-12 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-black text-xs sm:text-sm shadow-xl shadow-blue-600/30 flex-shrink-0 transition-all cursor-pointer"
-            >
-              Consultar Mi Estado
-            </button>
-          </form>
+            {/* ============================================================= */}
+            {/* BUSCADOR DE SOCIO / LOTE DE ALTO CONTRASTE                   */}
+            {/* ============================================================= */}
+            <div className="space-y-3 max-w-xl">
+              <form onSubmit={handleSearch} className="p-2 rounded-2xl bg-[#0B132B] border-2 border-blue-500/50 shadow-2xl flex items-center gap-2">
+                <Search className="w-5 h-5 text-blue-400 ml-2.5 flex-shrink-0" />
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Buscar por Lote, Carnet (CI) o Nombre de Socio..."
+                  className="w-full bg-transparent text-xs sm:text-sm font-semibold text-white placeholder-slate-400 focus:outline-none px-2"
+                />
+                <button
+                  type="submit"
+                  className="h-11 px-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-black text-xs sm:text-sm shadow-md flex-shrink-0 transition-all cursor-pointer"
+                >
+                  Consultar Estado
+                </button>
+              </form>
 
-          {/* Resultado de búsqueda rápida desplegado */}
-          {resolvedResult && (
-            <div className="mt-4 p-5 rounded-3xl bg-[#0B132B] border-2 border-emerald-500/50 shadow-2xl text-left space-y-4 animate-in fade-in">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black">
-                    ✓
-                  </div>
-                  <div>
-                    <h3 className="font-black text-white text-base">{resolvedResult.fullName}</h3>
-                    <p className="text-xs text-slate-400 font-mono">
-                      {resolvedResult.socioCode} • CI: {resolvedResult.ciNumber} • {resolvedResult.blockName}, {resolvedResult.lotName}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className={`px-3 py-1 rounded-full text-xs font-black border ${
-                    resolvedResult.totalDebt === 0
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  }`}>
-                    {resolvedResult.totalDebt === 0 ? 'Al Día ✓' : `Saldo: ${formatBOB(resolvedResult.totalDebt)}`}
-                  </span>
-                </div>
+              {/* Chips de prueba rápida para jurado / vecino */}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                <span className="font-semibold text-slate-300">Prueba rápida:</span>
+                <button
+                  type="button"
+                  onClick={() => loadPresetSearch('al_dia')}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 text-[11px] font-mono font-bold transition-colors cursor-pointer"
+                >
+                  ✓ Lote 12 (Juan Flores - Al Día)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => loadPresetSearch('con_deuda')}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/30 text-[11px] font-mono font-bold transition-colors cursor-pointer"
+                >
+                  ⚠ Lote 05 (Silvia Rojas - Saldo Pendiente)
+                </button>
               </div>
+            </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-                <p className="text-xs text-slate-300">
-                  Concepto: <strong className="text-white">{resolvedResult.unsettledConcept}</strong>
-                </p>
+            {/* ============================================================= */}
+            {/* SELLOS DE INGENIERÍA & GARANTÍA HORIZONTALES                 */}
+            {/* ============================================================= */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-xl">
+              <div className="p-2.5 rounded-xl bg-[#0B132B]/80 border border-slate-800 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span className="text-[11px] font-bold text-slate-200">SHA-256 Inmutable</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#0B132B]/80 border border-slate-800 flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                <span className="text-[11px] font-bold text-slate-200">Local-First SQLite</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#0B132B]/80 border border-slate-800 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                <span className="text-[11px] font-bold text-slate-200">Zero-PII Aislado</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-[#0B132B]/80 border border-slate-800 flex items-center gap-2">
+                <Scale className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <span className="text-[11px] font-bold text-slate-200">Licencia Libre MIT</span>
+              </div>
+            </div>
+          </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* =============================================================== */}
+          {/* COLUMNA DERECHA (5 COLS): TARJETA DINÁMICA / RECIBO EN VIVO    */}
+          {/* =============================================================== */}
+          <div className="lg:col-span-5">
+            {resolvedResult ? (
+              /* Tarjeta del Socio Encontrado en Búsqueda */
+              <div className="p-6 rounded-3xl bg-[#0B132B] border-2 border-blue-500/60 shadow-2xl text-left space-y-4 animate-in fade-in">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-black text-lg ${
+                      resolvedResult.totalDebt === 0
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                    }`}>
+                      {resolvedResult.totalDebt === 0 ? '✓' : '!'}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-white text-base">{resolvedResult.fullName}</h3>
+                      <p className="text-xs text-slate-400 font-mono">
+                        {resolvedResult.socioCode} • CI: {resolvedResult.ciNumber}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setResolvedResult(null);
+                      setSearchInput('');
+                    }}
+                    className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Cerrar consulta"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Ubicación Lote</span>
+                    <strong className="text-white font-mono">{resolvedResult.blockName}, {resolvedResult.lotName}</strong>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Estado de Caja</span>
+                    <strong className={resolvedResult.totalDebt === 0 ? 'text-emerald-400' : 'text-amber-400'}>
+                      {resolvedResult.totalDebt === 0 ? 'Al Día (0 Bs.)' : `Debe ${formatBOB(resolvedResult.totalDebt)}`}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-1">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Detalle de Aportes</span>
+                  <p className="text-slate-200 font-medium">{resolvedResult.unsettledConcept}</p>
+                  <p className="text-[11px] font-mono text-slate-400 truncate">
+                    Último Recibo: {resolvedResult.lastReceipt}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
                   {resolvedResult.totalDebt > 0 && (
                     <button
                       onClick={() => setIsQrModalOpen(true)}
-                      className="flex-1 sm:flex-none h-11 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
                     >
                       <QrCode className="w-4 h-4" />
-                      <span>Pagar con QR</span>
+                      <span>Pagar con QR Simple</span>
                     </button>
                   )}
 
                   <button
                     onClick={() => setIsPrintModalOpen(true)}
-                    className="flex-1 sm:flex-none h-11 px-5 rounded-xl bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/40 text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
                     <FileText className="w-4 h-4" />
                     <span>Ver Ficha Oficial</span>
                   </button>
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              /* Demostración en Vivo: Comprobante Comunal Digital con QR & SHA-256 */
+              <div className="p-6 rounded-3xl bg-[#0B132B]/95 border-2 border-slate-800 shadow-2xl text-left space-y-4 relative overflow-hidden group">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <BoliviaCoatOfArms size={24} />
+                    <div>
+                      <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">
+                        Certificación Criptográfica TRACE
+                      </span>
+                      <h4 className="text-sm font-black text-white">Recibo Oficial Comunal</h4>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Emitido ✓
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
+                    <span className="text-slate-400">N° Comprobante:</span>
+                    <span className="font-mono font-bold text-white">OTB-CBBA-2026-00042</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
+                    <span className="text-slate-400">Socio / Titular:</span>
+                    <span className="font-bold text-white">Juan José Flores M. (Lote 12)</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
+                    <span className="text-slate-400">Concepto:</span>
+                    <span className="text-slate-200">Cuota Nov 2026 + Tinglado</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/60">
+                    <span className="text-slate-400">Monto Cancelado:</span>
+                    <span className="font-mono font-black text-emerald-400 text-sm">Bs. 125.00</span>
+                  </div>
+                </div>
+
+                {/* Vista previa del QR de validación legal */}
+                <div className="p-3.5 rounded-2xl bg-[#020617] border border-slate-800 flex items-center gap-3.5">
+                  <div className="w-16 h-16 rounded-xl bg-white p-1.5 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <QrCode className="w-full h-full text-slate-950" />
+                  </div>
+                  <div className="space-y-1 overflow-hidden">
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block">Firma Digital SHA-256</span>
+                    <p className="text-[10px] font-mono text-blue-300 truncate">
+                      7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2
+                    </p>
+                    <p className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Inmutable en Ledger Comunal</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-1 flex items-center gap-2">
+                  <button
+                    onClick={() => navigate('/verificar-recibo')}
+                    className="w-full h-11 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <QrCode className="w-4 h-4 text-purple-400" />
+                    <span>Escanear y Validar Cualquier Recibo</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ================================================================= */}
-        {/* BOTONES GIGANTES DE ACCESO RÁPIDO (Senior Friendly)              */}
+        {/* 3. MÓDULOS DE ACCESO DIRECTO SENIOR-FRIENDLY (Alineado y Prolijo)  */}
         {/* ================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto w-full pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-12 text-left">
           <TiltCard3D>
             <button
               onClick={() => handleDemoAccess('vecino')}
@@ -357,8 +570,8 @@ export const LandingPage: React.FC = () => {
                 <h3 className="text-lg font-black text-white group-hover:text-blue-300 transition-colors">
                   Portal del Vecino
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Revisa tus cuotas del mes, historial de recibos y votaciones comunales.
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Consulta de cuotas del mes, historial de recibos con código QR y votaciones comunales directas.
                 </p>
               </div>
               <span className="text-xs font-black text-blue-400 flex items-center gap-1 pt-1">
@@ -379,8 +592,8 @@ export const LandingPage: React.FC = () => {
                 <h3 className="text-lg font-black text-white group-hover:text-emerald-300 transition-colors">
                   Mesa Directiva & Caja
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Control censal de lotes, cobro de cuotas, arqueo y rendición en asambleas.
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Padrón censal de lotes, recaudación de cuotas, arqueo automático y rendición para asambleas.
                 </p>
               </div>
               <span className="text-xs font-black text-emerald-400 flex items-center gap-1 pt-1">
@@ -401,8 +614,8 @@ export const LandingPage: React.FC = () => {
                 <h3 className="text-lg font-black text-white group-hover:text-purple-300 transition-colors">
                   Verificar Recibo QR
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Escanea cualquier recibo físico de la OTB para comprobar su validez legal.
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Validador público instantáneo para verificar autenticidad legal contra el registro inmutable.
                 </p>
               </div>
               <span className="text-xs font-black text-purple-400 flex items-center gap-1 pt-1">
@@ -414,57 +627,57 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* =================================================================== */}
-      {/* 3. LOS 3 PASOS EN ILUSTRACIONES VECTORIALES LIMPIAS                */}
+      {/* 4. FLUJO DE 3 PASOS: CLARIDAD Y TRANSPARENCIA VECINAL              */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-slate-800/80">
-        <div className="text-center space-y-2 mb-10">
-          <span className="text-xs font-black text-blue-400 uppercase tracking-wider">
-            ¿Cómo Funciona XENTRA OTB?
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
+        <div className="space-y-1.5 mb-8">
+          <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">
+            ¿Cómo Funciona la Plataforma en tu Barrio?
           </span>
-          <h2 className="text-2xl sm:text-4xl font-black text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-white">
             Tres Pasos Simples. Cero Complicaciones.
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* PASO 1 */}
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 text-center space-y-4 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-2xl mx-auto text-blue-400 font-black">
+          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-2xl text-blue-400 font-black">
               📱
             </div>
-            <div className="space-y-1">
-              <span className="text-xs font-black text-blue-400 uppercase tracking-wider">Paso 1</span>
+            <div className="space-y-1.5">
+              <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">Paso 1</span>
               <h3 className="text-lg font-black text-white">Pago con QR Simple</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                El vecino paga desde su teléfono mediante su aplicación bancaria (Banco Unión, BCP, BNB) sin salir de casa ni hacer filas.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                El vecino paga desde su teléfono mediante cualquier aplicación bancaria nacional (Banco Unión, BCP, BNB, BancoSol) sin salir de su casa.
               </p>
             </div>
           </div>
 
           {/* PASO 2 */}
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 text-center space-y-4 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl mx-auto text-emerald-400 font-black">
+          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl text-emerald-400 font-black">
               📜
             </div>
-            <div className="space-y-1">
-              <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">Paso 2</span>
+            <div className="space-y-1.5">
+              <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">Paso 2</span>
               <h3 className="text-lg font-black text-white">Recibo Oficial Certificado</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                El sistema emite un recibo formal con Escudo Nacional, código QR y token digital inmutable SHA-256 para imprimir o guardar.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                El sistema emite un recibo formal con Escudo Nacional de Bolivia, código QR escaneable y token digital inmutable SHA-256.
               </p>
             </div>
           </div>
 
           {/* PASO 3 */}
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 text-center space-y-4 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-2xl mx-auto text-purple-400 font-black">
+          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-2xl text-purple-400 font-black">
               🏛️
             </div>
-            <div className="space-y-1">
-              <span className="text-xs font-black text-purple-400 uppercase tracking-wider">Paso 3</span>
+            <div className="space-y-1.5">
+              <span className="text-xs font-black text-purple-400 uppercase tracking-wider block">Paso 3</span>
               <h3 className="text-lg font-black text-white">Asamblea Transparente</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                La directiva presenta los gastos con facturas y fotos en pantalla gigante. Cada centavo recaudado tiene destino comprobado.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                La directiva proyecta el balance general con respaldo fotográfico de facturas. Cada centavo recaudado tiene destino comprobado ante las bases.
               </p>
             </div>
           </div>
@@ -472,19 +685,19 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* =================================================================== */}
-      {/* 4. MAPA COMUNITARIO INTERACTIVO ABIERTO (Sin API Key)              */}
+      {/* 5. MAPA TERRITORIAL Y GEORREFERENCIACIÓN COMUNAL                    */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-slate-800/80">
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
+            <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">
               Georreferenciación Comunal en Vivo
             </span>
             <h2 className="text-xl sm:text-3xl font-black text-white">
-              Territorio y Equipamiento de la OTB
+              Territorio y Equipamiento Barrial
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Sede social, canchas polifuncionales y avisos vecinales geolocalizados en el mapa.
+              Sedes sociales, centros de salud, canchas polifuncionales y avisos vecinales geolocalizados.
             </p>
           </div>
 
@@ -502,14 +715,15 @@ export const LandingPage: React.FC = () => {
           centerLng={-66.16543}
           zoom={16}
           heightClass="h-80 sm:h-96"
-          otbName="OTB Villa Esperanza"
+          otbName="Territorio Comunal Bolivia"
         />
       </section>
 
       {/* =================================================================== */}
-      {/* 5. FOOTER INSTITUCIONAL COMPLETO & SERVICIOS COMUNALES              */}
+      {/* 6. FOOTER PÚBLICO INSTITUCIONAL NACIONAL (Única Instancia)          */}
       {/* =================================================================== */}
       <CommunityFooter
+        variant="public"
         onOpenEmergency={() => setIsEmergencyModalOpen(true)}
         onOpenInstallApp={() => setIsInstallModalOpen(true)}
         onOpenTransparency={() => setIsTransparencyModalOpen(true)}
@@ -534,7 +748,7 @@ export const LandingPage: React.FC = () => {
               </span>
               <h3 className="text-xl font-black text-white">Pago con QR Simple Bancario</h3>
               <p className="text-xs text-slate-400 mt-1">
-                Cuenta Oficial OTB Villa Esperanza • {otbPaymentConfig.bankName}
+                Cuenta Oficial de la OTB • {otbPaymentConfig.bankName}
               </p>
             </div>
 
@@ -630,7 +844,7 @@ export const LandingPage: React.FC = () => {
           isOpen={isEmergencyModalOpen}
           onClose={() => setIsEmergencyModalOpen(false)}
           otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
-          otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+          otbName={currentOtb?.name || 'Comunidad Vecinal'}
         />
       )}
 
@@ -641,13 +855,6 @@ export const LandingPage: React.FC = () => {
           onClose={() => setIsInstallModalOpen(false)}
         />
       )}
-
-      {/* Footer Público Institucional de la Plataforma Nacional */}
-      <CommunityFooter
-        variant="public"
-        onOpenEmergency={() => setIsEmergencyModalOpen(true)}
-        onOpenInstallApp={() => setIsInstallModalOpen(true)}
-      />
     </div>
   );
 };

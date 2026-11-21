@@ -7,12 +7,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Phone,
-  FileCheck
+  FileCheck,
+  Printer
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 
 interface NeighborMock {
   id: string;
+  socioCode: string;
   name: string;
   ci: string;
   phone: string;
@@ -23,11 +25,11 @@ interface NeighborMock {
 }
 
 const INITIAL_NEIGHBORS: NeighborMock[] = [
-  { id: '1', name: 'Juan José Flores Morales', ci: '7412589 CBBA', phone: '74567890', block: 'Manzana A', house: 'Lote 12', status: 'En Mora', debt: 50.00 },
-  { id: '2', name: 'Silvia Rojas Torrico', ci: '8521479 CBBA', phone: '75678901', block: 'Manzana B', house: 'Lote 05', status: 'En Mora', debt: 125.00 },
-  { id: '3', name: 'Roberto Fernández Vargas', ci: '5289341 CBBA', phone: '72345678', block: 'Manzana A', house: 'Lote 01', status: 'Al Día', debt: 0.00 },
-  { id: '4', name: 'Marina Condori Rocha', ci: '6398412 CBBA', phone: '73456789', block: 'Manzana C', house: 'Lote 08', status: 'Al Día', debt: 0.00 },
-  { id: '5', name: 'Pedro Gonzalo Canaviri', ci: '4896325 CBBA', phone: '78912345', block: 'Manzana B', house: 'Lote 14', status: 'Al Día', debt: 0.00 }
+  { id: '1', socioCode: 'SOC-012', name: 'Juan José Flores Morales', ci: '7412589 CBBA', phone: '74567890', block: 'Manzana A', house: 'Lote 12', status: 'En Mora', debt: 50.00 },
+  { id: '2', socioCode: 'SOC-005', name: 'Silvia Rojas Torrico', ci: '8521479 CBBA', phone: '75678901', block: 'Manzana B', house: 'Lote 05', status: 'En Mora', debt: 125.00 },
+  { id: '3', socioCode: 'SOC-001', name: 'Roberto Fernández Vargas', ci: '5289341 CBBA', phone: '72345678', block: 'Manzana A', house: 'Lote 01', status: 'Al Día', debt: 0.00 },
+  { id: '4', socioCode: 'SOC-008', name: 'Marina Condori Rocha', ci: '6398412 CBBA', phone: '73456789', block: 'Manzana C', house: 'Lote 08', status: 'Al Día', debt: 0.00 },
+  { id: '5', socioCode: 'SOC-014', name: 'Pedro Gonzalo Canaviri', ci: '4896325 CBBA', phone: '78912345', block: 'Manzana B', house: 'Lote 14', status: 'Al Día', debt: 0.00 }
 ];
 
 export const VecinosPage: React.FC = () => {
@@ -44,8 +46,10 @@ export const VecinosPage: React.FC = () => {
 
   const filtered = neighbors.filter(
     (n) =>
+      n.socioCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.ci.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      n.block.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.house.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -55,6 +59,7 @@ export const VecinosPage: React.FC = () => {
 
     const created: NeighborMock = {
       id: Date.now().toString(),
+      socioCode: `SOC-${Math.floor(100 + Math.random() * 900)}`,
       name: newName,
       ci: newCi,
       phone: newPhone || 'Sin teléfono',
@@ -85,13 +90,23 @@ export const VecinosPage: React.FC = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
-        >
-          <UserPlus className="w-4 h-4" />
-          Registrar Vecino
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>Imprimir Padrón</span>
+          </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
+          >
+            <UserPlus className="w-4 h-4" />
+            Registrar Vecino
+          </button>
+        </div>
       </div>
 
       {/* Buscador */}
@@ -101,8 +116,8 @@ export const VecinosPage: React.FC = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por nombre, carnet de identidad (CI) o lote..."
-          className="w-full text-xs bg-transparent focus:outline-none text-slate-800 placeholder-slate-400"
+          placeholder="Buscar por código de socio (ej. SOC-012), nombre, carnet (CI) o manzano/lote..."
+          className="w-full text-xs bg-transparent focus:outline-none text-slate-800 placeholder-slate-400 font-mono"
         />
       </div>
 
@@ -112,16 +127,22 @@ export const VecinosPage: React.FC = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50/75 border-b border-slate-200/80 text-slate-500 uppercase tracking-wider text-[10px]">
               <tr>
+                <th className="px-5 py-3.5 font-bold">Cód. Socio</th>
                 <th className="px-5 py-3.5 font-bold">Vecino / Residente</th>
-                <th className="px-5 py-3.5 font-bold">Vivienda / Ubicación</th>
+                <th className="px-5 py-3.5 font-bold">Manzano & Lote</th>
                 <th className="px-5 py-3.5 font-bold">Contacto</th>
-                <th className="px-5 py-3.5 font-bold">Estado de Cuotas</th>
+                <th className="px-5 py-3.5 font-bold">Estado</th>
                 <th className="px-5 py-3.5 font-bold text-right">Deuda Pendiente</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((vecino) => (
                 <tr key={vecino.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-5 py-3.5 font-mono font-bold text-blue-700">
+                    <span className="px-2 py-0.5 rounded bg-blue-50 border border-blue-200/60">
+                      {vecino.socioCode}
+                    </span>
+                  </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center">

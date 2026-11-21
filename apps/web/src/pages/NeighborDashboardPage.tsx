@@ -14,12 +14,14 @@ import {
   Clock,
   Check,
   Image as ImageIcon,
-  X
+  X,
+  Printer
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { useNavigate } from 'react-router-dom';
+import { PrintableStatementModal } from '../components/PrintableStatementModal';
 
 interface NeighborFee {
   id: string;
@@ -91,6 +93,9 @@ export const NeighborDashboardPage: React.FC = () => {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Modal Imprimir Estado de Cuenta
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+
   const totalAssigned = fees.reduce((acc, f) => acc + f.amountAssigned, 0);
   const totalPaid = fees.reduce((acc, f) => acc + f.amountPaid, 0);
   const totalDebt = Math.max(0, totalAssigned - totalPaid);
@@ -159,13 +164,23 @@ export const NeighborDashboardPage: React.FC = () => {
             </span>
           </div>
 
-          <button
-            onClick={() => setIsQrModalOpen(true)}
-            className="py-3 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
-          >
-            <QrCode className="w-4 h-4 text-slate-950" />
-            <span>Pagar con QR</span>
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              onClick={() => setIsQrModalOpen(true)}
+              className="py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+            >
+              <QrCode className="w-4 h-4 text-slate-950" />
+              <span>Pagar con QR</span>
+            </button>
+
+            <button
+              onClick={() => setIsPrintModalOpen(true)}
+              className="py-3 px-4 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/30 backdrop-blur-sm transition-all cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Imprimir Ficha</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -462,6 +477,38 @@ export const NeighborDashboardPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Modal Imprimible de Estado de Cuenta */}
+      <PrintableStatementModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        data={{
+          otbName: currentOtb?.name || 'OTB Villa Esperanza',
+          otbCode: currentOtb?.code || 'OTB-CBBA-001',
+          department: currentOtb?.department || 'Cochabamba',
+          municipality: currentOtb?.municipality || 'Cercado',
+          zone: currentOtb?.zone || 'Distrito 4 - Zona Noroeste',
+          socioCode: 'SOC-012',
+          socioName: `${profile?.first_name || 'Juan José'} ${profile?.last_name || 'Flores Morales'}`,
+          ciNumber: `${profile?.ci_number || '7412589'} ${profile?.ci_extension || 'CBBA'}`,
+          block: 'Manzana A',
+          lot: 'Lote 12',
+          phone: profile?.phone || '74567890',
+          totalAssigned,
+          totalPaid,
+          totalDebt,
+          lastReceiptNumber: 'OTB-CBBA-001-2026-00042',
+          tokenHash: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
+          fees: fees.map((f) => ({
+            period: 'Nov 2026',
+            concept: f.title,
+            assigned: f.amountAssigned,
+            paid: f.amountPaid,
+            balance: Math.max(0, f.amountAssigned - f.amountPaid),
+            status: f.isSettled ? 'Pagado' : 'Pendiente'
+          }))
+        }}
+      />
     </div>
   );
 };

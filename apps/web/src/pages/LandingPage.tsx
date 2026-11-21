@@ -27,11 +27,13 @@ import {
   EyeOff,
   Layers,
   FileText,
-  ShieldAlert
+  ShieldAlert,
+  Printer
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
 import { TiltCard3D } from '../components/TiltCard3D';
+import { PrintableStatementModal, StatementData, FeeItem } from '../components/PrintableStatementModal';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { formatBOB, AppRole } from '@xentra/shared';
@@ -44,15 +46,26 @@ interface SearchResult {
   otbName: string;
   otbCode: string;
   department: string;
+  municipality?: string;
+  zone?: string;
   code: string;
+  socioCode?: string;
   lotName?: string;
+  blockName?: string;
   maskedName?: string;
+  fullName?: string;
   maskedCi?: string;
+  ciNumber?: string;
+  phone?: string;
+  totalAssigned?: number;
+  totalPaid?: number;
   totalDebt: number;
   unsettledConcept?: string;
   role?: string;
   status: 'al_dia' | 'con_deuda' | 'directiva' | 'superadmin';
   lastReceipt?: string;
+  tokenHash?: string;
+  feesBreakdown?: FeeItem[];
 }
 
 export const LandingPage: React.FC = () => {
@@ -76,6 +89,9 @@ export const LandingPage: React.FC = () => {
   const [neighborEmail, setNeighborEmail] = useState('juan.vecino@gmail.com');
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailSentSuccess, setEmailSentSuccess] = useState(false);
+
+  // Modal para Imprimir Detalle Oficial de Cuenta / Recibo
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   // Modal para solicitar nueva OTB
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -125,35 +141,95 @@ export const LandingPage: React.FC = () => {
         role: 'Presidente de la Mesa Directiva',
         status: 'directiva'
       });
-    } else if (code.includes('05') || code.includes('5') || code.includes('silvia')) {
+    } else if (code.includes('05') || code.includes('5') || code.includes('silvia') || code.includes('rojas')) {
+      // Silvia Rojas - Al Día
       setResolvedResult({
         type: 'neighbor',
         otbName: 'OTB Villa Esperanza',
         otbCode: 'OTB-CBBA-001',
         department: 'Cochabamba',
-        code: 'Lote 05',
+        municipality: 'Cercado',
+        zone: 'Distrito 4 - Zona Noroeste',
+        code: 'SOC-005',
+        socioCode: 'SOC-005',
+        blockName: 'Manzana B',
         lotName: 'Manzana B, Lote 05',
         maskedName: 'S*** R*** T***',
+        fullName: 'Silvia Rojas Torrico',
         maskedCi: '8521*** CBBA',
+        ciNumber: '8521479 CBBA',
+        phone: '75678901',
+        totalAssigned: 125.0,
+        totalPaid: 125.0,
         totalDebt: 0,
         status: 'al_dia',
-        lastReceipt: 'OTB-CBBA-001-2026-00040'
+        lastReceipt: 'OTB-CBBA-001-2026-00040',
+        tokenHash: 'b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef012345678',
+        feesBreakdown: [
+          { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25.0, paid: 25.0, balance: 0.0, status: 'Pagado' },
+          { period: 'Nov 2026', concept: 'Aporte Pro-Tinglado (Cuota 1)', assigned: 100.0, paid: 100.0, balance: 0.0, status: 'Pagado' }
+        ]
       });
-    } else {
-      // Por defecto Lote 12 (Vecino con deuda)
+    } else if (code.includes('14') || code.includes('pedro') || code.includes('canaviri')) {
+      // Pedro Canaviri - Al Día
       setResolvedResult({
         type: 'neighbor',
         otbName: 'OTB Villa Esperanza',
         otbCode: 'OTB-CBBA-001',
         department: 'Cochabamba',
-        code: 'Lote 12',
+        municipality: 'Cercado',
+        zone: 'Distrito 4 - Zona Noroeste',
+        code: 'SOC-014',
+        socioCode: 'SOC-014',
+        blockName: 'Manzana B',
+        lotName: 'Manzana B, Lote 14',
+        maskedName: 'P*** G*** C***',
+        fullName: 'Pedro Gonzalo Canaviri',
+        maskedCi: '4896*** CBBA',
+        ciNumber: '4896325 CBBA',
+        phone: '78912345',
+        totalAssigned: 25.0,
+        totalPaid: 25.0,
+        totalDebt: 0,
+        status: 'al_dia',
+        lastReceipt: 'OTB-CBBA-001-2026-00039',
+        tokenHash: 'd1e2f3a4b5c6d7e8f90123456789abcdef0123456789abcdef0123456789abcdef',
+        feesBreakdown: [
+          { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25.0, paid: 25.0, balance: 0.0, status: 'Pagado' }
+        ]
+      });
+    } else {
+      // Juan José Flores - Con Deuda
+      const isLote = code.includes('12') || code.includes('juan') || code.includes('flores') || code.includes('lote');
+      const assignedSocioCode = isLote ? 'SOC-012' : `SOC-${Math.floor(100 + Math.random() * 900)}`;
+
+      setResolvedResult({
+        type: 'neighbor',
+        otbName: 'OTB Villa Esperanza',
+        otbCode: 'OTB-CBBA-001',
+        department: 'Cochabamba',
+        municipality: 'Cercado',
+        zone: 'Distrito 4 - Zona Noroeste',
+        code: assignedSocioCode,
+        socioCode: assignedSocioCode,
+        blockName: 'Manzana A',
         lotName: 'Manzana A, Lote 12',
         maskedName: 'J*** J*** F*** M***',
+        fullName: 'Juan José Flores Morales',
         maskedCi: '7412*** CBBA',
-        totalDebt: 50.00,
-        unsettledConcept: 'Aporte Pro-Tinglado (Cuota 1) - Vence 15/11/2026',
+        ciNumber: '7412589 CBBA',
+        phone: '74567890',
+        totalAssigned: 125.0,
+        totalPaid: 75.0,
+        totalDebt: 50.0,
+        unsettledConcept: 'Aporte Pro-Tinglado (Cuota 1) - Saldo pendiente: Bs. 50,00',
         status: 'con_deuda',
-        lastReceipt: 'OTB-CBBA-001-2026-00042'
+        lastReceipt: 'OTB-CBBA-001-2026-00042',
+        tokenHash: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
+        feesBreakdown: [
+          { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25.0, paid: 25.0, balance: 0.0, status: 'Pagado' },
+          { period: 'Nov 2026', concept: 'Aporte Pro-Tinglado (Cuota 1)', assigned: 100.0, paid: 50.0, balance: 50.0, status: 'Pendiente' }
+        ]
       });
     }
   };
@@ -441,15 +517,21 @@ export const LandingPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Datos del Inmueble (Protegidos) */}
                     <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inmueble Censado</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inmueble Censado</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono">
+                          Código: {resolvedResult.socioCode || resolvedResult.code}
+                        </span>
+                      </div>
                       <p className="text-sm font-bold text-white">{resolvedResult.lotName}</p>
                       <div className="text-xs text-slate-400 space-y-0.5 pt-1">
-                        <p>Titular: <span className="font-mono text-slate-300">{resolvedResult.maskedName}</span></p>
-                        <p>Cédula: <span className="font-mono text-slate-300">{resolvedResult.maskedCi}</span></p>
+                        <p>Titular de la Ficha: <span className="font-mono text-slate-300">{resolvedResult.maskedName}</span></p>
+                        <p>Cédula de Identidad: <span className="font-mono text-slate-300">{resolvedResult.maskedCi}</span></p>
+                        <p>Manzano / Bloque: <span className="text-slate-300 font-semibold">{resolvedResult.blockName || 'Manzana A'}</span></p>
                       </div>
                       <p className="text-[10px] text-slate-500 italic pt-1 flex items-center gap-1">
                         <Lock className="w-3 h-3 text-slate-500" />
-                        <span>Identidad anonimizada por normativa de protección de datos.</span>
+                        <span>Identidad anonimizada por normativa de protección comunitaria.</span>
                       </p>
                     </div>
 
@@ -473,31 +555,39 @@ export const LandingPage: React.FC = () => {
                   </div>
 
                   {/* Botones de Acción */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                     {resolvedResult.totalDebt > 0 && (
                       <button
                         onClick={() => setIsQrModalOpen(true)}
-                        className="py-3 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                        className="py-3 px-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
                       >
                         <QrCode className="w-4 h-4 text-slate-950" />
-                        <span>Pagar {formatBOB(resolvedResult.totalDebt)} con QR</span>
+                        <span>Pagar con QR</span>
                       </button>
                     )}
 
                     <button
+                      onClick={() => setIsPrintModalOpen(true)}
+                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      <Printer className="w-4 h-4 text-emerald-400" />
+                      <span>Imprimir Detalle</span>
+                    </button>
+
+                    <button
                       onClick={handleEnterNeighborPortal}
-                      className="py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
+                      className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
                     >
                       <FileCheck className="w-4 h-4" />
-                      <span>Ver Mi Portal Completo</span>
+                      <span>Ver Mi Portal</span>
                     </button>
 
                     <button
                       onClick={() => setIsEmailModalOpen(true)}
-                      className="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
                     >
                       <Mail className="w-4 h-4 text-blue-400" />
-                      <span>Recibir Recibo por Correo</span>
+                      <span>Recibo por Correo</span>
                     </button>
                   </div>
                 </div>
@@ -1003,6 +1093,36 @@ export const LandingPage: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* MODAL 4: Imprimir Estado de Cuenta / Ficha Oficial Comunitaria */}
+      {resolvedResult && (
+        <PrintableStatementModal
+          isOpen={isPrintModalOpen}
+          onClose={() => setIsPrintModalOpen(false)}
+          data={{
+            otbName: resolvedResult.otbName,
+            otbCode: resolvedResult.otbCode,
+            department: resolvedResult.department,
+            municipality: resolvedResult.municipality || 'Cercado',
+            zone: resolvedResult.zone || 'Distrito 4 - Zona Noroeste',
+            socioCode: resolvedResult.socioCode || resolvedResult.code,
+            socioName: resolvedResult.fullName || 'Juan José Flores Morales',
+            ciNumber: resolvedResult.ciNumber || '7412589 CBBA',
+            block: resolvedResult.blockName || 'Manzana A',
+            lot: resolvedResult.lotName?.split(',')[1]?.trim() || 'Lote 12',
+            phone: resolvedResult.phone || '74567890',
+            totalAssigned: resolvedResult.totalAssigned || 125.0,
+            totalPaid: resolvedResult.totalPaid || 75.0,
+            totalDebt: resolvedResult.totalDebt,
+            lastReceiptNumber: resolvedResult.lastReceipt || 'OTB-CBBA-001-2026-00042',
+            tokenHash: resolvedResult.tokenHash,
+            fees: resolvedResult.feesBreakdown || [
+              { period: 'Nov 2026', concept: 'Cuota Ordinaria Noviembre 2026', assigned: 25.0, paid: 25.0, balance: 0.0, status: 'Pagado' },
+              { period: 'Nov 2026', concept: 'Aporte Pro-Tinglado (Cuota 1)', assigned: 100.0, paid: 50.0, balance: 50.0, status: 'Pendiente' }
+            ]
+          }}
+        />
       )}
     </div>
   );

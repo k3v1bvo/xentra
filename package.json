@@ -1,0 +1,18 @@
+{
+  "name": "xentra-otb",
+  "private": true,
+  "version": "3.0.0",
+  "description": "XENTRA OTB — Plataforma Financiera Comunitaria Multi-OTB para Bolivia",
+  "packageManager": "pnpm@10.29.2",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

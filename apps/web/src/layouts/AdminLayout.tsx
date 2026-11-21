@@ -42,6 +42,8 @@ export const AdminLayout: React.FC = () => {
     setCurrentRole(role);
     if (role === 'vecino') {
       navigate('/vecino');
+    } else if (role === 'superadmin') {
+      navigate('/superadmin');
     }
   };
 
@@ -128,6 +130,17 @@ export const AdminLayout: React.FC = () => {
           <div className="pt-3 pb-1">
             <div className="h-px bg-slate-100 mx-2" />
           </div>
+
+          {currentRole === 'superadmin' && (
+            <NavLink
+              to="/superadmin"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors"
+            >
+              <ShieldAlert className="w-4 h-4 text-purple-600" />
+              <span>Consola Superadmin</span>
+            </NavLink>
+          )}
 
           <NavLink
             to="/vecino"

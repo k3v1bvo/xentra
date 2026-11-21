@@ -1,8 +1,15 @@
 // Supabase Edge Function: dispatch-notifications
-// Procesa el Outbox Transaccional y despacha eventos a notificaciones in-app y push
+// Procesa el Outbox Transaccional y despacha eventos a notificaciones in-app y correo Google SMTP (ayniprotocol@gmail.com)
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SMTP_CONFIG = {
+  host: Deno.env.get('SMTP_HOST') || 'smtp.gmail.com',
+  port: parseInt(Deno.env.get('SMTP_PORT') || '465'),
+  user: Deno.env.get('SMTP_USER') || 'ayniprotocol@gmail.com',
+  pass: Deno.env.get('SMTP_PASSWORD') || 'ujccnzxebbpqzhaw'
+};
 
 serve(async (req) => {
   const supabaseClient = createClient(

@@ -40,3 +40,40 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
 }
+
+/* =========================================================================
+   ELDER FRAMEWORK & WCAG AAA ACCESSIBILITY (PERSONAS MAYORES 50+)
+   - Contraste 7:1 (Nivel AAA)
+   - Fuente Base ≥ 18px (o 18-20px)
+   - Área Táctil (Target) ≥ 56-64px / 60x60pt WeChat Senior
+   - Interlineado ≥ 1.35x - 1.5x
+   ========================================================================= */
+
+.senior-mode {
+  font-size: 18px;
+}
+
+.senior-mode p,
+.senior-mode span,
+.senior-mode label,
+.senior-mode li {
+  line-height: 1.45;
+}
+
+/* Objetivos Táctiles Generosos para evitar pulsaciones erróneas */
+.senior-mode button,
+.senior-mode .btn-touch,
+.senior-mode a[role="button"],
+.senior-mode select {
+  min-height: 56px;
+}
+
+/* Evitar textos atenuados que dificulten la lectura a personas con baja visión */
+.senior-mode .text-slate-400,
+.senior-mode .text-slate-500 {
+  color: #F1F5F9 !important;
+}
+
+.senior-mode .text-slate-300 {
+  color: #FFFFFF !important;
+}

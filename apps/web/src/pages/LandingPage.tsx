@@ -38,6 +38,7 @@ import { CommunityTransparencyModal } from '../components/CommunityTransparencyM
 import { InstallAppModal } from '../components/InstallAppModal';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 import { BoliviaCoatOfArms } from '../components/BoliviaCoatOfArms';
+import { SeniorModeToggle } from '../components/SeniorModeToggle';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
@@ -207,30 +208,34 @@ export const LandingPage: React.FC = () => {
       <Xentra3DCanvas />
 
       {/* =================================================================== */}
-      {/* 1. BARRA SUPERIOR INSTITUCIONAL                                     */}
+      {/* 1. BARRA SUPERIOR INSTITUCIONAL (Senior Friendly ≥ 48-56px)         */}
       {/* =================================================================== */}
-      <header className="px-4 sm:px-8 py-4 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50 flex items-center justify-between">
+      <header className="px-4 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <XentraLogo size="md" variant="light" />
-          <span className="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          <span className="hidden sm:inline-block px-3.5 py-1 rounded-full text-xs sm:text-sm font-black bg-blue-500/20 text-blue-200 border border-blue-500/40">
             Plataforma Nacional OTB Bolivia
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Interruptor Modo Senior / Alta Legibilidad */}
+          <SeniorModeToggle />
+
           <button
             onClick={() => setIsEmergencyModalOpen(true)}
-            className="h-10 px-4 rounded-xl bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 text-xs font-black flex items-center gap-2 transition-all cursor-pointer"
+            className="min-h-[48px] px-4 rounded-2xl bg-rose-600/25 hover:bg-rose-600 text-rose-200 hover:text-white border-2 border-rose-500/50 text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer shadow-md"
           >
-            <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
-            <span>🚨 Auxilio & Alertas</span>
+            <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
+            <span className="hidden sm:inline">🚨 Auxilio & Alertas</span>
+            <span className="sm:hidden">🚨 Alertas</span>
           </button>
 
           <button
             onClick={() => navigate('/login')}
-            className="h-10 px-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-black shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            className="min-h-[48px] px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
           >
-            Ingresar al Sistema
+            Ingresar
           </button>
         </div>
       </header>

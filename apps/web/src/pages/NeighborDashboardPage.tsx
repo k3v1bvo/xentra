@@ -34,6 +34,7 @@ import { CommunityTransparencyModal } from '../components/CommunityTransparencyM
 import { InstallAppModal } from '../components/InstallAppModal';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
+import { SeniorModeToggle } from '../components/SeniorModeToggle';
 
 interface NeighborFee {
   id: string;
@@ -228,115 +229,122 @@ export const NeighborDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 text-white">
-      {/* Encabezado Vecino con 3D Depth */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B]/90 border-2 border-blue-500/40 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-500/30">
-            <Home className="w-3.5 h-3.5" />
-            <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
+      {/* Encabezado Vecino con 3D Depth & Accesibilidad Senior (+50 Años) */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B]/95 border-2 border-blue-500/50 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2.5 max-w-xl">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/25 text-blue-200 text-xs sm:text-sm font-black border border-blue-400/40">
+              <Home className="w-4 h-4 text-blue-300" />
+              <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
+            </div>
+
+            {/* Interruptor Modo Senior / Alta Legibilidad */}
+            <SeniorModeToggle />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Hola, {profile?.first_name || 'Juan'} {profile?.last_name || 'Flores'}
+
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+            Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
           </h1>
-          <p className="text-xs text-slate-300 max-w-md font-medium leading-relaxed">
-            Consulta tus cuotas asignadas, realiza tus pagos por QR Simple y descarga tus recibos oficiales con código de verificación.
+          <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed">
+            Portal vecinal accesible: consulta tus cuotas comunales, realiza tus pagos con QR Simple y descarga tus comprobantes oficiales con firma digital.
           </p>
         </div>
 
-        {/* Tarjeta Deuda y Botón de Pago Rápido */}
-        <div className="bg-[#030712] p-5 rounded-2xl border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center gap-4 flex-shrink-0 shadow-xl">
+        {/* Tarjeta Deuda y Botón de Pago Rápido (Target Size ≥ 56px WCAG AAA) */}
+        <div className="bg-[#030712] p-6 rounded-3xl border-2 border-slate-600 flex flex-col sm:flex-row sm:items-center gap-5 flex-shrink-0 shadow-2xl">
           <div className="text-left sm:text-right">
-            <span className="text-[11px] text-slate-400 block font-bold uppercase tracking-wider">Deuda Pendiente</span>
-            <span className="text-2xl sm:text-3xl font-black font-mono text-white">
+            <span className="text-xs sm:text-sm text-slate-200 block font-black uppercase tracking-wider">Deuda Pendiente</span>
+            <span className="text-3xl sm:text-4xl font-black font-mono text-white block mt-0.5">
               {formatBOB(totalDebt)}
             </span>
-            <span className="block text-[11px] font-bold text-amber-400 mt-0.5">
-              {totalDebt > 0 ? '1 cuota con saldo pendiente' : '¡Felicidades! Estás al día'}
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-300 mt-1">
+              <AlertCircle className="w-4 h-4 text-amber-400" />
+              <span>{totalDebt > 0 ? '1 cuota con saldo pendiente' : '¡Felicidades! Estás al día'}</span>
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2.5">
             <button
               onClick={() => setIsQrModalOpen(true)}
-              className="py-3 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+              className="min-h-[58px] py-4 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/30 transition-all cursor-pointer scale-100 hover:scale-[1.02]"
             >
-              <QrCode className="w-4 h-4 text-slate-950" />
+              <QrCode className="w-5 h-5 text-slate-950" />
               <span>Pagar con QR</span>
             </button>
 
             <button
               onClick={() => setIsPrintModalOpen(true)}
-              className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-600 transition-all cursor-pointer"
+              className="min-h-[58px] py-4 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 border-2 border-slate-600 transition-all cursor-pointer"
             >
-              <Printer className="w-4 h-4 text-blue-400" />
+              <Printer className="w-5 h-5 text-blue-300" />
               <span>Imprimir Ficha</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Barra Rápida de Auxilio, Transparencia y App Móvil */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Barra Rápida de Auxilio, Transparencia y App Móvil (Targets Generosos ≥ 64px) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         <button
           onClick={() => {
             setAlertModalTab('emergencias');
             setIsAlertModalOpen(true);
           }}
-          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
+          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-rose-500/50 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/10"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-600/30 border border-rose-500/50 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <PhoneCall className="w-5 h-5 animate-pulse" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-rose-600/30 border-2 border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <PhoneCall className="w-6 h-6 animate-pulse" />
             </div>
             <div>
-              <strong className="text-white font-black text-sm block">🚨 Auxilio & Reportes 24/7</strong>
-              <span className="text-rose-300 text-xs font-semibold">Radio Patrullas 110, SAMU 165 y Alerta</span>
+              <strong className="text-white font-black text-base sm:text-lg block">🚨 Auxilio & Reportes 24/7</strong>
+              <span className="text-rose-200 text-xs sm:text-sm font-bold block mt-0.5">Policía 110, SAMU 165 y Alerta Vecinal</span>
             </div>
           </div>
-          <span className="text-xs font-black text-rose-400 group-hover:translate-x-1 transition-transform">Llamar →</span>
+          <span className="text-sm font-black text-rose-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Llamar →</span>
         </button>
 
         <button
           onClick={() => setIsTransparencyModalOpen(true)}
-          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
+          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-purple-500/50 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/10"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-600/30 border border-purple-500/50 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <ShieldCheck className="w-4 h-4" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <strong className="text-white font-black text-sm block">🔍 Transparencia & Asamblea</strong>
-              <span className="text-purple-300 text-xs font-semibold">¿En qué se gastó? y Asamblea 29 Nov</span>
+              <strong className="text-white font-black text-base sm:text-lg block">🔍 Transparencia & Asamblea</strong>
+              <span className="text-purple-200 text-xs sm:text-sm font-bold block mt-0.5">¿En qué se gastó? y Asamblea 29 Nov</span>
             </div>
           </div>
-          <span className="text-xs font-black text-purple-400 group-hover:translate-x-1 transition-transform">Ver Cuentas →</span>
+          <span className="text-sm font-black text-purple-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver Cuentas →</span>
         </button>
 
         <button
           onClick={() => setIsInstallModalOpen(true)}
-          className="p-4 rounded-2xl bg-[#0F172A] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-md"
+          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-emerald-500/50 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/10"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-500/50 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Smartphone className="w-5 h-5" />
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Smartphone className="w-6 h-6" />
             </div>
             <div>
-              <strong className="text-white font-black text-sm block">📲 Instalar App Android</strong>
-              <span className="text-emerald-300 text-xs font-semibold">Instala el APK para avisos y cuotas</span>
+              <strong className="text-white font-black text-base sm:text-lg block">📲 Instalar App Android</strong>
+              <span className="text-emerald-200 text-xs sm:text-sm font-bold block mt-0.5">Instala el APK para avisos y cuotas</span>
             </div>
           </div>
-          <span className="text-xs font-black text-emerald-400 group-hover:translate-x-1 transition-transform">Ver App →</span>
+          <span className="text-sm font-black text-emerald-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver App →</span>
         </button>
       </div>
 
-      {/* Mis Cuotas Asignadas */}
+      {/* Mis Cuotas Asignadas (Legibilidad WCAG AAA y Targets ≥ 56px) */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-            <FileCheck className="w-4 h-4 text-blue-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
+            <FileCheck className="w-5 h-5 text-blue-400" />
             <span>Mis Cuotas y Obligaciones Comunitarias</span>
           </h2>
-          <span className="text-xs text-slate-400 font-mono font-bold">Total asignado: {formatBOB(totalAssigned)}</span>
+          <span className="text-sm sm:text-base text-slate-200 font-mono font-bold">Total asignado: <strong className="text-white">{formatBOB(totalAssigned)}</strong></span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -344,43 +352,43 @@ export const NeighborDashboardPage: React.FC = () => {
             <TiltCard3D
               key={fee.id}
               intensity={5}
-              className="p-5 rounded-2xl bg-[#0B132B]/90 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-3"
+              className="p-6 rounded-3xl bg-[#0B132B]/95 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-4"
             >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 uppercase">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-black px-3 py-1 rounded-lg bg-slate-800 text-slate-100 border border-slate-600 uppercase tracking-wide">
                   {fee.type}
                 </span>
                 {fee.isSettled ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 rounded-full">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Pagada
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 px-3 py-1 rounded-full">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Pagada al Día
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 rounded-full">
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" /> Saldo Pendiente
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-300 bg-amber-500/20 border border-amber-500/50 px-3 py-1 rounded-full">
+                    <AlertCircle className="w-4 h-4 text-amber-400" /> Saldo Pendiente
                   </span>
                 )}
               </div>
 
               <div>
-                <h3 className="font-extrabold text-white text-base">{fee.title}</h3>
-                <p className="text-xs text-slate-400 font-mono mt-0.5 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <h3 className="font-black text-white text-lg sm:text-xl leading-snug">{fee.title}</h3>
+                <p className="text-sm text-amber-300 font-bold font-mono mt-1 flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4 text-amber-400" />
                   <span>Vencimiento: {fee.dueDate}</span>
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#030712] border border-slate-700 grid grid-cols-3 gap-2 text-xs text-center font-mono">
+              <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 grid grid-cols-3 gap-2 text-center font-mono">
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-bold">Asignado</span>
-                  <strong className="text-slate-200 font-black">{formatBOB(fee.amountAssigned)}</strong>
+                  <span className="text-xs text-slate-300 block font-bold uppercase">Asignado</span>
+                  <strong className="text-white font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountAssigned)}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-bold">Abonado</span>
-                  <strong className="text-emerald-400 font-black">{formatBOB(fee.amountPaid)}</strong>
+                  <span className="text-xs text-slate-300 block font-bold uppercase">Abonado</span>
+                  <strong className="text-emerald-400 font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountPaid)}</strong>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-bold">Resta</span>
-                  <strong className="text-rose-400 font-black">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
+                  <span className="text-xs text-slate-300 block font-bold uppercase">Resta</span>
+                  <strong className="text-rose-400 font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
                 </div>
               </div>
 
@@ -390,9 +398,9 @@ export const NeighborDashboardPage: React.FC = () => {
                     setPayAmount((fee.amountAssigned - fee.amountPaid).toFixed(2));
                     setIsQrModalOpen(true);
                   }}
-                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/20 transition-colors cursor-pointer"
+                  className="w-full min-h-[56px] py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-sm sm:text-base font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
                 >
-                  <QrCode className="w-4 h-4" />
+                  <QrCode className="w-5 h-5" />
                   <span>Pagar saldo de esta cuota</span>
                 </button>
               )}
@@ -420,85 +428,85 @@ export const NeighborDashboardPage: React.FC = () => {
         />
       </div>
 
-      {/* Historial de Pagos y Comprobantes Enviados */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* Historial de Pagos y Comprobantes Enviados (Legibilidad WCAG AAA) */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-[#0B132B]/95 border-2 border-slate-700 shadow-2xl backdrop-blur-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-emerald-400" />
+            <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
+              <CreditCard className="w-5 h-5 text-emerald-400" />
               <span>Historial de Pagos y Recibos Oficiales</span>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Revisa si tus pagos fueron confirmados por la tesorería o descarga tu recibo con código QR.
+            <p className="text-sm text-slate-100 mt-0.5 leading-relaxed">
+              Consulta si tus aportes fueron confirmados por Tesorería o descarga tu comprobante oficial con código QR.
             </p>
           </div>
 
           <button
             onClick={() => setIsQrModalOpen(true)}
-            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-blue-600/20"
+            className="self-start sm:self-auto min-h-[52px] px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm sm:text-base flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-blue-600/30"
           >
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-4 h-4" />
             <span>Reportar Nuevo Pago</span>
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {submissions.map((sub) => (
             <div
               key={sub.id}
-              className="p-4 rounded-2xl border-2 border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#030712] hover:border-slate-500 transition-all shadow-md"
+              className="p-5 rounded-2xl border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#030712] hover:border-slate-500 transition-all shadow-md"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3.5">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold flex-shrink-0 ${
                     sub.status === 'Confirmed'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      ? 'bg-emerald-500/20 text-emerald-300 border-2 border-emerald-500/50'
+                      : 'bg-amber-500/20 text-amber-300 border-2 border-amber-500/50'
                   }`}
                 >
                   {sub.status === 'Confirmed' ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                   ) : (
-                    <Clock className="w-5 h-5 text-amber-400" />
+                    <Clock className="w-6 h-6 text-amber-400" />
                   )}
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-white">{sub.concept}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base font-black text-white">{sub.concept}</span>
                     <span
-                      className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                      className={`text-xs font-black px-3 py-1 rounded-full border ${
                         sub.status === 'Confirmed'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                          ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/60'
+                          : 'bg-amber-500/25 text-amber-300 border-amber-500/60'
                       }`}
                     >
                       {sub.status === 'Confirmed' ? 'Confirmado ✓' : 'Pendiente de Verificación'}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-200 mt-1 font-mono">
                     {sub.submittedAt} • Método: {sub.method}
-                    {sub.receiptNumber && ` • Recibo: ${sub.receiptNumber}`}
+                    {sub.receiptNumber && ` • N° Recibo: ${sub.receiptNumber}`}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 justify-between sm:justify-end">
-                <span className="text-sm font-black font-mono text-white">
+              <div className="flex items-center gap-3.5 justify-between sm:justify-end">
+                <span className="text-base sm:text-xl font-black font-mono text-white">
                   {formatBOB(sub.amount)}
                 </span>
 
                 {sub.status === 'Confirmed' && sub.receiptNumber ? (
                   <button
                     onClick={() => navigate(`/verificar-recibo?receipt=${sub.receiptNumber}`)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-300 bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/30 transition-colors cursor-pointer"
+                    className="min-h-[50px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black text-blue-200 bg-blue-950/80 hover:bg-blue-900 border-2 border-blue-500/50 transition-colors cursor-pointer whitespace-nowrap shadow-md"
                   >
                     <span>Ver Recibo QR</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-4 h-4 text-blue-300" />
                   </button>
                 ) : (
-                  <span className="text-[11px] text-amber-400 font-medium italic">
+                  <span className="text-xs sm:text-sm text-amber-300 font-bold italic">
                     En revisión por Tesorería
                   </span>
                 )}
@@ -585,98 +593,98 @@ export const NeighborDashboardPage: React.FC = () => {
                 )}
               </div>
 
-              {/* 4 Pasos Didácticos para el Vecino de 40 a 60 años */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[10px] w-full pt-1">
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
-                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">1</span>
-                  <span className="font-bold text-white block">Guarda el QR</span>
-                  <span className="text-[9px] text-slate-400">Toca botón verde</span>
+              {/* 4 Pasos Didácticos para Adultos Mayores (Senior Friendly ≥ 14-16px) */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center w-full pt-1">
+                <div className="p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 space-y-1">
+                  <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center mx-auto shadow-sm">1</span>
+                  <span className="font-extrabold text-white text-xs sm:text-sm block">Guarda el QR</span>
+                  <span className="text-xs text-slate-200 block">Toca botón verde</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
-                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">2</span>
-                  <span className="font-bold text-white block">Abre tu Banco</span>
-                  <span className="text-[9px] text-slate-400">Unión, Sol, BCP</span>
+                <div className="p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 space-y-1">
+                  <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center mx-auto shadow-sm">2</span>
+                  <span className="font-extrabold text-white text-xs sm:text-sm block">Abre tu Banco</span>
+                  <span className="text-xs text-slate-200 block">Unión, Sol, BCP</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
-                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white font-black text-[9px] flex items-center justify-center mx-auto">3</span>
-                  <span className="font-bold text-white block">Pagar QR</span>
-                  <span className="text-[9px] text-slate-400">Cargar de Galería</span>
+                <div className="p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 space-y-1">
+                  <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center mx-auto shadow-sm">3</span>
+                  <span className="font-extrabold text-white text-xs sm:text-sm block">Pagar QR</span>
+                  <span className="text-xs text-slate-200 block">Cargar de Galería</span>
                 </div>
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 space-y-0.5">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] flex items-center justify-center mx-auto">4</span>
-                  <span className="font-bold text-white block">Sube Voucher</span>
-                  <span className="text-[9px] text-slate-400">Adjunta captura</span>
+                <div className="p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 space-y-1">
+                  <span className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center mx-auto shadow-sm">4</span>
+                  <span className="font-extrabold text-white text-xs sm:text-sm block">Sube Voucher</span>
+                  <span className="text-xs text-slate-200 block">Adjunta captura</span>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm font-black text-white">Monto a pagar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
-                <p className="text-xs text-blue-400 font-bold font-mono mt-0.5">
+                <p className="text-base sm:text-lg font-black text-white">Monto a pagar: <span className="text-emerald-400 font-mono text-xl sm:text-2xl">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
+                <p className="text-sm text-blue-200 font-bold font-mono mt-1">
                   {otbPaymentConfig.bankName} • Cta Fiscal: {otbPaymentConfig.accountNumber}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-0.5">
+                <p className="text-xs sm:text-sm text-slate-200 mt-0.5">
                   Titular: {otbPaymentConfig.accountHolder} ({otbPaymentConfig.nitOrCi})
                 </p>
               </div>
 
-              {/* Botones de Acción QR */}
-              <div className="flex flex-col sm:flex-row gap-2 w-full pt-1">
+              {/* Botones de Acción QR (Target Size ≥ 56px WCAG AAA) */}
+              <div className="flex flex-col sm:flex-row gap-3 w-full pt-1">
                 <button
                   type="button"
                   onClick={handleDownloadQrImage}
-                  className="flex-1 py-3 px-3 rounded-xl text-xs font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="flex-1 min-h-[58px] py-4 px-4 rounded-2xl text-sm sm:text-base font-black text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-slate-950" />
+                  <Download className="w-5 h-5 text-slate-950" />
                   <span>Guardar QR en Galería</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleCopyAccount}
-                  className="py-3 px-4 rounded-xl text-xs font-bold text-slate-200 bg-slate-800 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="min-h-[58px] py-4 px-5 rounded-2xl text-sm sm:text-base font-bold text-white bg-slate-800 border-2 border-slate-600 hover:bg-slate-700 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedAccount ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
                   <span>{copiedAccount ? '¡Copiado!' : 'Copiar Cta.'}</span>
                 </button>
               </div>
 
               {/* Badges Bancos Bolivianos */}
               <div className="pt-2 border-t border-slate-800 w-full text-center">
-                <span className="text-[10px] text-slate-400 block mb-1 font-semibold">
-                  Acepta todos los bancos de Bolivia:
+                <span className="text-xs text-slate-200 block mb-1.5 font-bold">
+                  Acepta todos los bancos de Bolivia con QR Simple:
                 </span>
-                <div className="flex flex-wrap justify-center gap-1 text-[10px] font-bold">
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Banco Unión</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BancoSol</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BCP</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">BNB</span>
-                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">FIE</span>
+                <div className="flex flex-wrap justify-center gap-1.5 text-xs font-black">
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-white border border-slate-600">Banco Unión</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-white border border-slate-600">BancoSol</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-white border border-slate-600">BCP</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-white border border-slate-600">BNB</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-white border border-slate-600">FIE</span>
                 </div>
               </div>
             </div>
 
             {/* Formulario de Confirmación y Subida de Voucher */}
-            <form onSubmit={handleSendProof} className="space-y-4 text-xs">
+            <form onSubmit={handleSendProof} className="space-y-4 text-sm">
               <div>
-                <label className="font-bold text-slate-200 block mb-1">Monto Depositado (Bs.):</label>
+                <label className="font-black text-white block mb-1.5 text-sm sm:text-base">Monto Depositado (Bs.):</label>
                 <input
                   type="number"
                   step="0.50"
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full bg-[#030712] border-2 border-slate-700 rounded-xl px-3 py-2.5 font-mono text-white font-bold focus:outline-none focus:border-blue-500 text-sm"
+                  className="w-full min-h-[54px] bg-[#030712] border-2 border-slate-600 rounded-2xl px-4 py-3 font-mono text-white font-bold focus:outline-none focus:border-emerald-400 text-base sm:text-lg"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-200 block mb-1">Adjuntar Captura o Foto del Depósito:</label>
-                <label className="border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#030712] hover:bg-emerald-950/20">
-                  <Upload className="w-6 h-6 text-emerald-400 mb-1" />
-                  <span className="text-xs font-semibold text-slate-200">
+                <label className="font-black text-white block mb-1.5 text-sm sm:text-base">Adjuntar Captura o Foto del Depósito:</label>
+                <label className="min-h-[64px] border-2 border-dashed border-slate-600 hover:border-emerald-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#030712] hover:bg-emerald-950/20">
+                  <Upload className="w-7 h-7 text-emerald-400 mb-1" />
+                  <span className="text-sm font-bold text-white text-center">
                     {selectedFileName ? selectedFileName : 'Toca aquí para seleccionar foto o voucher'}
                   </span>
-                  <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG o PDF hasta 5MB</span>
+                  <span className="text-xs text-slate-300 mt-0.5">JPG, PNG o PDF hasta 5MB</span>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -686,17 +694,17 @@ export const NeighborDashboardPage: React.FC = () => {
                 </label>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-600/40 text-[11px] text-amber-200">
-                <p className="font-bold">⚠️ Nota de seguridad:</p>
+              <div className="p-4 rounded-2xl bg-amber-950/40 border-2 border-amber-500/50 text-xs sm:text-sm text-amber-100">
+                <p className="font-black text-white mb-0.5">⚠️ Nota de seguridad:</p>
                 <p>Tu comprobante será verificado por el Tesorero de la OTB en el extracto bancario. Una vez validado, se emitirá automáticamente tu Recibo Oficial con código QR.</p>
               </div>
 
               <button
                 type="submit"
                 disabled={isUploading}
-                className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                className="w-full min-h-[60px] py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30 transition-all cursor-pointer"
               >
-                <Upload className="w-4 h-4 text-slate-950" />
+                <Upload className="w-5 h-5 text-slate-950" />
                 <span>{isUploading ? 'Enviando a Tesorería...' : 'Enviar Comprobante para Verificación'}</span>
               </button>
             </form>

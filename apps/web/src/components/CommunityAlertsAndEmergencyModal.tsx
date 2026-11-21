@@ -422,20 +422,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* Radiopatrullas 110 */}
               <a
                 href="tel:110"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-rose-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-rose-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-rose-400 flex items-center justify-center font-black text-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-rose-400 flex items-center justify-center font-black text-2xl flex-shrink-0">
                     110
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-rose-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-rose-300">
                       Radiopatrullas Policía
                     </h4>
-                    <p className="text-xs text-slate-300">Robos, sospechosos, peleas</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Robos, sospechosos, peleas</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-rose-600 text-white shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-rose-600 text-white shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -443,20 +443,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* Presidente OTB y Ronda Vecinal */}
               <a
                 href="tel:72345678"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-blue-500/60 hover:border-blue-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-blue-500/60 hover:border-blue-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600/30 border-2 border-blue-400 text-blue-300 flex items-center justify-center font-black text-sm">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-600/30 border-2 border-blue-400 text-blue-300 flex items-center justify-center font-black text-base flex-shrink-0">
                     OTB
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-blue-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-blue-300">
                       Presidente de la OTB
                     </h4>
-                    <p className="text-xs text-slate-300">Don Roberto • Cel: 72345678</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Don Roberto • Cel: 72345678</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-blue-600 text-white shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-blue-600 text-white shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -464,20 +464,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* Ambulancia SAMU 165 */}
               <a
                 href="tel:165"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-emerald-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-emerald-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center font-black text-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center font-black text-2xl flex-shrink-0">
                     165
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-emerald-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-emerald-300">
                       Ambulancia SAMU
                     </h4>
-                    <p className="text-xs text-slate-300">Desmayos, heridos, infartos</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Desmayos, caídas, auxilio médico</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-emerald-500 text-slate-950 shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -485,20 +485,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* Bomberos 119 */}
               <a
                 href="tel:119"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-amber-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-amber-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-600/25 border-2 border-amber-500 text-amber-400 flex items-center justify-center font-black text-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-600/25 border-2 border-amber-500 text-amber-400 flex items-center justify-center font-black text-2xl flex-shrink-0">
                     119
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-amber-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-amber-300">
                       Bomberos y Rescate
                     </h4>
-                    <p className="text-xs text-slate-300">Fugas de gas, incendios</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Fugas de gas, incendios</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-amber-500 text-slate-950 shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-amber-500 text-slate-950 shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -506,20 +506,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* SEMAPA / Agua Potable 178 */}
               <a
                 href="tel:178"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-cyan-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-cyan-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-600/25 border-2 border-cyan-500 text-cyan-300 flex items-center justify-center font-black text-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-cyan-600/25 border-2 border-cyan-500 text-cyan-300 flex items-center justify-center font-black text-2xl flex-shrink-0">
                     178
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-cyan-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-cyan-300">
                       Agua y Alcantarillado
                     </h4>
-                    <p className="text-xs text-slate-300">Rotura de cañería o pozo</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Rotura de cañería o pozo</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-cyan-500 text-slate-950 shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -527,20 +527,20 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               {/* ELFEC / Alumbrado 176 */}
               <a
                 href="tel:176"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-yellow-400 flex items-center justify-between transition-all group shadow-md"
+                className="p-5 min-h-[76px] rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-yellow-400 flex items-center justify-between transition-all group shadow-md"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-yellow-500/25 border-2 border-yellow-500 text-yellow-300 flex items-center justify-center font-black text-xl">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-14 h-14 rounded-2xl bg-yellow-500/25 border-2 border-yellow-500 text-yellow-300 flex items-center justify-center font-black text-2xl flex-shrink-0">
                     176
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-yellow-300">
+                    <h4 className="font-black text-white text-base sm:text-lg group-hover:text-yellow-300">
                       Cables y Postes de Luz
                     </h4>
-                    <p className="text-xs text-slate-300">Cables caídos y chispas</p>
+                    <p className="text-sm text-slate-100 font-medium mt-0.5">Cables caídos y chispas</p>
                   </div>
                 </div>
-                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-yellow-500 text-slate-950 shadow-md">
+                <span className="text-sm sm:text-base font-black px-5 py-3 rounded-2xl bg-yellow-500 text-slate-950 shadow-md flex-shrink-0">
                   Llamar
                 </span>
               </a>
@@ -577,9 +577,9 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-2.5">
                   <div className="relative flex-1">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <Search className="w-5 h-5 text-slate-400 absolute left-4 top-3.5" />
                     <input
                       type="text"
                       value={lookupInput}
@@ -594,43 +594,43 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                         }
                       }}
                       placeholder="Ej: SOC-012, SOC-005 o Carnet 7412589..."
-                      className="w-full bg-slate-900 border-2 border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-white font-mono font-bold text-xs sm:text-sm focus:border-amber-400 placeholder:text-slate-500"
+                      className="w-full min-h-[54px] bg-slate-900 border-2 border-slate-600 rounded-2xl pl-11 pr-4 py-3 text-white font-mono font-bold text-sm sm:text-base focus:border-amber-400 placeholder:text-slate-500"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={handleVerifyNeighbor}
-                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md whitespace-nowrap"
+                    className="min-h-[54px] px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-500/25 whitespace-nowrap"
                   >
-                    <UserCheck className="w-4 h-4 text-slate-950" />
+                    <UserCheck className="w-5 h-5 text-slate-950" />
                     <span>Validar Mi Socio</span>
                   </button>
                 </div>
 
                 {lookupError && (
-                  <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs font-bold flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                  <div className="p-3.5 rounded-xl bg-rose-950/80 border-2 border-rose-500 text-rose-200 text-sm font-bold flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-rose-400 flex-shrink-0" />
                     <span>{lookupError}</span>
                   </div>
                 )}
 
                 {/* Acceso Rápido 1-Toque para Adultos Mayores 50+ */}
                 <div className="pt-2 border-t border-slate-800">
-                  <span className="text-[11px] font-bold text-slate-400 block mb-2 uppercase tracking-wide">
+                  <span className="text-xs sm:text-sm font-black text-slate-300 block mb-2 uppercase tracking-wide">
                     👴👵 Socios Registrados en {currentOtbInfo.name} (Toca tu nombre):
                   </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     {otbCensusNeighbors.slice(0, 6).map((n) => (
                       <button
                         key={n.id}
                         type="button"
                         onClick={() => handleSelectNeighbor(n)}
-                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-amber-400/80 text-left transition-all cursor-pointer group"
+                        className="min-h-[60px] p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 hover:border-amber-400 text-left transition-all cursor-pointer group shadow-sm"
                       >
-                        <span className="text-xs font-black text-white block group-hover:text-amber-300 truncate">
+                        <span className="text-sm font-black text-white block group-hover:text-amber-300 truncate">
                           {n.name}
                         </span>
-                        <span className="text-[11px] font-mono text-emerald-400 block">
+                        <span className="text-xs font-mono text-emerald-300 font-bold block mt-0.5">
                           {n.socioCode} • {n.house}
                         </span>
                       </button>
@@ -645,17 +645,17 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                       setIsUnregistered(true);
                       setLookupError(null);
                     }}
-                    className="text-xs text-blue-400 hover:text-blue-300 font-bold underline cursor-pointer"
+                    className="text-sm text-blue-300 hover:text-blue-200 font-bold underline cursor-pointer"
                   >
                     ¿Eres nuevo vecino, inquilino o visitante del barrio? Pulsa aquí para reportar →
                   </button>
                 </div>
               </div>
             ) : isUnregistered ? (
-              <div className="p-4 rounded-2xl bg-amber-950/40 border-2 border-amber-500/70 space-y-3">
+              <div className="p-5 rounded-2xl bg-amber-950/40 border-2 border-amber-500/70 space-y-3.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-amber-300 font-black text-xs sm:text-sm">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-2 text-amber-300 font-black text-sm sm:text-base">
+                    <AlertTriangle className="w-5 h-5 text-amber-400" />
                     <span>Reporte de Vecino en Proceso de Empadronamiento</span>
                   </div>
                   <button
@@ -664,22 +664,22 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                       setIsUnregistered(false);
                       setLookupError(null);
                     }}
-                    className="text-[11px] text-slate-300 hover:text-white underline font-bold cursor-pointer"
+                    className="text-xs sm:text-sm text-slate-200 hover:text-white underline font-bold cursor-pointer"
                   >
                     Tengo código de socio
                   </button>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-sm text-slate-200 font-medium">
                   Ingresa tus datos para vincular el aviso a tu domicilio en {currentOtbInfo.name}:
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input
                     type="text"
                     required
                     value={manualName}
                     onChange={(e) => setManualName(e.target.value)}
                     placeholder="Tu Nombre Completo..."
-                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                    className="w-full min-h-[50px] bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-sm"
                   />
                   <input
                     type="text"
@@ -687,7 +687,7 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     value={manualCi}
                     onChange={(e) => setManualCi(e.target.value)}
                     placeholder="Carnet de Identidad (C.I.)..."
-                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                    className="w-full min-h-[50px] bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-sm"
                   />
                   <input
                     type="text"
@@ -695,7 +695,7 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     value={manualPhone}
                     onChange={(e) => setManualPhone(e.target.value)}
                     placeholder="Celular de Contacto..."
-                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                    className="w-full min-h-[50px] bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-sm"
                   />
                   <input
                     type="text"
@@ -703,30 +703,30 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     value={manualLot}
                     onChange={(e) => setManualLot(e.target.value)}
                     placeholder="Manzana y Lote referencial..."
-                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                    className="w-full min-h-[50px] bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold text-sm"
                   />
                 </div>
               </div>
             ) : (
               /* Vecino Verificado y Acreditado */
-              <div className="p-4 rounded-2xl bg-[#020617] border-2 border-emerald-500 shadow-lg shadow-emerald-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center font-black flex-shrink-0">
-                    <UserCheck className="w-6 h-6" />
+              <div className="p-5 rounded-2xl bg-[#020617] border-2 border-emerald-500 shadow-xl shadow-emerald-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center font-black flex-shrink-0">
+                    <UserCheck className="w-7 h-7" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-md border border-emerald-700">
+                      <span className="text-xs font-black text-emerald-300 bg-emerald-950 px-2.5 py-1 rounded-md border border-emerald-700">
                         ✓ Socio Acreditado en {currentOtbInfo.name}
                       </span>
-                      <span className="text-xs font-mono font-bold text-slate-300">
+                      <span className="text-sm font-mono font-black text-white">
                         {verifiedNeighbor?.socioCode}
                       </span>
                     </div>
-                    <h4 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                    <h4 className="text-base sm:text-lg font-black text-white mt-1">
                       {verifiedNeighbor?.name}
                     </h4>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-sm text-slate-100 font-medium">
                       📍 {verifiedNeighbor?.block}, {verifiedNeighbor?.house} • C.I. {verifiedNeighbor?.ci} • Cel: {verifiedNeighbor?.phone}
                     </p>
                   </div>
@@ -738,7 +738,7 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     setLookupInput('');
                     setLookupError(null);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold border border-slate-600 transition-all cursor-pointer whitespace-nowrap"
+                  className="min-h-[46px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-black border-2 border-slate-600 transition-all cursor-pointer whitespace-nowrap"
                 >
                   Cambiar Socio
                 </button>
@@ -746,10 +746,10 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
             )}
 
             <div>
-              <label className="font-black text-slate-200 block mb-2 text-xs sm:text-sm uppercase tracking-wide">
+              <label className="font-black text-white block mb-2 text-sm sm:text-base uppercase tracking-wide">
                 2. Selecciona el problema que estás viendo en {currentOtbInfo.name}:
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {(Object.keys(CATEGORY_METADATA) as ReportCategory[]).map((catKey) => {
                   const meta = CATEGORY_METADATA[catKey];
                   const isSelected = category === catKey;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Users,
   Home,
@@ -9,7 +9,14 @@ import {
   ArrowDownRight,
   ShieldCheck,
   PlusCircle,
-  FileSpreadsheet
+  FileSpreadsheet,
+  PhoneCall,
+  AlertTriangle,
+  CheckCircle2,
+  MapPin,
+  Radio,
+  Check,
+  ShieldAlert
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -22,6 +29,8 @@ import {
 } from 'recharts';
 import { formatBOB } from '@xentra/shared';
 import { useTenantStore } from '../stores/tenantStore';
+import { useCommunityReportsStore } from '../stores/communityReportsStore';
+import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
 import { useNavigate } from 'react-router-dom';
 
 const MONTHLY_DATA = [
@@ -35,6 +44,12 @@ const MONTHLY_DATA = [
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
+  const { getReportsByOtb, updateReportStatus } = useCommunityReportsStore();
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+
+  const otbId = currentOtb?.id || '11111111-1111-1111-1111-111111111111';
+  const reports = getReportsByOtb(otbId);
+  const activeReports = reports.filter((r) => r.status !== 'resuelto');
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -50,6 +65,13 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setIsAlertModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 shadow-sm transition-all cursor-pointer"
+          >
+            <ShieldAlert className="w-4 h-4 text-rose-600 animate-pulse" />
+            <span>Alertas Vecinales ({activeReports.length})</span>
+          </button>
           <button
             onClick={() => navigate('/admin/finanzas')}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/25 transition-all"
@@ -221,6 +243,104 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* SECCIÓN: ALERTAS CIUDADANAS Y SEGURIDAD VECINAL EN VIVO */}
+      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-fintech space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+                <Radio className="w-4 h-4 animate-pulse" />
+              </span>
+              <h2 className="text-base font-bold text-slate-900">
+                Alertas Comunitarias & Seguridad Vecinal 24/7 ({currentOtb?.name})
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Reportes directos enviados por vecinos con código de cliente acreditado.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsAlertModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors self-start sm:self-auto cursor-pointer"
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>Abrir Centro de Auxilio Completo</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {reports.slice(0, 3).map((rep) => (
+            <div
+              key={rep.id}
+              className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-300 transition-all space-y-2 flex flex-col justify-between"
+            >
+              <div className="space-y-1.5">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                    {rep.socioCode}
+                  </span>
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                      rep.status === 'resuelto'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : rep.status === 'en_camino'
+                        ? 'bg-rose-100 text-rose-800 animate-pulse'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {rep.statusLabel}
+                  </span>
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-1">
+                  {rep.title}
+                </h4>
+                <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-slate-400" />
+                  <span>{rep.location}</span>
+                </p>
+                <p className="text-xs text-slate-600 line-clamp-2 bg-white p-2 rounded-lg border border-slate-200">
+                  {rep.description}
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+                <span className="text-[10px] text-slate-400">{rep.timestamp}</span>
+                <div className="flex items-center gap-1">
+                  {rep.status !== 'en_camino' && rep.status !== 'resuelto' && (
+                    <button
+                      onClick={() => updateReportStatus(rep.id, 'en_camino', 'La Ronda Vecinal acude al llamado.')}
+                      className="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-bold cursor-pointer"
+                    >
+                      En Camino
+                    </button>
+                  )}
+                  {rep.status !== 'resuelto' && (
+                    <button
+                      onClick={() => updateReportStatus(rep.id, 'resuelto', 'Incidente resuelto y archivado.')}
+                      className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold cursor-pointer flex items-center gap-1"
+                    >
+                      <Check className="w-3 h-3" /> Resuelto
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal Auxilio y Reportes Barriales */}
+      <CommunityAlertsAndEmergencyModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        otbId={otbId}
+        otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+        socioCode="ADM-PRES"
+        neighborName="Mesa Directiva OTB"
+        lotName="Sede Comunal"
+      />
     </div>
   );
 };

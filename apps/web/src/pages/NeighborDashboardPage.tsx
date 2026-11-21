@@ -19,7 +19,8 @@ import {
   PhoneCall,
   Smartphone,
   Sparkles,
-  AlertTriangle
+  AlertTriangle,
+  ShieldCheck
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
@@ -28,6 +29,7 @@ import { usePaymentVerificationStore } from '../stores/paymentVerificationStore'
 import { useNavigate } from 'react-router-dom';
 import { PrintableStatementModal } from '../components/PrintableStatementModal';
 import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
+import { CommunityTransparencyModal } from '../components/CommunityTransparencyModal';
 import { InstallAppModal } from '../components/InstallAppModal';
 
 interface NeighborFee {
@@ -110,6 +112,9 @@ export const NeighborDashboardPage: React.FC = () => {
 
   // Modal Instalar App / APK
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
+  // Modal Transparencia OTB & Próxima Asamblea
+  const [isTransparencyModalOpen, setIsTransparencyModalOpen] = useState(false);
 
   const totalAssigned = fees.reduce((acc, f) => acc + f.amountAssigned, 0);
   const totalPaid = fees.reduce((acc, f) => acc + f.amountPaid, 0);
@@ -267,8 +272,8 @@ export const NeighborDashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Barra Rápida de Auxilio y App Móvil */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Barra Rápida de Auxilio, Transparencia y App Móvil */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <button
           onClick={() => {
             setAlertModalTab('emergencias');
@@ -281,11 +286,27 @@ export const NeighborDashboardPage: React.FC = () => {
               <PhoneCall className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <strong className="text-rose-950 font-black text-sm block">🚨 Auxilio & Reportes Barriales 24/7</strong>
-              <span className="text-rose-700 text-xs">Llamadas directas a Radio Patrullas 110, SAMU 165 y Alerta Vecinal</span>
+              <strong className="text-rose-950 font-black text-sm block">🚨 Auxilio & Reportes 24/7</strong>
+              <span className="text-rose-700 text-xs">Radio Patrullas 110, SAMU 165 y Alerta</span>
             </div>
           </div>
           <span className="text-xs font-black text-rose-600 group-hover:translate-x-1 transition-transform">Llamar →</span>
+        </button>
+
+        <button
+          onClick={() => setIsTransparencyModalOpen(true)}
+          className="p-4 rounded-2xl bg-purple-50 border-2 border-purple-200 hover:bg-purple-100/80 transition-all flex items-center justify-between text-left group cursor-pointer shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <strong className="text-purple-950 font-black text-sm block">🔍 Transparencia & Asamblea</strong>
+              <span className="text-purple-700 text-xs">¿En qué se gastó? y Convocatoria 29 Nov</span>
+            </div>
+          </div>
+          <span className="text-xs font-black text-purple-600 group-hover:translate-x-1 transition-transform">Ver Cuentas →</span>
         </button>
 
         <button
@@ -297,8 +318,8 @@ export const NeighborDashboardPage: React.FC = () => {
               <Smartphone className="w-5 h-5" />
             </div>
             <div>
-              <strong className="text-emerald-950 font-black text-sm block">📲 Instalar App Móvil / Descargar APK</strong>
-              <span className="text-emerald-700 text-xs">Instala en tu celular para recibir avisos de agua y asambleas</span>
+              <strong className="text-emerald-950 font-black text-sm block">📲 Instalar App Android</strong>
+              <span className="text-emerald-700 text-xs">Instala el APK para avisos y cuotas</span>
             </div>
           </div>
           <span className="text-xs font-black text-emerald-600 group-hover:translate-x-1 transition-transform">Ver App →</span>
@@ -697,13 +718,26 @@ export const NeighborDashboardPage: React.FC = () => {
         isOpen={isAlertModalOpen}
         onClose={() => setIsAlertModalOpen(false)}
         initialTab={alertModalTab}
+        otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
         otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+        socioCode="SOC-012"
+        neighborName={`${profile?.first_name || 'Juan José'} ${profile?.last_name || 'Flores Morales'}`}
+        lotName="Manzana A, Lote 12"
+        phoneContact={profile?.phone || '74567890'}
       />
 
       {/* Modal Descargar e Instalar App Móvil */}
       <InstallAppModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
+      />
+
+      {/* Modal Transparencia OTB & Próxima Asamblea */}
+      <CommunityTransparencyModal
+        isOpen={isTransparencyModalOpen}
+        onClose={() => setIsTransparencyModalOpen(false)}
+        otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+        otbCode={currentOtb?.code || 'OTB-CBBA-001'}
       />
     </div>
   );

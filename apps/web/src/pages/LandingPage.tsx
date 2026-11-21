@@ -37,13 +37,15 @@ import {
   AlertTriangle,
   Lightbulb,
   Download,
-  MapPin
+  MapPin,
+  Globe
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { PrintableStatementModal, StatementData, FeeItem } from '../components/PrintableStatementModal';
 import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
+import { CommunityTransparencyModal } from '../components/CommunityTransparencyModal';
 import { InstallAppModal } from '../components/InstallAppModal';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
@@ -112,6 +114,9 @@ export const LandingPage: React.FC = () => {
 
   // Modal de Descarga e Instalación App Móvil (Android APK / PWA)
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
+  // Modal de Transparencia Comunitaria & Asamblea de Vecinos
+  const [isTransparencyModalOpen, setIsTransparencyModalOpen] = useState(false);
 
   // Modo Accesibilidad Adulto Mayor (40 a 60 años: letra grande y alto contraste)
   const [isSeniorMode, setIsSeniorMode] = useState(false);
@@ -813,7 +818,7 @@ export const LandingPage: React.FC = () => {
                   </div>
 
                   {/* Botones de Acción de Alto Contraste */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2">
                     {resolvedResult.totalDebt > 0 && (
                       <button
                         onClick={() => setIsQrModalOpen(true)}
@@ -824,12 +829,24 @@ export const LandingPage: React.FC = () => {
                       </button>
                     )}
 
+                    {/* Botón de Reportar Incidente Comunitario para el Socio */}
+                    <button
+                      onClick={() => {
+                        setAlertModalTab('reportar');
+                        setIsAlertModalOpen(true);
+                      }}
+                      className="py-3 px-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition-all cursor-pointer"
+                    >
+                      <AlertTriangle className="w-4 h-4 text-slate-950" />
+                      <span>🚨 Reportar Incidente</span>
+                    </button>
+
                     <button
                       onClick={() => setIsPrintModalOpen(true)}
                       className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-emerald-500/50 transition-all cursor-pointer shadow-sm"
                     >
                       <Printer className="w-4 h-4 text-emerald-400" />
-                      <span>Imprimir Detalle</span>
+                      <span>Imprimir Ficha</span>
                     </button>
 
                     <button
@@ -845,7 +862,19 @@ export const LandingPage: React.FC = () => {
                       className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-blue-600 text-blue-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-blue-500/50 transition-all cursor-pointer shadow-sm"
                     >
                       <Mail className="w-4 h-4 text-blue-400" />
-                      <span>Recibo por Correo</span>
+                      <span>Recibo Email</span>
+                    </button>
+                  </div>
+
+                  {/* Acceso Rápido a Transparencia Comunitaria & Convocatoria de Asamblea */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsTransparencyModalOpen(true)}
+                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-purple-950/70 via-indigo-950/70 to-slate-900 border-2 border-purple-500/60 hover:border-purple-400 text-purple-200 hover:text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-md hover:shadow-purple-500/20 transition-all cursor-pointer"
+                    >
+                      <ShieldCheck className="w-4 h-4 sm:w-5 h-5 text-purple-400" />
+                      <span>🔍 Ver Transparencia de la OTB: ¿En qué se gastó el dinero? & Convocatoria a la Próxima Asamblea</span>
                     </button>
                   </div>
                 </div>
@@ -1152,6 +1181,140 @@ export const LandingPage: React.FC = () => {
               <p className="text-xs text-slate-300 leading-relaxed">
                 <strong>Accesibilidad total:</strong> modo "Lectura Fácil (A+)" con tipografía ampliada, contrastes reforzados y cero palabras técnicas en inglés. Guía ilustrada en 4 pasos para guardar el QR en la galería y pagar desde la banca móvil sin confusiones.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* SECCIÓN 5: ECOSISTEMA WEB + APP MÓVIL ANDROID (ALTA VENTA) */}
+        {/* ======================================================== */}
+        <section className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#0B132B] via-[#0A192F] to-[#020617] border-2 border-blue-500/50 space-y-8 shadow-2xl relative overflow-hidden">
+          {/* Resplandor decorativo */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="text-center space-y-3 relative z-10 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-500/40">
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>Doble Ecosistema Tecnológico: Web en la Nube + App Móvil Android</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+              Diseñado Pensando en Nuestras Familias y Adultos Mayores
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Sabemos que más del 70% de los vecinos que asisten a las asambleas tienen entre <strong>40 y 60+ años</strong>. Por eso, Xentra no es una aplicación fría ni complicada: se adapta a la vista y necesidades reales de los vecinos de Bolivia.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+            {/* Tarjeta 1: Aplicación Móvil Android (Senior Friendly) */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#030712] border-2 border-emerald-500/50 space-y-5 flex flex-col justify-between shadow-xl hover:border-emerald-400 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center font-bold">
+                      <Smartphone className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Instalación Directa en Teléfonos</span>
+                      <h3 className="text-xl font-black text-white">App Móvil Android (APK / PWA)</h3>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    Modo A+ Senior
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  Pensada exclusivamente para que cualquier vecino mayor pueda usarla <strong>sin pedir ayuda a sus hijos</strong>:
+                </p>
+
+                <ul className="space-y-2.5 text-xs text-slate-300">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Letras Extra Grandes y Alto Contraste:</strong> Botones táctiles grandes para pulsar cómodamente sin equivocarse de opción.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Notificaciones de Asambleas y Pagos:</strong> Suena un timbre claro en el celular avisando la fecha de cobro y asamblea para no olvidar sus cuotas.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Reportes Barriales en 2 Toques:</strong> ¿Alguien echado en la cancha? ¿Un perrito atropellado? ¿Fuga de agua o auto sospechoso? Presionas 1 botón y se alerta a la directiva y ronda vecinal.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Botones de Pánico Directos:</strong> Llamada directa sin memorizar números al 110 Policía, 119 Bomberos, 165 SAMU y al celular del Presidente.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsInstallModalOpen(true)}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-slate-950" />
+                  <span>Descargar e Instalar APK Android en mi Celular</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Tarjeta 2: Plataforma Web en la Nube */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#030712] border-2 border-blue-500/50 space-y-5 flex flex-col justify-between shadow-xl hover:border-blue-400 transition-all">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-600/25 border-2 border-blue-500 text-blue-400 flex items-center justify-center font-bold">
+                      <Globe className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-blue-400">Acceso Inmediato desde Navegador</span>
+                      <h3 className="text-xl font-black text-white">Plataforma Web en la Nube</h3>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/40">
+                    24/7 En Línea
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  El centro de transparencia donde convergen vecinos y la mesa directiva:
+                </p>
+
+                <ul className="space-y-2.5 text-xs text-slate-300">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Consulta Instantánea por Código:</strong> El vecino coloca su código de lote o CI y ve su saldo exacto sin tener que recordar contraseñas.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Recaudación QR Simple Interoperable:</strong> El admin sube el QR de su OTB y recibe pagos de Banco Unión, BNB, BCP, Sol, FIE, etc.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Talonario de Recibos Mensuales con QR:</strong> La directiva imprime recibos oficiales con código QR escaneable que certifica la validez legal del pago en línea.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span><strong className="text-white">Auditoría TRACE Criptográfica:</strong> Cada movimiento queda registrado en un libro contable con hash inmutable, desterrando para siempre la desconfianza.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.querySelector('input[placeholder*="Ingresa tu Código"]');
+                    if (el) (el as HTMLElement).focus();
+                  }}
+                  className="w-full py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Probar Consulta Web Inmediata con Código de Lote</span>
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -1559,13 +1722,26 @@ export const LandingPage: React.FC = () => {
         isOpen={isAlertModalOpen}
         onClose={() => setIsAlertModalOpen(false)}
         initialTab={alertModalTab}
-        otbName={resolvedResult?.otbName || 'OTB Villa Esperanza'}
+        otbId={resolvedResult?.otbCode === 'OTB-LPZ-002' ? '22222222-2222-2222-2222-222222222222' : '11111111-1111-1111-1111-111111111111'}
+        otbName={resolvedResult?.otbName || 'Villa Esperanza'}
+        socioCode={resolvedResult?.socioCode || resolvedResult?.code || 'SOC-012'}
+        neighborName={resolvedResult?.fullName || 'Juan José Flores Morales'}
+        lotName={resolvedResult?.lotName || 'Manzana A, Lote 12'}
+        phoneContact={resolvedResult?.phone || '74567890'}
       />
 
       {/* MODAL 6: Descargar e Instalar App Móvil (Android APK / PWA) */}
       <InstallAppModal
         isOpen={isInstallModalOpen}
         onClose={() => setIsInstallModalOpen(false)}
+      />
+
+      {/* MODAL 7: Transparencia Financiera & Convocatoria de Asambleas OTB */}
+      <CommunityTransparencyModal
+        isOpen={isTransparencyModalOpen}
+        onClose={() => setIsTransparencyModalOpen(false)}
+        otbName={resolvedResult?.otbName || 'Villa Esperanza'}
+        otbCode={resolvedResult?.otbCode || 'OTB-CBBA-001'}
       />
     </div>
   );

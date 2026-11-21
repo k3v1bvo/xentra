@@ -13,87 +13,73 @@ import {
   Clock,
   Camera,
   MapPin,
-  Flame,
-  Radio,
-  Building,
   HeartPulse,
-  Smartphone
+  Radio,
+  Eye,
+  Check,
+  Building,
+  UserCheck
 } from 'lucide-react';
-
-export interface CommunityReport {
-  id: string;
-  category: 'seguridad' | 'cancha' | 'luminaria' | 'agua' | 'basura' | 'ruido';
-  title: string;
-  description: string;
-  location: string;
-  reportedBy: string;
-  timestamp: string;
-  status: 'atendiendo' | 'en_camino' | 'resuelto';
-  statusLabel: string;
-}
-
-const INITIAL_REPORTS: CommunityReport[] = [
-  {
-    id: 'rep-01',
-    category: 'cancha',
-    title: 'Persona descompensada / dormida en graderías de la cancha',
-    description: 'Hay una persona mayor recostada en las graderías de la cancha polifuncional, parece necesitar abrigo o auxilio médico.',
-    location: 'Cancha Polifuncional - Manzana B',
-    reportedBy: 'Vecino Vigilante (Lote 05)',
-    timestamp: 'Hace 12 minutos',
-    status: 'en_camino',
-    statusLabel: 'Directiva y Ronda Vecinal en camino'
-  },
-  {
-    id: 'rep-02',
-    category: 'luminaria',
-    title: 'Poste sin luz en esquina oscura',
-    description: 'Foco quemado hace 2 noches. Está muy oscuro para las señoras y jóvenes que vuelven del trabajo.',
-    location: 'Calle Los Pinos esq. Manzano A',
-    reportedBy: 'Vecina Silvia R. (Lote 14)',
-    timestamp: 'Hoy 10:15',
-    status: 'atendiendo',
-    statusLabel: 'Reporte derivado a Alumbrado Público'
-  },
-  {
-    id: 'rep-03',
-    category: 'agua',
-    title: 'Fuga de agua potable en vereda comunal',
-    description: 'Chorro de agua saliendo de la llave de paso de la sede social.',
-    location: 'Puerta Sede Comunal',
-    reportedBy: 'Don Roberto (Lote 01)',
-    timestamp: 'Ayer 18:30',
-    status: 'resuelto',
-    statusLabel: 'Solucionado por plomero del barrio'
-  }
-];
+import {
+  useCommunityReportsStore,
+  ReportCategory,
+  CATEGORY_METADATA
+} from '../stores/communityReportsStore';
 
 interface CommunityAlertsAndEmergencyModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialTab?: 'emergencias' | 'reportar' | 'muro';
+  otbId?: string;
   otbName?: string;
+  socioCode?: string;
+  neighborName?: string;
+  lotName?: string;
+  phoneContact?: string;
 }
 
 export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmergencyModalProps> = ({
   isOpen,
   onClose,
   initialTab = 'emergencias',
-  otbName = 'OTB Villa Esperanza'
+  otbId = '11111111-1111-1111-1111-111111111111',
+  otbName = 'Villa Esperanza',
+  socioCode = 'SOC-012',
+  neighborName = 'Juan José Flores Morales',
+  lotName = 'Manzana A, Lote 12',
+  phoneContact = '74567890'
 }) => {
   const [activeTab, setActiveTab] = useState<'emergencias' | 'reportar' | 'muro'>(initialTab);
-  const [reports, setReports] = useState<CommunityReport[]>(INITIAL_REPORTS);
 
-  // Formulario nuevo reporte
-  const [category, setCategory] = useState<CommunityReport['category']>('cancha');
+  const { addReport, updateReportStatus, getReportsByOtb } = useCommunityReportsStore();
+  const otbReports = getReportsByOtb(otbId);
+
+  // Formulario de nuevo reporte
+  const [category, setCategory] = useState<ReportCategory>('borracho_cancha');
+  const [customSocioCode, setCustomSocioCode] = useState(socioCode);
+  const [customLotName, setCustomLotName] = useState(lotName);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('Cancha Polifuncional');
+  const [location, setLocation] = useState('Cancha Polifuncional - Manzana B');
   const [photoName, setPhotoName] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
+  const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setPhotoName(file.name);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPhotoUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCreateReport = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,19 +87,21 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
 
     setIsSubmitting(true);
     setTimeout(() => {
-      const newReport: CommunityReport = {
-        id: `rep-${Date.now()}`,
+      addReport({
+        otbId,
+        otbName,
         category,
         title,
         description,
         location,
-        reportedBy: 'Vecino Registrado',
-        timestamp: 'Justo ahora',
-        status: 'atendiendo',
-        statusLabel: 'Alerta comunitaria enviada a la Directiva'
-      };
+        socioCode: customSocioCode || socioCode,
+        neighborName: neighborName || 'Vecino Acreditado',
+        lotName: customLotName || lotName,
+        phoneContact,
+        photoName: photoName || undefined,
+        photoUrl: photoUrl || undefined
+      });
 
-      setReports([newReport, ...reports]);
       setIsSubmitting(false);
       setSuccessMsg(true);
       setTimeout(() => {
@@ -122,86 +110,130 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
         setTitle('');
         setDescription('');
         setPhotoName(null);
-      }, 1200);
-    }, 800);
+        setPhotoUrl(null);
+      }, 1000);
+    }, 600);
+  };
+
+  const getCategoryIcon = (cat: ReportCategory) => {
+    switch (cat) {
+      case 'borracho_cancha':
+        return <ShieldAlert className="w-5 h-5 text-rose-400" />;
+      case 'perro_peligro':
+        return <HeartPulse className="w-5 h-5 text-amber-400" />;
+      case 'fuga_agua':
+        return <Droplets className="w-5 h-5 text-cyan-400" />;
+      case 'auto_sospechoso':
+        return <Eye className="w-5 h-5 text-rose-400" />;
+      case 'luminaria':
+        return <Lightbulb className="w-5 h-5 text-yellow-400" />;
+      case 'basura':
+        return <Trash2 className="w-5 h-5 text-slate-300" />;
+      case 'ruido':
+        return <Volume2 className="w-5 h-5 text-purple-400" />;
+      default:
+        return <AlertTriangle className="w-5 h-5 text-amber-400" />;
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0B132B] border-2 border-slate-600 text-white w-full max-w-2xl rounded-3xl p-5 sm:p-8 shadow-2xl relative max-h-[92vh] flex flex-col my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0B132B] border-2 border-slate-600 text-white w-full max-w-2xl rounded-3xl p-5 sm:p-8 shadow-2xl relative max-h-[94vh] flex flex-col my-auto">
         {/* Botón Cerrar */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 p-2 text-slate-300 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
+          className="absolute right-4 top-4 sm:right-6 sm:top-6 p-2.5 text-slate-300 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
           aria-label="Cerrar modal"
         >
-          <X className="w-5 h-5" />
+          <X className="w-6 h-6" />
         </button>
 
-        {/* Encabezado */}
-        <div className="mb-4 pr-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-black border border-rose-500/40 mb-2">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-rose-400" />
-            <span>Red Vecinal Activa & Seguridad Ciudadana 24/7</span>
+        {/* Encabezado con Tipografía Grande para Adultos Mayores */}
+        <div className="mb-4 pr-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs sm:text-sm font-black border border-rose-500/40 mb-2">
+            <Radio className="w-4 h-4 animate-pulse text-rose-400" />
+            <span>Seguridad & Auxilio Barrial 24/7 • OTB {otbName}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-            Centro de Auxilio, Reportes y Emergencias Barriales
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+            Centro de Auxilio y Reportes Barriales
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Comunidad: <strong className="text-emerald-400">{otbName}</strong> • Comunicación directa entre vecinos, directiva y auxilio público.
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            Tu reporte llega al instante al Presidente, Ronda Vecinal y vecinos de tu OTB con tu código oficial de socio.
           </p>
         </div>
 
-        {/* Navegación por Pestañas de Gran Tamaño (Accesible para 40 a 60 años) */}
+        {/* Identidad del Vecino Conectado */}
+        <div className="mb-4 p-3 rounded-2xl bg-[#020617] border border-blue-500/40 flex items-center justify-between gap-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-sm">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] text-blue-300 font-bold block uppercase tracking-wide">
+                Identificado como Socio Oficial:
+              </span>
+              <strong className="text-white font-extrabold text-sm sm:text-base">
+                {customSocioCode} • {customLotName}
+              </strong>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700">
+            {otbName}
+          </span>
+        </div>
+
+        {/* Pestañas Gigantes Fáciles de Tocar (40 - 60 años) */}
         <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-[#020617] border-2 border-slate-700 mb-5">
           <button
             type="button"
             onClick={() => setActiveTab('emergencias')}
-            className={`py-3 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`py-3.5 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'emergencias'
-                ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30'
+                ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/40 scale-[1.02]'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            <PhoneCall className="w-4 h-4 text-rose-300" />
-            <span>Números de Auxilio</span>
+            <PhoneCall className="w-4 h-4 sm:w-5 h-5 text-rose-300" />
+            <span>Llamar Auxilio</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('reportar')}
-            className={`py-3 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`py-3.5 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'reportar'
-                ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30'
+                ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/40 scale-[1.02]'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
-            <span>Avisar al Barrio</span>
+            <AlertTriangle className="w-4 h-4 sm:w-5 h-5 text-slate-950" />
+            <span>Hacer Reporte</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('muro')}
-            className={`py-3 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`py-3.5 px-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'muro'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/40 scale-[1.02]'
                 : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
             }`}
           >
-            <ShieldAlert className="w-4 h-4 text-blue-300" />
-            <span>Muro en Vivo ({reports.length})</span>
+            <ShieldAlert className="w-4 h-4 sm:w-5 h-5 text-blue-300" />
+            <span>Muro ({otbReports.length})</span>
           </button>
         </div>
 
-        {/* CONTENIDO 1: NÚMEROS DE EMERGENCIA DE BOLIVIA (1-TAP CALL) */}
+        {/* TAB 1: LLAMADAS DIRECTAS DE EMERGENCIA EN BOLIVIA A 1 SOLO TOQUE */}
         {activeTab === 'emergencias' && (
-          <div className="space-y-4 overflow-y-auto pr-1">
-            <div className="p-3.5 rounded-2xl bg-rose-950/40 border-2 border-rose-500/50 text-xs text-rose-200 flex items-start gap-2.5">
-              <PhoneCall className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-3.5 overflow-y-auto pr-1">
+            <div className="p-3.5 rounded-2xl bg-rose-950/50 border-2 border-rose-500/60 text-xs sm:text-sm text-rose-200 flex items-start gap-3">
+              <PhoneCall className="w-6 h-6 text-rose-400 flex-shrink-0 mt-0.5" />
               <div>
-                <strong className="block text-white text-sm">Llamadas Directas de Urgencia:</strong>
-                <span>Presiona cualquier número para marcar al instante desde tu teléfono celular sin costo.</span>
+                <strong className="block text-white font-bold text-sm sm:text-base">
+                  Llamada Directa Inmediata:
+                </strong>
+                <span>Presiona el botón verde o rojo para marcar al instante sin tener que memorizar el número.</span>
               </div>
             </div>
 
@@ -212,38 +244,38 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                 className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-rose-400 flex items-center justify-between transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-rose-600/25 border border-rose-500 text-rose-400 flex items-center justify-center font-bold text-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-rose-400 flex items-center justify-center font-black text-xl">
                     110
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-rose-300">
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-rose-300">
                       Radiopatrullas Policía
                     </h4>
-                    <p className="text-[11px] text-slate-300">Emergencias de seguridad 24h</p>
+                    <p className="text-xs text-slate-300">Robos, sospechosos, peleas</p>
                   </div>
                 </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-rose-600 text-white shadow-sm">
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-rose-600 text-white shadow-md">
                   Llamar
                 </span>
               </a>
 
-              {/* Bomberos 119 */}
+              {/* Presidente OTB y Ronda Vecinal */}
               <a
-                href="tel:119"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-amber-400 flex items-center justify-between transition-all group shadow-md"
+                href="tel:72345678"
+                className="p-4 rounded-2xl bg-[#030712] border-2 border-blue-500/60 hover:border-blue-400 flex items-center justify-between transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-600/25 border border-amber-500 text-amber-400 flex items-center justify-center font-bold text-lg">
-                    119
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/30 border-2 border-blue-400 text-blue-300 flex items-center justify-center font-black text-sm">
+                    OTB
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-amber-300">
-                      Bomberos y Rescate
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-blue-300">
+                      Presidente de la OTB
                     </h4>
-                    <p className="text-[11px] text-slate-300">Incendios, fugas y rescates</p>
+                    <p className="text-xs text-slate-300">Don Roberto • Cel: 72345678</p>
                   </div>
                 </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 shadow-sm">
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-blue-600 text-white shadow-md">
                   Llamar
                 </span>
               </a>
@@ -254,80 +286,80 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                 className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-emerald-400 flex items-center justify-between transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-600/25 border border-emerald-500 text-emerald-400 flex items-center justify-center font-bold text-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center font-black text-xl">
                     165
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-emerald-300">
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-emerald-300">
                       Ambulancia SAMU
                     </h4>
-                    <p className="text-[11px] text-slate-300">Primeros auxilios médicos</p>
+                    <p className="text-xs text-slate-300">Desmayos, heridos, infartos</p>
                   </div>
                 </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 shadow-sm">
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 shadow-md">
                   Llamar
                 </span>
               </a>
 
-              {/* Presidente OTB / Ronda Barrial */}
+              {/* Bomberos 119 */}
               <a
-                href="tel:72345678"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-blue-400 flex items-center justify-between transition-all group shadow-md"
+                href="tel:119"
+                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-amber-400 flex items-center justify-between transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-blue-600/25 border border-blue-500 text-blue-400 flex items-center justify-center font-bold">
-                    OTB
+                  <div className="w-12 h-12 rounded-2xl bg-amber-600/25 border-2 border-amber-500 text-amber-400 flex items-center justify-center font-black text-xl">
+                    119
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-blue-300">
-                      Presidente de la OTB
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-amber-300">
+                      Bomberos y Rescate
                     </h4>
-                    <p className="text-[11px] text-slate-300">Don Roberto (Cel: 72345678)</p>
+                    <p className="text-xs text-slate-300">Fugas de gas, incendios</p>
                   </div>
                 </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-blue-600 text-white shadow-sm">
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-amber-500 text-slate-950 shadow-md">
                   Llamar
                 </span>
               </a>
 
-              {/* Alumbrado Público ELFEC */}
-              <a
-                href="tel:176"
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-yellow-400 flex items-center justify-between transition-all group shadow-md"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-yellow-500/25 border border-yellow-500 text-yellow-300 flex items-center justify-center font-bold text-lg">
-                    176
-                  </div>
-                  <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-yellow-300">
-                      Cables y Alumbrado
-                    </h4>
-                    <p className="text-[11px] text-slate-300">Cables caídos y postes sin luz</p>
-                  </div>
-                </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-yellow-500 text-slate-950 shadow-sm">
-                  Llamar
-                </span>
-              </a>
-
-              {/* SEMAPA Agua y Alcantarillado */}
+              {/* SEMAPA / Agua Potable 178 */}
               <a
                 href="tel:178"
                 className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-cyan-400 flex items-center justify-between transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-cyan-600/25 border border-cyan-500 text-cyan-300 flex items-center justify-center font-bold text-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-600/25 border-2 border-cyan-500 text-cyan-300 flex items-center justify-center font-black text-xl">
                     178
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-white text-sm group-hover:text-cyan-300">
-                      Emergencias de Agua
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-cyan-300">
+                      Agua y Alcantarillado
                     </h4>
-                    <p className="text-[11px] text-slate-300">Rotura de cañerías y pozos</p>
+                    <p className="text-xs text-slate-300">Rotura de cañería o pozo</p>
                   </div>
                 </div>
-                <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 shadow-sm">
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 shadow-md">
+                  Llamar
+                </span>
+              </a>
+
+              {/* ELFEC / Alumbrado 176 */}
+              <a
+                href="tel:176"
+                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 hover:border-yellow-400 flex items-center justify-between transition-all group shadow-md"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-yellow-500/25 border-2 border-yellow-500 text-yellow-300 flex items-center justify-center font-black text-xl">
+                    176
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-white text-sm sm:text-base group-hover:text-yellow-300">
+                      Cables y Postes de Luz
+                    </h4>
+                    <p className="text-xs text-slate-300">Cables caídos y chispas</p>
+                  </div>
+                </div>
+                <span className="text-xs sm:text-sm font-black px-4 py-2 rounded-xl bg-yellow-500 text-slate-950 shadow-md">
                   Llamar
                 </span>
               </a>
@@ -335,188 +367,339 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
           </div>
         )}
 
-        {/* CONTENIDO 2: FORMULARIO DE REPORTE CIUDADANO EN VIVO */}
+        {/* TAB 2: FORMULARIO DE REPORTE CON CATEGORÍAS REALES SOLICITADAS */}
         {activeTab === 'reportar' && (
-          <form onSubmit={handleCreateReport} className="space-y-4 overflow-y-auto pr-1 text-xs">
+          <form onSubmit={handleCreateReport} className="space-y-4 overflow-y-auto pr-1 text-xs sm:text-sm">
             {successMsg && (
-              <div className="p-3 bg-emerald-950/80 border-2 border-emerald-500 rounded-2xl text-emerald-300 text-center font-bold flex items-center justify-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                <span>¡Reporte publicado con éxito en el Muro Barrial! La directiva fue notificada.</span>
+              <div className="p-4 bg-emerald-950/90 border-2 border-emerald-500 rounded-2xl text-emerald-300 text-center font-extrabold flex items-center justify-center gap-2.5">
+                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                <span className="text-sm sm:text-base">
+                  ¡Reporte publicado con éxito! La Directiva y la Ronda Vecinal han sido alertadas.
+                </span>
               </div>
             )}
 
             <div>
-              <label className="font-bold text-slate-200 block mb-1 text-xs">
-                ¿Qué tipo de problema o incidente deseas reportar?
+              <label className="font-black text-slate-200 block mb-2 text-xs sm:text-sm uppercase tracking-wide">
+                1. Selecciona el problema que estás viendo:
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {[
-                  { id: 'cancha', label: 'Persona en la Cancha / Calle', icon: ShieldAlert },
-                  { id: 'seguridad', label: 'Sospechoso / Robo', icon: AlertTriangle },
-                  { id: 'luminaria', label: 'Luz de Poste Quemada', icon: Lightbulb },
-                  { id: 'agua', label: 'Fuga de Agua / Tubo', icon: Droplets },
-                  { id: 'basura', label: 'Basural / Escombros', icon: Trash2 },
-                  { id: 'ruido', label: 'Fiesta / Ruido Fuerte', icon: Volume2 }
-                ].map((cat) => {
-                  const Icon = cat.icon;
-                  const isSelected = category === cat.id;
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(Object.keys(CATEGORY_METADATA) as ReportCategory[]).map((catKey) => {
+                  const meta = CATEGORY_METADATA[catKey];
+                  const isSelected = category === catKey;
                   return (
                     <button
-                      key={cat.id}
+                      key={catKey}
                       type="button"
-                      onClick={() => setCategory(cat.id as any)}
-                      className={`p-3 rounded-xl border-2 flex items-center gap-2 text-left font-bold transition-all cursor-pointer ${
+                      onClick={() => {
+                        setCategory(catKey);
+                        if (!title) {
+                          if (catKey === 'borracho_cancha') setTitle('Alguien echado en la cancha / calle');
+                          if (catKey === 'perro_peligro') setTitle('Perrito atropellado o en peligro');
+                          if (catKey === 'fuga_agua') setTitle('Fuga de agua potable en la calle');
+                          if (catKey === 'auto_sospechoso') setTitle('Auto o personas sospechosas rondando');
+                          if (catKey === 'luminaria') setTitle('Poste de luz quemado / calle a oscuras');
+                          if (catKey === 'basura') setTitle('Basural clandestino o escombros');
+                          if (catKey === 'ruido') setTitle('Fiesta clandestina con exceso de bulla');
+                        }
+                      }}
+                      className={`p-3.5 rounded-2xl border-2 flex items-center gap-3 text-left font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-md'
+                          ? 'bg-amber-500/20 border-amber-400 text-white shadow-lg shadow-amber-500/20'
                           : 'bg-[#020617] border-slate-700 text-slate-300 hover:border-slate-500'
                       }`}
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-[11px] leading-tight">{cat.label}</span>
+                      <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 flex-shrink-0">
+                        {getCategoryIcon(catKey)}
+                      </div>
+                      <span className="text-xs sm:text-sm leading-snug">{meta.label}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
+            {/* Código de Socio y Lote */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="font-black text-slate-200 block mb-1 text-xs">
+                  Tu Código de Socio / Cliente:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={customSocioCode}
+                  onChange={(e) => setCustomSocioCode(e.target.value)}
+                  placeholder="ej. SOC-012"
+                  className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-mono font-bold focus:border-amber-400 text-xs sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="font-black text-slate-200 block mb-1 text-xs">
+                  Tu Manzana y Lote:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={customLotName}
+                  onChange={(e) => setCustomLotName(e.target.value)}
+                  placeholder="ej. Manzana A, Lote 12"
+                  className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-amber-400 text-xs sm:text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Título */}
             <div>
-              <label className="font-bold text-slate-200 block mb-1 text-xs">Título del Aviso:</label>
+              <label className="font-black text-slate-200 block mb-1 text-xs sm:text-sm">
+                Título Resumido del Aviso:
+              </label>
               <input
                 type="text"
                 required
-                placeholder="ej. Alguien echado en la cancha / Foco quemado calle A"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-medium focus:outline-none focus:border-amber-400 text-xs"
+                placeholder="ej. Alguien echado en la cancha / Perrito herido en la acera"
+                className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-amber-400 text-xs sm:text-sm"
               />
             </div>
 
+            {/* Ubicación y Foto */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="font-bold text-slate-200 block mb-1 text-xs">Ubicación Exacta:</label>
+                <label className="font-black text-slate-200 block mb-1 text-xs sm:text-sm">
+                  ¿En qué calle o sector está ocurriendo?
+                </label>
                 <div className="relative">
-                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
                   <input
                     type="text"
                     required
-                    placeholder="ej. Cancha Polifuncional, Manzana B"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl pl-9 pr-3 py-2.5 text-white font-medium focus:outline-none focus:border-amber-400 text-xs"
+                    placeholder="ej. Cancha Polifuncional, Manzana B"
+                    className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl pl-9 pr-3 py-2.5 text-white font-medium focus:border-amber-400 text-xs sm:text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-bold text-slate-200 block mb-1 text-xs">Adjuntar Foto (Opcional):</label>
-                <label className="border-2 border-dashed border-slate-600 hover:border-amber-400 rounded-xl p-2.5 flex items-center justify-center gap-2 cursor-pointer transition-colors bg-[#020617] text-slate-300">
-                  <Camera className="w-4 h-4 text-amber-400" />
-                  <span className="truncate text-xs font-semibold">
-                    {photoName || 'Tomar o subir foto'}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && setPhotoName(e.target.files[0].name)}
-                    className="hidden"
-                  />
+                <label className="font-black text-slate-200 block mb-1 text-xs sm:text-sm">
+                  Foto de Respaldo o Evidencia (Cámara / Galería):
                 </label>
+                {photoUrl ? (
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500/60 p-2 bg-[#020617] flex items-center gap-3">
+                    <img
+                      src={photoUrl}
+                      alt="Foto Evidencia"
+                      className="w-14 h-14 object-cover rounded-xl border border-slate-700"
+                    />
+                    <div className="flex-1 truncate">
+                      <span className="text-xs font-bold text-white block truncate">{photoName || 'Foto adjuntada'}</span>
+                      <span className="text-[10px] text-emerald-400 font-bold">✓ Lista para transmitir</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhotoName(null);
+                        setPhotoUrl(null);
+                      }}
+                      className="p-1.5 rounded-lg bg-rose-600/30 text-rose-300 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer text-xs font-bold"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                ) : (
+                  <label className="border-2 border-dashed border-slate-600 hover:border-amber-400 rounded-xl p-3 flex items-center justify-center gap-2 cursor-pointer transition-colors bg-[#020617] text-slate-300">
+                    <Camera className="w-5 h-5 text-amber-400" />
+                    <span className="truncate text-xs sm:text-sm font-semibold">
+                      Tomar foto o subir desde celular
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
+            {/* Detalles */}
             <div>
-              <label className="font-bold text-slate-200 block mb-1 text-xs">Detalles del Suceso:</label>
+              <label className="font-black text-slate-200 block mb-1 text-xs sm:text-sm">
+                Describe qué está pasando:
+              </label>
               <textarea
                 required
                 rows={3}
-                placeholder="Describe brevemente qué viste, qué hora ocurrió y si la persona o situación requiere ayuda inmediata..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl p-3 text-white font-medium focus:outline-none focus:border-amber-400 text-xs"
+                placeholder="Indica qué viste, si la persona o animalito necesita abrigo o médico, color de auto o si el agua se está inundando..."
+                className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl p-3 text-white font-medium focus:border-amber-400 text-xs sm:text-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition-all cursor-pointer"
+              className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-amber-500/30 transition-all cursor-pointer"
             >
-              <Send className="w-4 h-4" />
-              <span>{isSubmitting ? 'Transmitiendo Alerta al Barrio...' : 'Enviar Alerta Inmediata a la OTB'}</span>
+              <Send className="w-5 h-5 text-slate-950" />
+              <span>{isSubmitting ? 'Transmitiendo Alerta al Barrio...' : 'Publicar Alerta Inmediata en la OTB'}</span>
             </button>
           </form>
         )}
 
-        {/* CONTENIDO 3: MURO VECINAL EN VIVO */}
+        {/* TAB 3: MURO VECINAL EN VIVO CON ESTADOS Y GESTIÓN DIRECTA */}
         {activeTab === 'muro' && (
           <div className="space-y-3 overflow-y-auto pr-1">
-            <div className="flex items-center justify-between text-xs text-slate-400 pb-1">
-              <span>Incidentes y avisos reportados por vecinos de {otbName}:</span>
+            <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 pb-1">
+              <span>
+                Reportes comunitarios activos en <strong>{otbName}</strong>:
+              </span>
               <button
                 type="button"
                 onClick={() => setActiveTab('reportar')}
-                className="text-amber-400 hover:underline font-bold"
+                className="text-amber-400 hover:underline font-black text-xs sm:text-sm"
               >
-                + Nuevo Aviso
+                + Nuevo Reporte
               </button>
             </div>
 
-            {reports.map((rep) => (
-              <div
-                key={rep.id}
-                className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2.5 shadow-md"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
-                      {rep.category === 'cancha' ? (
-                        <ShieldAlert className="w-4 h-4" />
-                      ) : rep.category === 'luminaria' ? (
-                        <Lightbulb className="w-4 h-4" />
-                      ) : (
-                        <AlertTriangle className="w-4 h-4" />
-                      )}
-                    </span>
-                    <div>
-                      <h4 className="font-bold text-white text-xs sm:text-sm">{rep.title}</h4>
-                      <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-slate-500" />
-                        <span>{rep.location} • {rep.timestamp}</span>
-                      </p>
+            {otbReports.length === 0 ? (
+              <div className="p-8 text-center bg-[#020617] border border-slate-700 rounded-2xl text-slate-400">
+                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+                <p className="font-bold text-white text-base">Tranquilidad en el Barrio</p>
+                <p className="text-xs text-slate-400 mt-1">No hay incidentes sin resolver reportados en {otbName}.</p>
+              </div>
+            ) : (
+              otbReports.map((rep) => (
+                <div
+                  key={rep.id}
+                  className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-3 shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 flex-shrink-0">
+                        {getCategoryIcon(rep.category)}
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-white text-sm sm:text-base leading-snug">
+                          {rep.title}
+                        </h4>
+                        <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{rep.location} • <strong className="text-amber-400">{rep.timestamp}</strong></span>
+                        </p>
+                      </div>
                     </div>
+
+                    <span
+                      className={`text-[11px] font-black px-3 py-1 rounded-full border flex-shrink-0 ${
+                        rep.status === 'resuelto'
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                          : rep.status === 'en_camino'
+                          ? 'bg-rose-500/25 text-rose-300 border-rose-500/60 animate-pulse'
+                          : rep.status === 'atendiendo'
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                          : 'bg-blue-500/20 text-blue-300 border-blue-500/50'
+                      }`}
+                    >
+                      {rep.statusLabel}
+                    </span>
                   </div>
 
-                  <span
-                    className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border flex-shrink-0 ${
-                      rep.status === 'resuelto'
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                        : rep.status === 'en_camino'
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 animate-pulse'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                    }`}
-                  >
-                    {rep.statusLabel}
-                  </span>
-                </div>
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-[#0B132B] p-3 rounded-xl border border-slate-800">
+                    {rep.description}
+                  </p>
 
-                <p className="text-xs text-slate-300 leading-relaxed bg-[#0B132B] p-2.5 rounded-xl border border-slate-800">
-                  {rep.description}
-                </p>
+                  {/* Foto de Evidencia Adjunta si existe */}
+                  {rep.photoUrl && (
+                    <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-black/60 max-h-56 group">
+                      <img
+                        src={rep.photoUrl}
+                        alt="Evidencia fotográfica del reporte"
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform cursor-pointer"
+                        onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
+                        className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-black/75 hover:bg-black text-white text-[11px] font-bold border border-white/20 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-blue-400" />
+                        <span>Ver Foto Completa</span>
+                      </button>
+                    </div>
+                  )}
 
-                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-                  <span>Reportado por: <strong className="text-slate-200">{rep.reportedBy}</strong></span>
-                  <a
-                    href="tel:110"
-                    className="inline-flex items-center gap-1 text-rose-400 hover:text-rose-300 font-bold"
-                  >
-                    <PhoneCall className="w-3 h-3" /> Auxilio Policial
-                  </a>
+                  {rep.actionNotes && (
+                    <div className="p-2.5 rounded-xl bg-blue-950/60 border border-blue-500/40 text-xs text-blue-200">
+                      <strong className="text-white block font-bold mb-0.5">Respuesta de la Mesa Directiva:</strong>
+                      {rep.actionNotes}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs text-slate-400">
+                    <span className="flex items-center gap-1">
+                      Reportado por: <strong className="text-slate-200 font-bold">{rep.reportedByPublic}</strong>
+                    </span>
+
+                    {/* Acciones de Mesa Directiva / Vecinos para cambiar estado */}
+                    <div className="flex items-center gap-1.5">
+                      {rep.status !== 'en_camino' && rep.status !== 'resuelto' && (
+                        <button
+                          type="button"
+                          onClick={() => updateReportStatus(rep.id, 'en_camino', 'La Ronda Vecinal y Directiva acuden en auxilio.')}
+                          className="px-2.5 py-1 rounded-lg bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/50 text-[11px] font-black cursor-pointer"
+                        >
+                          Marcar "En Camino"
+                        </button>
+                      )}
+                      {rep.status !== 'resuelto' && (
+                        <button
+                          type="button"
+                          onClick={() => updateReportStatus(rep.id, 'resuelto', 'Incidente atendido y resuelto favorablemente por la comunidad.')}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/50 text-[11px] font-black cursor-pointer flex items-center gap-1"
+                        >
+                          <Check className="w-3 h-3" /> Resuelto
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </div>
+
+      {/* Lightbox / Foto Ampliada en Pantalla Completa */}
+      {enlargedPhoto && (
+        <div
+          className="fixed inset-0 z-60 bg-black/95 flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setEnlargedPhoto(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden border-2 border-slate-600 bg-black">
+            <button
+              onClick={() => setEnlargedPhoto(null)}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-black/80 text-white hover:bg-rose-600 transition-colors cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={enlargedPhoto}
+              alt="Foto Evidencia Completa"
+              className="w-full h-full object-contain"
+            />
+            <div className="p-3 bg-slate-900/90 text-center text-xs text-slate-300">
+              Evidencia fotográfica transmitida en vivo a la Directiva y Ronda Vecinal
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

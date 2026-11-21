@@ -1,18 +1,7 @@
-// Service Worker Offline para Xentra OTB PWA
-const CACHE_NAME = 'xentra-otb-cache-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/xentra-logo.svg',
-  '/manifest.json'
-];
+// Service Worker para Xentra OTB PWA (Estrategia Network-First con Fallback Seguro)
+const CACHE_NAME = 'xentra-otb-cache-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -26,26 +15,39 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Solo interceptar peticiones GET del mismo origen o CDN de assets
   if (event.request.method !== 'GET') return;
 
+  // Para navegación HTML y rutas SPA: SIEMPRE IR A LA RED PRIMERO
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((res) => res || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // Para assets JS/CSS estáticos: Network-First para evitar hashes desactualizados
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        // Si no hay red y solicita HTML, devolver la app shell de index.html
-        if (event.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/index.html');
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }
-      });
-    })
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

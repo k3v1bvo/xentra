@@ -7,14 +7,14 @@ interface TiltCard3DProps {
 }
 
 /**
- * TiltCard3D — Tarjeta Espacial con Profundidad 3D y Efecto Vidrio
- * Aplica inclinación física interactiva en los ejes X e Y según la posición del cursor.
- * Añade destello especular dinámico que sigue el ángulo de la luz.
+ * TiltCard3D — Tarjeta Espacial de Alto Contraste y Nitidez
+ * Aplica inclinación física interactiva suave sin romper el apilamiento de capas
+ * ni hacer invisibles los textos en navegadores móviles (iOS/Android/WebKit).
  */
 export const TiltCard3D: React.FC<TiltCard3DProps> = ({
   children,
   className = '',
-  intensity = 12
+  intensity = 6
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotateX, setRotateX] = useState(0);
@@ -40,7 +40,7 @@ export const TiltCard3D: React.FC<TiltCard3DProps> = ({
 
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
-    setGlarePos({ x: glareX, y: glareY, opacity: 0.25 });
+    setGlarePos({ x: glareX, y: glareY, opacity: 0.18 });
   };
 
   const handleMouseLeave = () => {
@@ -51,31 +51,27 @@ export const TiltCard3D: React.FC<TiltCard3DProps> = ({
 
   return (
     <div
-      style={{ perspective: '1000px' }}
-      className="w-full"
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transition: 'transform 0.18s ease-out, box-shadow 0.18s ease-out',
+        willChange: 'transform'
+      }}
+      className={`relative overflow-hidden transition-all duration-200 ${className}`}
     >
+      {/* Destello especular de luz 3D suave (sin oscurecer ni ocultar texto) */}
       <div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        className="pointer-events-none absolute inset-0 z-20 transition-opacity duration-300"
         style={{
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          transition: 'transform 0.15s ease-out, box-shadow 0.15s ease-out',
-          transformStyle: 'preserve-3d'
+          background: `radial-gradient(circle 380px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, ${glarePos.opacity}), transparent 75%)`
         }}
-        className={`relative overflow-hidden transition-all duration-200 ${className}`}
-      >
-        {/* Destello especular 3D */}
-        <div
-          className="pointer-events-none absolute inset-0 z-30 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle 320px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, ${glarePos.opacity}), transparent 80%)`
-          }}
-        />
+      />
 
-        <div style={{ transform: 'translateZ(18px)' }}>
-          {children}
-        </div>
+      {/* Contenido con contraste garantizado */}
+      <div className="relative z-10 w-full">
+        {children}
       </div>
     </div>
   );

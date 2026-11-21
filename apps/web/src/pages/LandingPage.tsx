@@ -395,7 +395,7 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* Buscador Interactivo con Efecto 3D Tilt */}
-        <TiltCard3D intensity={5} className="bg-slate-900/80 border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl space-y-4">
+        <TiltCard3D intensity={5} className="bg-slate-900/90 border-2 border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl space-y-4">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -404,13 +404,13 @@ export const LandingPage: React.FC = () => {
             className="flex flex-col sm:flex-row gap-3"
           >
             <div className="relative flex-1">
-              <Search className="w-5 h-5 text-slate-500 absolute left-3.5 top-3.5" />
+              <Search className="w-5 h-5 text-blue-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Ingresa tu Código (ej. Lote 12, 7412589, ADM-TES)..."
-                className="w-full bg-slate-950/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 font-mono focus:outline-none focus:border-blue-500 transition-colors"
+                placeholder="Ingresa tu Código (ej. Lote 12, SOC-012, 7412589, ADM-TES)..."
+                className="w-full bg-[#020617] border-2 border-slate-600 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-400 font-mono focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all"
               />
             </div>
 
@@ -423,15 +423,16 @@ export const LandingPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Chips Sugeridos para Prueba Rápida */}
+          {/* Chips Sugeridos para Prueba Rápida de Alto Contraste */}
           <div className="flex flex-wrap items-center gap-2 text-xs pt-1">
-            <span className="text-[11px] text-slate-400 font-medium">Pruebas sugeridas:</span>
+            <span className="text-[11px] text-slate-300 font-bold">Pruebas sugeridas:</span>
             {[
               { label: 'Lote 12 (Vecino con deuda)', val: 'Lote 12' },
-              { label: 'Lote 05 (Vecino al día)', val: 'Lote 05' },
+              { label: 'SOC-005 (Vecino al día)', val: 'SOC-005' },
+              { label: 'SOC-014 (Vecino al día)', val: 'SOC-014' },
               { label: 'ADM-TES (Tesorero OTB)', val: 'ADM-TES' },
               { label: 'ADM-PRES (Presidente OTB)', val: 'ADM-PRES' },
-              { label: 'SUPERADMIN (Control)', val: 'SUPERADMIN' }
+              { label: 'SUPERADMIN (Control Nacional)', val: 'SUPERADMIN' }
             ].map((chip) => (
               <button
                 key={chip.val}
@@ -440,7 +441,7 @@ export const LandingPage: React.FC = () => {
                   setSearchInput(chip.val);
                   handleSearchCode(chip.val);
                 }}
-                className="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-[11px] font-medium border border-slate-700/80 backdrop-blur-sm transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600 text-slate-100 hover:text-white text-[11px] font-bold border border-slate-600 hover:border-blue-400 backdrop-blur-sm transition-all shadow-sm cursor-pointer"
               >
                 {chip.label}
               </button>
@@ -452,26 +453,26 @@ export const LandingPage: React.FC = () => {
         {resolvedResult && (
           <div className="space-y-3">
             <div className="flex items-center justify-between px-2">
-              <span className="text-xs font-bold text-slate-400">Resultado de Consulta Privada:</span>
+              <span className="text-xs font-bold text-slate-300">Resultado de Consulta Privada:</span>
               <button
                 onClick={() => {
                   setResolvedResult(null);
                   setSearchInput('');
                 }}
-                className="text-xs text-slate-400 hover:text-rose-400 underline flex items-center gap-1 cursor-pointer"
+                className="text-xs text-rose-300 hover:text-rose-200 underline flex items-center gap-1 cursor-pointer font-bold"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Cerrar resultado</span>
               </button>
             </div>
 
-            <TiltCard3D intensity={6} className="bg-slate-900/85 border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6 animate-in fade-in duration-300">
+            <TiltCard3D intensity={5} className="bg-[#0B132B] border-2 border-blue-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6 animate-in fade-in duration-300">
               {/* Cabecera del Resultado */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700/80">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold flex-shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/30 border border-blue-400/50 text-blue-300 flex items-center justify-center font-bold flex-shrink-0">
                     {resolvedResult.type === 'neighbor' ? (
-                      <Home className="w-6 h-6" />
+                      <Home className="w-6 h-6 text-blue-300" />
                     ) : resolvedResult.type === 'admin' ? (
                       <Building2 className="w-6 h-6 text-emerald-400" />
                     ) : (
@@ -481,31 +482,31 @@ export const LandingPage: React.FC = () => {
 
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-slate-400 font-mono">{resolvedResult.otbCode}</span>
-                      <span className="text-xs text-slate-600">•</span>
-                      <span className="text-xs font-bold text-blue-400">{resolvedResult.department}</span>
+                      <span className="text-xs font-bold text-blue-300 font-mono bg-blue-950/90 px-2 py-0.5 rounded border border-blue-700/80">{resolvedResult.otbCode}</span>
+                      <span className="text-xs text-slate-400">•</span>
+                      <span className="text-xs font-extrabold text-emerald-400">{resolvedResult.department}</span>
                     </div>
-                    <h2 className="text-lg sm:text-xl font-bold text-white">{resolvedResult.otbName}</h2>
+                    <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">{resolvedResult.otbName}</h2>
                   </div>
                 </div>
 
-                {/* Badges de Estado */}
+                {/* Badges de Estado de Alto Contraste */}
                 <div>
                   {resolvedResult.status === 'con_deuda' ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      <AlertCircle className="w-3.5 h-3.5" /> Saldo Pendiente de Pago
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-500/25 text-amber-300 border-2 border-amber-400 shadow-sm">
+                      <AlertCircle className="w-4 h-4 text-amber-400" /> Saldo Pendiente de Pago
                     </span>
                   ) : resolvedResult.status === 'al_dia' ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Al Día sin Deudas
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-500/25 text-emerald-300 border-2 border-emerald-400 shadow-sm">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Al Día sin Deudas
                     </span>
                   ) : resolvedResult.status === 'directiva' ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      <Building2 className="w-3.5 h-3.5" /> Mesa Directiva de la OTB
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-500/25 text-emerald-300 border-2 border-emerald-400 shadow-sm">
+                      <Building2 className="w-4 h-4 text-emerald-400" /> Mesa Directiva de la OTB
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Superadministrador Nacional
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-purple-500/25 text-purple-300 border-2 border-purple-400 shadow-sm">
+                      <ShieldCheck className="w-4 h-4 text-purple-400" /> Superadministrador Nacional
                     </span>
                   )}
                 </div>
@@ -516,50 +517,54 @@ export const LandingPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Datos del Inmueble (Protegidos) */}
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2">
+                    <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2 shadow-md">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Inmueble Censado</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-300">Inmueble Censado</span>
+                        <span className="text-[11px] font-extrabold px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 font-mono border border-blue-500/50">
                           Código: {resolvedResult.socioCode || resolvedResult.code}
                         </span>
                       </div>
-                      <p className="text-sm font-bold text-white">{resolvedResult.lotName}</p>
-                      <div className="text-xs text-slate-400 space-y-0.5 pt-1">
-                        <p>Titular de la Ficha: <span className="font-mono text-slate-300">{resolvedResult.maskedName}</span></p>
-                        <p>Cédula de Identidad: <span className="font-mono text-slate-300">{resolvedResult.maskedCi}</span></p>
-                        <p>Manzano / Bloque: <span className="text-slate-300 font-semibold">{resolvedResult.blockName || 'Manzana A'}</span></p>
+                      <p className="text-base font-black text-white">{resolvedResult.lotName}</p>
+                      <div className="text-xs text-slate-200 space-y-1 pt-1">
+                        <p><span className="text-slate-400 font-medium">Titular Ficha:</span> <strong className="font-mono text-emerald-300">{resolvedResult.maskedName}</strong></p>
+                        <p><span className="text-slate-400 font-medium">Cédula Identidad:</span> <strong className="font-mono text-slate-100">{resolvedResult.maskedCi}</strong></p>
+                        <p><span className="text-slate-400 font-medium">Manzano / Bloque:</span> <strong className="text-white">{resolvedResult.blockName || 'Manzana A'}</strong></p>
                       </div>
-                      <p className="text-[10px] text-slate-500 italic pt-1 flex items-center gap-1">
-                        <Lock className="w-3 h-3 text-slate-500" />
+                      <p className="text-[11px] text-slate-400 pt-1 flex items-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
                         <span>Identidad anonimizada por normativa de protección comunitaria.</span>
                       </p>
                     </div>
 
                     {/* Estado Financiero */}
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-2 flex flex-col justify-between">
+                    <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2 flex flex-col justify-between shadow-md">
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Deuda Total Pendiente</span>
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Deuda Total Pendiente</span>
                         <p className="text-2xl sm:text-3xl font-black font-mono text-white mt-1">
                           {formatBOB(resolvedResult.totalDebt)}
                         </p>
                       </div>
 
-                      <div className="text-xs">
+                      <div className="text-xs pt-1">
                         {resolvedResult.totalDebt > 0 ? (
-                          <p className="text-amber-400 font-medium">{resolvedResult.unsettledConcept}</p>
+                          <p className="text-amber-300 font-bold bg-amber-950/40 p-2 rounded-xl border border-amber-800/60">
+                            {resolvedResult.unsettledConcept}
+                          </p>
                         ) : (
-                          <p className="text-emerald-400 font-medium">Todas tus cuotas comunitarias están cubiertas.</p>
+                          <p className="text-emerald-300 font-bold bg-emerald-950/40 p-2 rounded-xl border border-emerald-800/60">
+                            ✓ Todas tus cuotas comunitarias están cubiertas.
+                          </p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Botones de Acción */}
+                  {/* Botones de Acción de Alto Contraste */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                     {resolvedResult.totalDebt > 0 && (
                       <button
                         onClick={() => setIsQrModalOpen(true)}
-                        className="py-3 px-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                        className="py-3 px-3 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
                       >
                         <QrCode className="w-4 h-4 text-slate-950" />
                         <span>Pagar con QR</span>
@@ -568,7 +573,7 @@ export const LandingPage: React.FC = () => {
 
                     <button
                       onClick={() => setIsPrintModalOpen(true)}
-                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-emerald-500/50 transition-all cursor-pointer shadow-sm"
                     >
                       <Printer className="w-4 h-4 text-emerald-400" />
                       <span>Imprimir Detalle</span>
@@ -576,7 +581,7 @@ export const LandingPage: React.FC = () => {
 
                     <button
                       onClick={handleEnterNeighborPortal}
-                      className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all cursor-pointer"
+                      className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
                     >
                       <FileCheck className="w-4 h-4" />
                       <span>Ver Mi Portal</span>
@@ -584,7 +589,7 @@ export const LandingPage: React.FC = () => {
 
                     <button
                       onClick={() => setIsEmailModalOpen(true)}
-                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-blue-600 text-blue-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-blue-500/50 transition-all cursor-pointer shadow-sm"
                     >
                       <Mail className="w-4 h-4 text-blue-400" />
                       <span>Recibo por Correo</span>
@@ -596,19 +601,19 @@ export const LandingPage: React.FC = () => {
               {/* CASO 2: ADMIN / DIRECTIVA */}
               {resolvedResult.type === 'admin' && (
                 <div className="space-y-5">
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Acceso Autorizado de Directiva</span>
-                    <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
-                    <p className="text-xs text-slate-400">
+                  <div className="p-4 rounded-2xl bg-[#030712] border-2 border-emerald-500/40 space-y-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Acceso Autorizado de Directiva</span>
+                    <p className="text-base font-bold text-white">{resolvedResult.role}</p>
+                    <p className="text-xs text-slate-300">
                       Has sido reconocido como parte de la mesa directiva de <strong>{resolvedResult.otbName}</strong>. Accede a tu panel para administrar cuotas, registrar cobros, verificar vouchers de vecinos y generar informes de asamblea.
                     </p>
                   </div>
 
                   <button
                     onClick={() => handleEnterAdminPanel(resolvedResult.code === 'ADM-PRES' ? 'presidente' : 'tesorero')}
-                    className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
+                    className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
                   >
-                    <Building2 className="w-4 h-4" />
+                    <Building2 className="w-4 h-4 text-slate-950" />
                     <span>Ingresar al Panel Administrativo de tu OTB →</span>
                   </button>
                 </div>
@@ -617,10 +622,10 @@ export const LandingPage: React.FC = () => {
               {/* CASO 3: SUPERADMIN */}
               {resolvedResult.type === 'superadmin' && (
                 <div className="space-y-5">
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-purple-500/30 space-y-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Privilegios Globales a Nivel de Servidor</span>
-                    <p className="text-sm font-bold text-white">{resolvedResult.role}</p>
-                    <p className="text-xs text-slate-400">
+                  <div className="p-4 rounded-2xl bg-[#030712] border-2 border-purple-500/50 space-y-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-purple-300">Privilegios Globales a Nivel de Servidor</span>
+                    <p className="text-base font-bold text-white">{resolvedResult.role}</p>
+                    <p className="text-xs text-slate-300">
                       Supervisión multi-tenant de todas las organizaciones territoriales de base de Bolivia, creación de nuevas OTBs y aprobación de solicitudes barriales.
                     </p>
                   </div>
@@ -656,61 +661,61 @@ export const LandingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Pilar 1: QR Simple */}
-            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-blue-500/40 transition-colors">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center">
-                <QrCode className="w-5 h-5" />
+            <div className="p-6 rounded-3xl bg-[#0F172A] border-2 border-slate-700/80 backdrop-blur-md space-y-3 hover:border-blue-400 transition-all shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/40 text-blue-300 flex items-center justify-center">
+                <QrCode className="w-5 h-5 text-blue-300" />
               </div>
               <h3 className="font-bold text-white text-base">Recaudación QR Simple Bancario</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-200 leading-relaxed">
                 Los vecinos pagan desde cualquier banco o cooperativa de Bolivia (Banco Unión, BCP, BNB, Banco Sol, Fie). Se acabaron las filas los fines de semana en la sede: escanean, pagan y adjuntan su comprobante al instante.
               </p>
-              <div className="pt-2 text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5" />
+              <div className="pt-2 text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Recibo digital oficial con código de verificación antifraude.</span>
               </div>
             </div>
 
             {/* Pilar 2: XENTRA TRACE */}
-            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-emerald-500/40 transition-colors">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
-                <Layers className="w-5 h-5" />
+            <div className="p-6 rounded-3xl bg-[#0F172A] border-2 border-slate-700/80 backdrop-blur-md space-y-3 hover:border-emerald-400 transition-all shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center">
+                <Layers className="w-5 h-5 text-emerald-300" />
               </div>
               <h3 className="font-bold text-white text-base">Contabilidad Inmutable (XENTRA TRACE)</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-200 leading-relaxed">
                 Transparencia radical. Cada centavo que ingresa por cuotas ordinarias o aportes especiales para tinglados, alumbrado o seguridad tiene doble partida contable y respaldo fotográfico obligatorio de la factura o gasto.
               </p>
-              <div className="pt-2 text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5" />
+              <div className="pt-2 text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Cero gastos sin justificar. Historial permanente auditado.</span>
               </div>
             </div>
 
             {/* Pilar 3: XENTRA VOTA */}
-            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-purple-500/40 transition-colors">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center">
-                <Vote className="w-5 h-5" />
+            <div className="p-6 rounded-3xl bg-[#0F172A] border-2 border-slate-700/80 backdrop-blur-md space-y-3 hover:border-purple-400 transition-all shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/40 text-purple-300 flex items-center justify-center">
+                <Vote className="w-5 h-5 text-purple-300" />
               </div>
               <h3 className="font-bold text-white text-base">Asambleas y Democracia Digital (XENTRA VOTA)</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-200 leading-relaxed">
                 Convoca asambleas ordinarias y extraordinarias con orden del día formal. Registra el quórum de vecinos presentes y somete a votación proyectos barriales con actas digitales inviolables que evitan impugnaciones.
               </p>
-              <div className="pt-2 text-[11px] font-bold text-purple-400 flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5" />
+              <div className="pt-2 text-[11px] font-bold text-purple-300 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-purple-400" />
                 <span>Actas emitidas con firma de directiva y validación comunitaria.</span>
               </div>
             </div>
 
             {/* Pilar 4: AI Auditor */}
-            <div className="p-6 rounded-3xl bg-slate-900/70 border border-white/10 backdrop-blur-md space-y-3 hover:border-amber-500/40 transition-colors">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
+            <div className="p-6 rounded-3xl bg-[#0F172A] border-2 border-slate-700/80 backdrop-blur-md space-y-3 hover:border-amber-400 transition-all shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-amber-300" />
               </div>
               <h3 className="font-bold text-white text-base">Auditoría Algorítmica Preventiva</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-200 leading-relaxed">
                 Entrega de gestión sin conflictos. El motor auditor analiza los balances mensuales, detecta anomalías y emite informes técnicos claros para que la directiva saliente entregue su gestión con total tranquilidad y respaldo.
               </p>
-              <div className="pt-2 text-[11px] font-bold text-amber-400 flex items-center gap-1.5">
-                <Check className="w-3.5 h-3.5" />
+              <div className="pt-2 text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-amber-400" />
                 <span>Informes periciales descargables en PDF para asambleas generales.</span>
               </div>
             </div>
@@ -720,31 +725,31 @@ export const LandingPage: React.FC = () => {
         {/* ======================================================== */}
         {/* SECCIÓN 2: POLÍTICA DE BLINDAJE Y PRIVACIDAD TOTAL       */}
         {/* ======================================================== */}
-        <section className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-emerald-500/30 backdrop-blur-xl space-y-4">
+        <section className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-emerald-500/50 backdrop-blur-xl space-y-4 shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <EyeOff className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center flex-shrink-0">
+              <EyeOff className="w-5 h-5 text-emerald-300" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white">
+              <h3 className="text-base sm:text-lg font-black text-white">
                 Blindaje de Privacidad: Cero Exposición de Datos entre Vecinos
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-300">
                 Por qué en Xentra no verás listas públicas de vecinos ni deudores expuestos.
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 space-y-2">
-            <p>
+          <div className="p-5 rounded-2xl bg-[#030712] border-2 border-slate-700 text-xs text-slate-200 space-y-2">
+            <p className="leading-relaxed">
               En muchas comunidades se acostumbra pegar listas impresas en la puerta de la sede barrial o difundir planillas con nombres completos y montos en grupos abiertos de WhatsApp. Esta práctica <strong className="text-white">vulnera la seguridad física y económica de las familias</strong>.
             </p>
-            <p>
+            <p className="leading-relaxed font-semibold text-white">
               En <strong>XENTRA OTB</strong>, la privacidad es prioritaria:
             </p>
-            <ul className="list-disc list-inside space-y-1 text-slate-400 pl-1">
+            <ul className="list-disc list-inside space-y-1.5 text-slate-200 pl-1">
               <li>Cada vecino consulta exclusivamente su propio lote utilizando su código privado o cédula.</li>
-              <li>Los nombres y documentos de identidad se muestran anonimizados (<code className="text-emerald-400">J*** J*** F***</code>) para evitar usurpación o espionaje vecinal.</li>
+              <li>Los nombres y documentos de identidad se muestran anonimizados (<code className="text-emerald-300 font-bold bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800">J*** J*** F***</code>) para evitar usurpación o espionaje vecinal.</li>
               <li>Ningún vecino puede ver las deudas de otros vecinos, ni explorar padrones de otras OTBs.</li>
               <li>Únicamente la mesa directiva acreditada y el superadministrador tienen visibilidad de la tesorería global de su respectiva OTB.</li>
             </ul>
@@ -754,46 +759,46 @@ export const LandingPage: React.FC = () => {
         {/* ======================================================== */}
         {/* SECCIÓN 3: CÓMO SOLICITAR ACCESO PARA MANEJAR TU OTB     */}
         {/* ======================================================== */}
-        <section className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950/70 border border-blue-500/30 space-y-6">
+        <section className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0F172A] via-[#0B132B] to-[#0A192F] border-2 border-blue-500/50 space-y-6 shadow-xl">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block">
+            <span className="text-xs font-black text-emerald-300 uppercase tracking-widest block">
               Para Dirigentes, Presidentes y Mesas Directivas
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-white">
               ¿Cómo solicitar acceso para digitalizar y manejar tu OTB?
             </h2>
-            <p className="text-xs text-slate-300 max-w-lg mx-auto">
+            <p className="text-xs text-slate-200 max-w-lg mx-auto">
               Sigue estos 3 pasos para incorporar tu comunidad a la Red Nacional de Xentra:
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
-              <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+            <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2 text-center sm:text-left shadow-md">
+              <span className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center mx-auto sm:mx-0 shadow">
                 1
               </span>
-              <h4 className="font-bold text-white text-xs">Postula tu OTB</h4>
-              <p className="text-[11px] text-slate-400">
+              <h4 className="font-extrabold text-white text-xs">Postula tu OTB</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
                 Llena el formulario con los datos de tu comunidad, departamento, municipio y teléfono del presidente o tesorero.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
-              <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+            <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2 text-center sm:text-left shadow-md">
+              <span className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center mx-auto sm:mx-0 shadow">
                 2
               </span>
-              <h4 className="font-bold text-white text-xs">Validación & Código Único</h4>
-              <p className="text-[11px] text-slate-400">
-                El Superadministrador Nacional revisa la solicitud vecinal y emite el código institucional oficial (ej. <code className="text-emerald-400">OTB-CBBA-001</code>).
+              <h4 className="font-extrabold text-white text-xs">Validación & Código Único</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                El Superadministrador Nacional revisa la solicitud vecinal y emite el código institucional oficial (ej. <code className="text-emerald-300 font-bold">OTB-CBBA-001</code>).
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2 text-center sm:text-left">
-              <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center mx-auto sm:mx-0">
+            <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-2 text-center sm:text-left shadow-md">
+              <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-black text-xs flex items-center justify-center mx-auto sm:mx-0 shadow">
                 3
               </span>
-              <h4 className="font-bold text-white text-xs">Padrón y Recaudación QR</h4>
-              <p className="text-[11px] text-slate-400">
+              <h4 className="font-extrabold text-white text-xs">Padrón y Recaudación QR</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
                 La directiva recibe acceso a su panel privado, registra los lotes y comienza a recaudar por QR Simple con recibos oficiales inmediatos.
               </p>
             </div>
@@ -802,7 +807,7 @@ export const LandingPage: React.FC = () => {
           <div className="text-center pt-2">
             <button
               onClick={() => setIsRequestModalOpen(true)}
-              className="py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs inline-flex items-center gap-2 shadow-xl shadow-emerald-500/25 transition-all cursor-pointer"
+              className="py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 font-black text-xs inline-flex items-center gap-2 shadow-xl shadow-emerald-500/25 transition-all cursor-pointer"
             >
               <Building2 className="w-4 h-4 text-slate-950" />
               <span>Solicitar Registro de mi OTB al Superadministrador Nacional →</span>
@@ -818,28 +823,28 @@ export const LandingPage: React.FC = () => {
 
       {/* MODAL 1: Pagar por QR Simple */}
       {isQrModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0B132B] border-2 border-slate-600 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setIsQrModalOpen(false)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+              className="absolute right-5 top-5 p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/25 text-emerald-300 text-xs font-black border border-emerald-500/40 mb-2">
                 <QrCode className="w-3.5 h-3.5" />
                 <span>QR Simple • Transferencia Bancaria</span>
               </div>
-              <h3 className="text-lg font-black text-white">Pagar con Código QR Simple</h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <h3 className="text-xl font-black text-white">Pagar con Código QR Simple</h3>
+              <p className="text-xs text-slate-300 mt-1">
                 Transfiere desde cualquier banco de Bolivia (Banco Unión, BCP, BNB, Sol) y adjunta tu comprobante.
               </p>
             </div>
 
             {/* Código QR Visual */}
-            <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
+            <div className="p-4 bg-[#020617] border-2 border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
               <div className="w-44 h-44 bg-white rounded-2xl p-2.5 shadow-sm flex items-center justify-center">
                 <svg className="w-full h-full text-slate-950" viewBox="0 0 100 100" fill="currentColor">
                   <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
@@ -858,14 +863,14 @@ export const LandingPage: React.FC = () => {
               </div>
 
               <div>
-                <p className="text-xs font-bold text-white">Monto a abonar: {formatBOB(parseFloat(payAmount) || 50)}</p>
-                <p className="text-[11px] text-slate-400 font-mono mt-0.5">Banco Unión • Cta: 10000034891230</p>
+                <p className="text-sm font-black text-white">Monto a abonar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
+                <p className="text-xs text-slate-300 font-mono mt-0.5">Banco Unión • Cta: 10000034891230</p>
               </div>
 
               <button
                 type="button"
                 onClick={handleCopyAccount}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"
               >
                 {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedAccount ? '¡Número de cuenta copiado!' : 'Copiar número de cuenta'}</span>
@@ -886,22 +891,22 @@ export const LandingPage: React.FC = () => {
               className="space-y-4 text-xs"
             >
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Monto Depositado (Bs.):</label>
+                <label className="font-bold text-slate-200 block mb-1">Monto Depositado (Bs.):</label>
                 <input
                   type="number"
                   step="0.50"
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 font-mono text-white font-bold focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 font-mono text-white font-bold focus:outline-none focus:border-emerald-400"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Adjuntar Captura o Foto del Voucher:</label>
-                <label className="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-950">
-                  <Upload className="w-6 h-6 text-slate-400 mb-1" />
-                  <span className="text-xs font-semibold text-slate-300">
+                <label className="font-bold text-slate-200 block mb-1">Adjuntar Captura o Foto del Voucher:</label>
+                <label className="border-2 border-dashed border-slate-500 hover:border-blue-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#020617]">
+                  <Upload className="w-6 h-6 text-blue-400 mb-1" />
+                  <span className="text-xs font-bold text-slate-200">
                     {selectedFileName || 'Seleccionar captura o foto de depósito'}
                   </span>
                   <input
@@ -916,9 +921,9 @@ export const LandingPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isUploading}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
               >
-                <Upload className="w-4 h-4" />
+                <Upload className="w-4 h-4 text-slate-950" />
                 <span>{isUploading ? 'Enviando Comprobante...' : 'Enviar Comprobante a Tesorería'}</span>
               </button>
             </form>
@@ -928,43 +933,43 @@ export const LandingPage: React.FC = () => {
 
       {/* MODAL 2: Notificaciones por Correo Google SMTP (ayni protocol) */}
       {isEmailModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0B132B] border-2 border-slate-600 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative">
             <button
               onClick={() => setIsEmailModalOpen(false)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+              className="absolute right-5 top-5 p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/25 text-blue-300 text-xs font-black border border-blue-500/40 mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Google SMTP • Notificación Oficial</span>
               </div>
-              <h3 className="text-lg font-black text-white">Recibir Recibos por Correo</h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <h3 className="text-xl font-black text-white">Recibir Recibos por Correo</h3>
+              <p className="text-xs text-slate-300 mt-1">
                 Registra tu correo electrónico para recibir automáticamente tus recibos digitales oficiales y convocatorias a asambleas emitidas por la OTB.
               </p>
             </div>
 
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-[11px] text-slate-400 space-y-1">
-              <p><strong>Servidor SMTP:</strong> <code>{GOOGLE_SMTP_CONFIG.host} (SSL 465)</code></p>
-              <p><strong>Remitente Autorizado:</strong> <code className="text-blue-400">{GOOGLE_SMTP_CONFIG.user}</code></p>
+            <div className="p-3 bg-[#020617] border-2 border-slate-700 rounded-xl text-xs text-slate-300 space-y-1">
+              <p><strong className="text-white">Servidor SMTP:</strong> <code className="text-blue-300">{GOOGLE_SMTP_CONFIG.host} (SSL 465)</code></p>
+              <p><strong className="text-white">Remitente Autorizado:</strong> <code className="text-emerald-300 font-bold">{GOOGLE_SMTP_CONFIG.user}</code></p>
             </div>
 
             <form onSubmit={handleSendEmailNotification} className="space-y-4 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Tu Correo Electrónico:</label>
+                <label className="font-bold text-slate-200 block mb-1">Tu Correo Electrónico:</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
                     type="email"
                     required
                     value={neighborEmail}
                     onChange={(e) => setNeighborEmail(e.target.value)}
                     placeholder="ej. mi.correo@gmail.com"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl pl-9 pr-3 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 font-medium"
                   />
                 </div>
               </div>
@@ -972,7 +977,7 @@ export const LandingPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={sendingEmail || emailSentSuccess}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
               >
                 <Send className="w-4 h-4" />
                 <span>
@@ -990,94 +995,94 @@ export const LandingPage: React.FC = () => {
 
       {/* MODAL 3: Solicitar Nueva OTB */}
       {isRequestModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#0B132B] border-2 border-slate-600 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setIsRequestModalOpen(false)}
-              className="absolute right-5 top-5 p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+              className="absolute right-5 top-5 p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <h3 className="text-lg font-bold text-white">Solicitud de Incorporación de OTB</h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <h3 className="text-xl font-black text-white">Solicitud de Incorporación de OTB</h3>
+              <p className="text-xs text-slate-300 mt-1">
                 Completa los datos de tu comunidad para que el Superadministrador apruebe su alta institucional.
               </p>
             </div>
 
             <form onSubmit={handleSendRequest} className="space-y-4 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Nombre Oficial de la OTB / Barrio:</label>
+                <label className="font-bold text-slate-200 block mb-1">Nombre Oficial de la OTB / Barrio:</label>
                 <input
                   type="text"
                   required
                   placeholder="ej. OTB San Pedro Central"
                   value={otbName}
                   onChange={(e) => setOtbName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Departamento:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Departamento:</label>
                   <select
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-400 font-medium cursor-pointer"
                   >
                     {['Cochabamba', 'La Paz', 'Santa Cruz', 'Chuquisaca', 'Oruro', 'Potosí', 'Tarija', 'Beni', 'Pando'].map((d) => (
-                      <option key={d} value={d}>{d}</option>
+                      <option key={d} value={d} className="bg-slate-900 text-white">{d}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Municipio:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Municipio:</label>
                   <input
                     type="text"
                     required
                     placeholder="ej. Cercado"
                     value={municipality}
                     onChange={(e) => setMunicipality(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-medium"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Zona / Distrito:</label>
+                <label className="font-bold text-slate-200 block mb-1">Zona / Distrito:</label>
                 <input
                   type="text"
                   required
                   placeholder="ej. Distrito 4 - Zona Noroeste"
                   value={zone}
                   onChange={(e) => setZone(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Nombre Presidente / Dirigente:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Nombre Presidente / Dirigente:</label>
                   <input
                     type="text"
                     required
                     placeholder="ej. Mario Gutiérrez"
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-medium"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Celular / WhatsApp:</label>
+                  <label className="font-bold text-slate-200 block mb-1">Celular / WhatsApp:</label>
                   <input
                     type="tel"
                     required
                     placeholder="ej. 76543210"
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-[#020617] border-2 border-slate-500 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400 font-mono font-medium"
                   />
                 </div>
               </div>
@@ -1085,9 +1090,9 @@ export const LandingPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={requestSent}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-600/30 transition-all mt-4"
+                className="w-full py-3.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/30 transition-all mt-4 cursor-pointer"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 text-slate-950" />
                 <span>{requestSent ? 'Enviando Solicitud...' : 'Enviar Solicitud al Superadministrador'}</span>
               </button>
             </form>

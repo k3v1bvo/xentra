@@ -33,7 +33,7 @@ import {
   OtbPaymentConfig
 } from '../stores/paymentVerificationStore';
 import { OfficialMonthlyReceiptsPrintModal } from '../components/OfficialMonthlyReceiptsPrintModal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface PaymentMock {
   id: string;
@@ -97,9 +97,19 @@ export const FinanzasPage: React.FC = () => {
   } = usePaymentVerificationStore();
 
   const [payments, setPayments] = useState(INITIAL_PAYMENTS);
+  const [searchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab') as 'pagos' | 'verificaciones' | 'config_qr' | 'cuotas' | 'arqueo' | null;
+
   const [activeTab, setActiveTab] = useState<
     'pagos' | 'verificaciones' | 'config_qr' | 'cuotas' | 'arqueo'
-  >('verificaciones');
+  >(urlTab || 'verificaciones');
+
+  React.useEffect(() => {
+    const tabParam = searchParams.get('tab') as any;
+    if (tabParam && ['pagos', 'verificaciones', 'config_qr', 'cuotas', 'arqueo'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   // Modal Cobro Manual
   const [showPayModal, setShowPayModal] = useState(false);
@@ -283,11 +293,10 @@ export const FinanzasPage: React.FC = () => {
       <div className="flex items-center gap-2 border-b border-slate-800 overflow-x-auto whitespace-nowrap pb-1">
         <button
           onClick={() => setActiveTab('verificaciones')}
-          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
-            activeTab === 'verificaciones'
-              ? 'border-blue-400 text-blue-400 font-black'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${activeTab === 'verificaciones'
+            ? 'border-blue-400 text-blue-400 font-black'
+            : 'border-transparent text-slate-400 hover:text-white'
+            }`}
         >
           <span>Verificaciones Pendientes</span>
           {pendingCount > 0 && (
@@ -299,11 +308,10 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('config_qr')}
-          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-1.5 cursor-pointer ${
-            activeTab === 'config_qr'
-              ? 'border-blue-400 text-blue-400 font-black'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 flex items-center gap-1.5 cursor-pointer ${activeTab === 'config_qr'
+            ? 'border-blue-400 text-blue-400 font-black'
+            : 'border-transparent text-slate-400 hover:text-white'
+            }`}
         >
           <Settings className="w-3.5 h-3.5" />
           <span>Configurar QR & Banco OTB</span>
@@ -311,33 +319,30 @@ export const FinanzasPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('pagos')}
-          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
-            activeTab === 'pagos'
-              ? 'border-blue-400 text-blue-400 font-black'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${activeTab === 'pagos'
+            ? 'border-blue-400 text-blue-400 font-black'
+            : 'border-transparent text-slate-400 hover:text-white'
+            }`}
         >
           Historial de Recibos Emitidos
         </button>
 
         <button
           onClick={() => setActiveTab('cuotas')}
-          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
-            activeTab === 'cuotas'
-              ? 'border-blue-400 text-blue-400 font-black'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${activeTab === 'cuotas'
+            ? 'border-blue-400 text-blue-400 font-black'
+            : 'border-transparent text-slate-400 hover:text-white'
+            }`}
         >
           Tarifario de Cuotas
         </button>
 
         <button
           onClick={() => setActiveTab('arqueo')}
-          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${
-            activeTab === 'arqueo'
-              ? 'border-blue-400 text-blue-400 font-black'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
+          className={`pb-2.5 px-3.5 text-xs sm:text-sm font-bold transition-all border-b-2 cursor-pointer ${activeTab === 'arqueo'
+            ? 'border-blue-400 text-blue-400 font-black'
+            : 'border-transparent text-slate-400 hover:text-white'
+            }`}
         >
           Arqueo de Caja Central
         </button>

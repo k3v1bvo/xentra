@@ -14,7 +14,9 @@ import {
   ChevronDown,
   Menu,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Lock,
+  ExternalLink
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { NotificationBell } from '../notifications/NotificationBell';
@@ -23,9 +25,10 @@ import { useTenantStore } from '../stores/tenantStore';
 import { AppRole } from '@xentra/shared';
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/vecinos', label: 'Vecinos & Viviendas', icon: Users },
+  { to: '/admin', label: 'Dashboard Comunal', icon: LayoutDashboard },
+  { to: '/admin/vecinos', label: 'Vecinos & Mapa Catastral', icon: Users },
   { to: '/admin/finanzas', label: 'Finanzas & Tesorería', icon: Wallet },
+  { to: '/admin/finanzas?tab=config_qr', label: 'Banco & QR Oficial OTB', icon: QrCode },
   { to: '/admin/trace', label: 'XENTRA TRACE', icon: GitBranch },
   { to: '/admin/auditor', label: 'XENTRA AI Auditor', icon: ShieldAlert },
   { to: '/admin/vota', label: 'XENTRA VOTA', icon: Vote },
@@ -37,6 +40,8 @@ export const AdminLayout: React.FC = () => {
   const { profile, currentRole, setCurrentRole, logout } = useAuthStore();
   const { currentOtb, availableOtbs, setCurrentOtb } = useTenantStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isSuperadmin = currentRole === 'superadmin';
 
   const handleRoleChange = (role: AppRole) => {
     setCurrentRole(role);
@@ -90,35 +95,62 @@ export const AdminLayout: React.FC = () => {
           </button>
         </div>
 
-        {/* Selector de OTB Activa */}
-        <div className="px-4 py-3 border-b border-slate-800 bg-[#020617]/60">
-          <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">
-            Organización Activa
-          </label>
-          <div className="relative">
-            <select
-              value={currentOtb?.id || ''}
-              onChange={(e) => {
-                const found = availableOtbs.find((o) => o.id === e.target.value);
-                if (found) setCurrentOtb(found);
-              }}
-              className="w-full text-xs font-bold bg-[#030712] border border-slate-700 rounded-lg px-2.5 py-2 pr-7 appearance-none text-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm cursor-pointer"
-            >
-              {availableOtbs.map((otb) => (
-                <option key={otb.id} value={otb.id} className="bg-slate-900 text-white">
-                  {otb.name} ({otb.code})
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
+        {/* =================================================================== */}
+        {/* SEGURIDAD MULTI-TENANT: AISLAMIENTO ESTRICTO DE ORGANIZACIÓN        */}
+        {/* Solo el Superadmin puede cambiar de OTB; el Admin regular NO puede  */}
+        {/* =================================================================== */}
+        <div className="px-4 py-3 border-b border-slate-800 bg-[#020617]/80">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
+              Organización Territorial
+            </span>
+            {isSuperadmin ? (
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                Superadmin
+              </span>
+            ) : (
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                <Lock className="w-2.5 h-2.5" /> Exclusivo
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-slate-400 font-medium">
-            <Building2 className="w-3 h-3 text-emerald-400" />
-            <span className="truncate">{currentOtb?.department} • {currentOtb?.municipality}</span>
-          </div>
+
+          {isSuperadmin ? (
+            /* Superadmin puede cambiar entre OTBs registradas */
+            <div className="relative">
+              <select
+                value={currentOtb?.id || ''}
+                onChange={(e) => {
+                  const found = availableOtbs.find((o) => o.id === e.target.value);
+                  if (found) setCurrentOtb(found);
+                }}
+                className="w-full text-xs font-bold bg-[#030712] border border-purple-500/40 rounded-lg px-2.5 py-2 pr-7 appearance-none text-white focus:outline-none focus:ring-1 focus:ring-purple-500 shadow-sm cursor-pointer"
+              >
+                {availableOtbs.map((otb) => (
+                  <option key={otb.id} value={otb.id} className="bg-slate-900 text-white">
+                    {otb.name} ({otb.code})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-purple-400 absolute right-2.5 top-2.5 pointer-events-none" />
+            </div>
+          ) : (
+            /* Administrador de OTB regular: FIJO en su propia OTB sin acceso a otras */
+            <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-700/80 space-y-1">
+              <div className="flex items-center justify-between">
+                <p className="font-black text-white text-xs truncate">{currentOtb?.name}</p>
+                <span className="font-mono text-[9px] font-bold text-blue-400 bg-blue-500/15 px-1.5 py-0.5 rounded border border-blue-500/30">
+                  {currentOtb?.code}
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 truncate">
+                {currentOtb?.department} • {currentOtb?.municipality}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Menú de Navegación */}
+        {/* Menú de Navegación del Panel de Control */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -136,7 +168,7 @@ export const AdminLayout: React.FC = () => {
                   }`
                 }
               >
-                <Icon className="w-4 h-4 flex-shrink-0" />
+                <Icon className="w-4 h-4 flex-shrink-0 text-blue-400" />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -146,52 +178,45 @@ export const AdminLayout: React.FC = () => {
             <div className="h-px bg-slate-800 mx-2" />
           </div>
 
-          {currentRole === 'superadmin' && (
+          {/* Consola Superadmin (Solo visible para el superadmin) */}
+          {isSuperadmin && (
             <NavLink
               to="/superadmin"
               onClick={closeMobileMenu}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-300 bg-purple-950/40 border border-purple-500/30 hover:bg-purple-900/40 transition-colors"
             >
               <ShieldAlert className="w-4 h-4 text-purple-400" />
-              <span>Consola Superadmin</span>
+              <span>Consola Superadmin Nacional</span>
             </NavLink>
           )}
 
           <NavLink
-            to="/vecino"
-            onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 hover:bg-emerald-900/40 transition-colors"
-          >
-            <UserCheck className="w-4 h-4 text-emerald-400" />
-            <span>Vista Portal Vecino</span>
-          </NavLink>
-
-          <NavLink
             to="/"
             onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver a la Portada</span>
+            <ArrowLeft className="w-4 h-4 text-slate-400" />
+            <span>Volver a Portada</span>
           </NavLink>
         </nav>
 
-        {/* Footer del Sidebar: Perfil y Rol */}
-        <div className="p-3 border-t border-slate-800 bg-[#020617]/70">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-400/50 text-blue-300 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+        {/* Perfil del Usuario Activo */}
+        <div className="p-3 border-t border-slate-800 bg-[#020617]/90">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                {profile?.first_name ? profile.first_name[0] : 'A'}
               </div>
-              <div className="min-w-0">
+              <div className="truncate">
                 <p className="text-xs font-bold text-white truncate">
                   {profile?.first_name} {profile?.last_name}
                 </p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
-                  CI {profile?.ci_number}
-                </p>
+                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                  {currentRole === 'superadmin' ? 'Superadmin' : 'Directiva OTB'}
+                </span>
               </div>
             </div>
+
             <button
               onClick={() => {
                 logout();
@@ -203,68 +228,73 @@ export const AdminLayout: React.FC = () => {
               <LogOut className="w-4 h-4" />
             </button>
           </div>
-
-          {/* Selector de Rol para simulación/pruebas */}
-          <div className="flex items-center justify-between bg-[#030712] px-2 py-1.5 rounded-lg border border-slate-700">
-            <span className="text-[10px] font-bold text-slate-400">Rol Activo:</span>
-            <select
-              value={currentRole}
-              onChange={(e) => handleRoleChange(e.target.value as AppRole)}
-              className="text-[11px] font-black text-blue-400 bg-transparent focus:outline-none cursor-pointer"
-            >
-              <option value="tesorero" className="bg-slate-900 text-white">Tesorero</option>
-              <option value="presidente" className="bg-slate-900 text-white">Presidente</option>
-              <option value="secretario" className="bg-slate-900 text-white">Secretario</option>
-              <option value="fiscalizador" className="bg-slate-900 text-white">Fiscalizador</option>
-              <option value="superadmin" className="bg-slate-900 text-white">Superadmin</option>
-              <option value="vecino" className="bg-slate-900 text-white">Vecino</option>
-            </select>
-          </div>
         </div>
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-950">
-        {/* Barra Superior Responsiva */}
-        <header className="h-16 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl px-3 sm:px-6 flex items-center justify-between flex-shrink-0 z-10 shadow-sm">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            {/* Botón Hamburguesa Móvil con feedback claro */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Navbar */}
+        <header className="h-14 sm:h-16 border-b border-slate-800 bg-[#0B132B]/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-6 z-30">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 text-slate-300 hover:text-white rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
-              aria-label="Abrir Menú de Navegación"
+              aria-label="Abrir Menú"
+              className="md:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
             >
-              <Menu className="w-5 h-5 text-slate-300" />
-              <span className="text-xs font-bold text-slate-200 hidden xs:inline">Menú</span>
+              <Menu className="w-5 h-5" />
             </button>
-
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 truncate">
-              <span className="font-extrabold text-white truncate max-w-[110px] sm:max-w-none">
-                {currentOtb?.name}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-white hidden sm:inline">
+                {currentOtb?.name || 'Gestión Comunal'}
               </span>
-              <span>/</span>
-              <span className="capitalize text-blue-400 font-extrabold">{currentRole}</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                {currentOtb?.code}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Botón Inicio SIEMPRE visible tanto en móvil como en escritorio */}
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-200 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl transition-all shadow-sm cursor-pointer"
-              title="Volver a la Portada Principal"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 text-blue-400" />
-              <span>Inicio</span>
-            </button>
+          <div className="flex items-center gap-3">
+            {/* Selector Rápido de Rol (Demo) */}
+            <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+              <button
+                onClick={() => handleRoleChange('presidente')}
+                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
+                  currentRole === 'presidente' || currentRole === 'tesorero'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Directiva
+              </button>
+              <button
+                onClick={() => handleRoleChange('vecino')}
+                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
+                  currentRole === 'vecino'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Vecino
+              </button>
+              <button
+                onClick={() => handleRoleChange('superadmin')}
+                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
+                  currentRole === 'superadmin'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Superadmin
+              </button>
+            </div>
 
-            {/* Campana de Notificaciones Transversal */}
+            {/* Notificaciones */}
             <NotificationBell />
           </div>
         </header>
 
-        {/* Área de Visualización */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-950">
+        {/* Viewport Principal */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-950">
           <Outlet />
         </main>
       </div>

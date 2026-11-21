@@ -59,7 +59,7 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
         <TiltCard3D intensity={5} className="w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6 border border-slate-200">
           <div className="text-center space-y-2">
-            <XentraLogo size="lg" className="justify-center" />
+            <XentraLogo size="lg" variant="dark" className="justify-center" />
             <h1 className="text-xl font-bold tracking-tight text-slate-900 pt-2">
               Iniciar Sesión
             </h1>

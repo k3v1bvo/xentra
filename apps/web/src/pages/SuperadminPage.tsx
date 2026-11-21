@@ -136,7 +136,7 @@ export const SuperadminPage: React.FC = () => {
       {/* Top Header */}
       <header className="px-4 sm:px-8 py-4 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <XentraLogo size="md" />
+          <XentraLogo size="md" variant="light" />
           <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
             Consola Superadmin Global
           </span>

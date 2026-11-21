@@ -66,7 +66,7 @@ export const AdminLayout: React.FC = () => {
         }`}
       >
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
-          <XentraLogo size="md" />
+          <XentraLogo size="md" variant="dark" />
           <button
             onClick={closeMobileMenu}
             aria-label="Cerrar Menú"

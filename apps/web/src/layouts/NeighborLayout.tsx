@@ -36,7 +36,7 @@ export const NeighborLayout: React.FC = () => {
           </button>
 
           <div className="h-5 w-px bg-slate-200" />
-          <XentraLogo size="sm" />
+          <XentraLogo size="sm" variant="dark" />
 
           <div className="hidden sm:flex flex-col ml-1">
             <span className="text-xs font-bold text-slate-800">{currentOtb?.name}</span>

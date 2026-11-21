@@ -357,7 +357,7 @@ export const LandingPage: React.FC = () => {
 
       {/* Top Navbar */}
       <header className="px-4 sm:px-8 py-4 border-b border-slate-800/80 bg-slate-950/75 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
-        <XentraLogo size="md" />
+        <XentraLogo size="md" variant="light" />
 
         <div className="flex items-center gap-2 sm:gap-4">
           <button

@@ -28,6 +28,13 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/xentra-otb.apk",
+      "destination": "https://github.com/k3v1bvo/xentra/releases/download/v3.0.0/xentra-otb-v3.0.apk",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

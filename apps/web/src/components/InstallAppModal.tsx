@@ -62,18 +62,24 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
 
   const handleDownloadApk = () => {
     setDownloadingApk(true);
-    // Simula descarga o descarga archivo directo si existe en public
+    const releaseApkUrl = 'https://github.com/k3v1bvo/xentra/releases/download/v3.0.0/xentra-otb-v3.0.apk';
+    const releasePageUrl = 'https://github.com/k3v1bvo/xentra/releases/latest';
+
     setTimeout(() => {
+      // Disparar la descarga directa del paquete APK oficial compilado en GitHub Actions
       const link = document.createElement('a');
-      link.href = '/xentra-otb.apk';
+      link.href = releaseApkUrl;
       link.download = 'xentra-otb-v3.0.apk';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
       setDownloadingApk(false);
       setApkDownloaded(true);
-      setTimeout(() => setApkDownloaded(false), 4000);
-    }, 1000);
+      setTimeout(() => setApkDownloaded(false), 5000);
+    }, 600);
   };
 
   return (
@@ -192,36 +198,58 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({ isOpen, onClos
           {/* TAB 2: Descarga APK Directo (Android Standalone) */}
           {tab === 'apk' && (
             <div className="space-y-3 animate-in fade-in duration-200">
-              <div className="p-4 rounded-2xl bg-[#030712] border border-slate-700 text-xs text-slate-300 space-y-2">
+              <div className="p-4 rounded-2xl bg-[#030712] border border-slate-700 text-xs text-slate-300 space-y-2.5">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold">
                   <Sparkles className="w-4 h-4" />
-                  <span>Compilación Automática con GitHub Actions</span>
+                  <span>Compilador Oficial en la Nube (GitHub Actions)</span>
                 </div>
                 <p className="leading-relaxed">
-                  El archivo instalador nativo <code className="text-blue-300 font-mono font-bold">xentra-otb-v3.0.apk</code> se empaqueta de forma automática mediante integración continua en GitHub Actions (<code className="text-slate-200 font-mono">.github/workflows/build-apk.yml</code>).
+                  El paquete binario <code className="text-blue-300 font-mono font-bold">xentra-otb-v3.0.apk</code> se compila con el toolchain nativo de Android y Gradle 8.10 en los servidores de GitHub Actions, sin usar memoria de tu dispositivo.
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-slate-300 pt-1">
-                  <li>Compatible con Android 7.0 en adelante.</li>
-                  <li>No requiere Google Play Store para instalar.</li>
-                  <li>Tamaño ultraligero: menos de 8 MB.</li>
-                </ul>
+
+                {/* Guía Xiaomi / Android */}
+                <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-500/40 text-[11px] space-y-1 text-slate-200">
+                  <strong className="text-blue-300 block font-bold">
+                    📱 Instrucciones para teléfonos Xiaomi (MIUI / HyperOS), Samsung y Android:
+                  </strong>
+                  <p>1. Toca <strong>"Descargar xentra-otb-v3.0.apk"</strong>.</p>
+                  <p>2. Si el navegador pregunta <em>"¿Descargar archivo de todos modos?"</em>, confirma la descarga.</p>
+                  <p>3. Abre el archivo y en la pantalla de análisis de Xiaomi pulsa <strong>"Instalar de todas formas"</strong>.</p>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1">
+                  <span>Arquitectura: Universal (ARM64 / v7a)</span>
+                  <span className="text-emerald-400 font-bold">Compatible con Android 8+</span>
+                </div>
               </div>
 
               {apkDownloaded && (
                 <div className="p-3 rounded-xl bg-emerald-950/90 border border-emerald-500 text-xs text-emerald-300 text-center font-bold flex items-center justify-center gap-2">
                   <Check className="w-4 h-4 text-emerald-400" />
-                  <span>¡Descarga iniciada! Abre el archivo en tus descargas para instalar.</span>
+                  <span>¡Descarga iniciada desde GitHub Releases! Abre la notificación en tu celular para instalar.</span>
                 </div>
               )}
 
-              <button
-                onClick={handleDownloadApk}
-                disabled={downloadingApk}
-                className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
-              >
-                <Download className="w-4 h-4 text-slate-950" />
-                <span>{downloadingApk ? 'Descargando paquete APK...' : 'Descargar xentra-otb-v3.0.apk (Directo)'}</span>
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={handleDownloadApk}
+                  disabled={downloadingApk}
+                  className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-slate-950" />
+                  <span>{downloadingApk ? 'Conectando con GitHub Releases...' : 'Descargar xentra-otb-v3.0.apk (Directo)'}</span>
+                </button>
+
+                <a
+                  href="https://github.com/k3v1bvo/xentra/releases/latest"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                  <span>Ver Todos los Releases & Changelog en GitHub</span>
+                </a>
+              </div>
             </div>
           )}
 

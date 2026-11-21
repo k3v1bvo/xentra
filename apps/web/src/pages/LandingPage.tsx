@@ -47,6 +47,7 @@ import { PrintableStatementModal, StatementData, FeeItem } from '../components/P
 import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
 import { CommunityTransparencyModal } from '../components/CommunityTransparencyModal';
 import { InstallAppModal } from '../components/InstallAppModal';
+import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
@@ -453,7 +454,7 @@ export const LandingPage: React.FC = () => {
       <Xentra3DCanvas />
 
       {/* Top Navbar */}
-      <header className="px-3 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
+      <header className="px-4 sm:px-8 py-3.5 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
         <XentraLogo size="md" variant="light" />
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -463,32 +464,25 @@ export const LandingPage: React.FC = () => {
               setAlertModalTab('emergencias');
               setIsAlertModalOpen(true);
             }}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-black text-rose-300 bg-rose-950/60 hover:bg-rose-900/70 border-2 border-rose-500/60 shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-black text-white bg-rose-600 hover:bg-rose-500 shadow-md shadow-rose-600/30 transition-all cursor-pointer"
           >
-            <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
-            <span>Auxilio & Reportes 24/7</span>
+            <PhoneCall className="w-4 h-4 text-white animate-pulse" />
+            <span className="hidden sm:inline">Auxilio 24/7 (Pol. 110)</span>
+            <span className="sm:hidden">Auxilio 110</span>
           </button>
 
           {/* Botón Instalar App Celular (APK / PWA) */}
           <button
             onClick={() => setIsInstallModalOpen(true)}
-            className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/50 transition-all cursor-pointer"
+            className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer"
           >
             <Smartphone className="w-4 h-4 text-emerald-400" />
-            <span>Instalar App Móvil</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/verificar-recibo')}
-            className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm transition-colors cursor-pointer"
-          >
-            <QrCode className="w-4 h-4 text-blue-400" />
-            <span>Verificar QR</span>
+            <span>App Celular</span>
           </button>
 
           <button
             onClick={() => navigate('/login')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4" />
             <span>Iniciar Sesión</span>
@@ -770,64 +764,79 @@ export const LandingPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Botones de Acción de Alto Contraste */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2">
-                    {resolvedResult.totalDebt > 0 && (
+                  {/* Mapa Comunal del Inmueble y la Sede de la OTB */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      <span className="font-extrabold text-white flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-emerald-400" />
+                        <span>Plano Comunal Interactivo & Sede de la OTB:</span>
+                      </span>
+                      <span className="text-slate-400 text-xs">
+                        Av. Petrolera Km 4
+                      </span>
+                    </div>
+
+                    <CommunityInteractiveMap
+                      centerLat={-17.41325}
+                      centerLng={-66.16543}
+                      zoom={16}
+                      heightClass="h-48 sm:h-56"
+                      otbName={otbPaymentConfig.otbName}
+                      selectedLotName={resolvedResult.lotName}
+                    />
+                  </div>
+
+                  {/* Botones de Acción Accesibles para Personas Mayores (Sin amontonamiento) */}
+                  <div className="space-y-3 pt-2">
+                    {/* Botón Principal Destacado */}
+                    {resolvedResult.totalDebt > 0 ? (
                       <button
                         onClick={() => setIsQrModalOpen(true)}
-                        className="py-3 px-3 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+                        className="w-full py-4 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/25 transition-all cursor-pointer"
                       >
-                        <QrCode className="w-4 h-4 text-slate-950" />
-                        <span>Pagar con QR</span>
+                        <QrCode className="w-5 h-5 text-slate-950" />
+                        <span>Pagar con Código QR Simple (Desde tu Banco)</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleEnterNeighborPortal}
+                        className="w-full py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-blue-600/30 transition-all cursor-pointer"
+                      >
+                        <FileCheck className="w-5 h-5" />
+                        <span>Entrar a Mi Portal de Vecino</span>
                       </button>
                     )}
 
-                    {/* Botón de Reportar Incidente Comunitario para el Socio */}
-                    <button
-                      onClick={() => {
-                        setAlertModalTab('reportar');
-                        setIsAlertModalOpen(true);
-                      }}
-                      className="py-3 px-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition-all cursor-pointer"
-                    >
-                      <AlertTriangle className="w-4 h-4 text-slate-950" />
-                      <span>🚨 Reportar Incidente</span>
-                    </button>
+                    {/* Fila de 2 Botones Secundarios Grandes y Claros */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        onClick={() => setIsPrintModalOpen(true)}
+                        className="py-3.5 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border-2 border-slate-700 transition-all cursor-pointer"
+                      >
+                        <Printer className="w-4 h-4 text-blue-400" />
+                        <span>Imprimir Ficha Oficial</span>
+                      </button>
 
-                    <button
-                      onClick={() => setIsPrintModalOpen(true)}
-                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-emerald-500/50 transition-all cursor-pointer shadow-sm"
-                    >
-                      <Printer className="w-4 h-4 text-emerald-400" />
-                      <span>Imprimir Ficha</span>
-                    </button>
+                      <button
+                        onClick={() => {
+                          setAlertModalTab('reportar');
+                          setIsAlertModalOpen(true);
+                        }}
+                        className="py-3.5 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border-2 border-slate-700 transition-all cursor-pointer"
+                      >
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <span>Avisar de un Problema</span>
+                      </button>
+                    </div>
 
-                    <button
-                      onClick={handleEnterNeighborPortal}
-                      className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
-                    >
-                      <FileCheck className="w-4 h-4" />
-                      <span>Ver Mi Portal</span>
-                    </button>
-
-                    <button
-                      onClick={() => setIsEmailModalOpen(true)}
-                      className="py-3 px-3 rounded-2xl bg-slate-800 hover:bg-blue-600 text-blue-300 hover:text-white font-extrabold text-xs flex items-center justify-center gap-2 border-2 border-blue-500/50 transition-all cursor-pointer shadow-sm"
-                    >
-                      <Mail className="w-4 h-4 text-blue-400" />
-                      <span>Recibo Email</span>
-                    </button>
-                  </div>
-
-                  {/* Acceso Rápido a Transparencia Comunitaria & Convocatoria de Asamblea */}
-                  <div className="pt-2">
+                    {/* Botón de Transparencia Comunitaria y Asamblea */}
                     <button
                       type="button"
                       onClick={() => setIsTransparencyModalOpen(true)}
-                      className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-purple-950/70 via-indigo-950/70 to-slate-900 border-2 border-purple-500/60 hover:border-purple-400 text-purple-200 hover:text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-md hover:shadow-purple-500/20 transition-all cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-blue-500/50 text-blue-200 hover:text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all cursor-pointer"
                     >
-                      <ShieldCheck className="w-4 h-4 sm:w-5 h-5 text-purple-400" />
-                      <span>🔍 Ver Transparencia de la OTB: ¿En qué se gastó el dinero? & Convocatoria a la Próxima Asamblea</span>
+                      <ShieldCheck className="w-4 h-4 text-blue-400" />
+                      <span>Ver Cuentas Claras: ¿En qué se gastó? & Asamblea 29 Nov</span>
                     </button>
                   </div>
                 </div>

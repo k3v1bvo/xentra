@@ -28,7 +28,7 @@ import { formatBOB } from '@xentra/shared';
 import { XentraLogo } from '../components/XentraLogo';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
 import { PrintableStatementModal } from '../components/PrintableStatementModal';
-import { BoliviaCivicEmblem } from '../components/OfficialMonthlyReceiptsPrintModal';
+import { BoliviaCoatOfArms } from '../components/BoliviaCoatOfArms';
 
 interface SocioAccountMock {
   socioCode: string;
@@ -249,7 +249,7 @@ export const ReceiptVerificationPage: React.FC = () => {
           </button>
 
           <div className="flex items-center gap-2">
-            <BoliviaCivicEmblem size={28} />
+            <BoliviaCoatOfArms size={32} />
             <XentraLogo size="sm" variant="light" />
           </div>
         </div>

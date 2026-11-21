@@ -7,6 +7,7 @@ dist/
 build/
 .expo/
 .turbo/
+*.tsbuildinfo
 
 # Variables de Entorno y Secretos
 .env

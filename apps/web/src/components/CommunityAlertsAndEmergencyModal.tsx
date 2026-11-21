@@ -22,13 +22,16 @@ import {
   Crosshair,
   Navigation,
   ExternalLink,
-  Loader2
+  Loader2,
+  Map as MapIcon,
+  List
 } from 'lucide-react';
 import {
   useCommunityReportsStore,
   ReportCategory,
   CATEGORY_METADATA
 } from '../stores/communityReportsStore';
+import { CommunityInteractiveMap } from './CommunityInteractiveMap';
 
 interface CommunityAlertsAndEmergencyModalProps {
   isOpen: boolean;
@@ -93,6 +96,7 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [gpsStatus, setGpsStatus] = useState<string | null>(null);
+  const [muroViewMode, setMuroViewMode] = useState<'lista' | 'mapa'>('mapa');
 
   if (!isOpen) return null;
 
@@ -593,6 +597,28 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                   <span>{gpsStatus}</span>
                 </p>
               )}
+
+              {/* Mapa Comunal Interactivo para Seleccionar Ubicación Táctil */}
+              <div className="pt-1 space-y-1">
+                <span className="text-[11px] text-slate-300 font-semibold block">
+                  📍 O toca/haz clic en el mapa para marcar el lugar exacto:
+                </span>
+                <CommunityInteractiveMap
+                  centerLat={selectedOtbId.includes('2222') ? -16.54124 : -17.41325}
+                  centerLng={selectedOtbId.includes('2222') ? -68.08215 : -66.16543}
+                  zoom={16}
+                  heightClass="h-44 sm:h-52"
+                  otbName={currentOtbInfo.name}
+                  interactiveSelection={true}
+                  onSelectCoordinates={(lat, lng) => {
+                    setLatitude(lat);
+                    setLongitude(lng);
+                    setGpsAccuracy(5);
+                    setLocation(`Ubicación marcada en mapa: ${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+                    setGpsStatus('✓ Punto exacto fijado en el mapa comunal');
+                  }}
+                />
+              </div>
             </div>
 
             {/* Foto de Respaldo */}
@@ -668,29 +694,85 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
         {/* TAB 3: MURO VECINAL EN VIVO ESTRICTO DE LA OTB */}
         {activeTab === 'muro' && (
           <div className="space-y-3 overflow-y-auto pr-1">
-            <div className="flex items-center justify-between text-xs sm:text-sm text-slate-300 pb-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-300 pb-1">
               <span>
                 Reportes comunitarios activos en <strong className="text-emerald-400">{currentOtbInfo.name}</strong>:
               </span>
-              <button
-                type="button"
-                onClick={() => setActiveTab('reportar')}
-                className="text-amber-400 hover:underline font-black text-xs sm:text-sm"
-              >
-                + Nuevo Reporte
-              </button>
+
+              <div className="flex items-center gap-2">
+                <div className="flex bg-[#020617] p-1 rounded-xl border border-slate-700">
+                  <button
+                    type="button"
+                    onClick={() => setMuroViewMode('mapa')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                      muroViewMode === 'mapa'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <MapIcon className="w-3.5 h-3.5" />
+                    <span>Mapa</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMuroViewMode('lista')}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                      muroViewMode === 'lista'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    <span>Lista ({otbReports.length})</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('reportar')}
+                  className="text-amber-400 hover:underline font-black text-xs sm:text-sm whitespace-nowrap"
+                >
+                  + Nuevo Reporte
+                </button>
+              </div>
             </div>
 
-            {otbReports.length === 0 ? (
-              <div className="p-8 text-center bg-[#020617] border border-slate-700 rounded-2xl text-slate-400 space-y-2">
-                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                <p className="font-bold text-white text-base">Tranquilidad en {currentOtbInfo.name}</p>
-                <p className="text-xs text-slate-400">
-                  No hay incidentes sin resolver reportados en esta OTB. Los datos no se mezclan con otras zonas.
-                </p>
+            {/* Vista 1: Mapa Comunal de Incidentes */}
+            {muroViewMode === 'mapa' && (
+              <div className="space-y-2">
+                <CommunityInteractiveMap
+                  reports={otbReports}
+                  centerLat={selectedOtbId.includes('2222') ? -16.54124 : -17.41325}
+                  centerLng={selectedOtbId.includes('2222') ? -68.08215 : -66.16543}
+                  zoom={16}
+                  heightClass="h-72 sm:h-80"
+                  otbName={currentOtbInfo.name}
+                />
+                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-700">
+                  <span className="font-bold text-slate-400">Pines en el mapa:</span>
+                  <span className="inline-flex items-center gap-1">🏛️ Sede</span>
+                  <span className="inline-flex items-center gap-1">⚽ Cancha</span>
+                  <span className="inline-flex items-center gap-1">🍺 Ebrio</span>
+                  <span className="inline-flex items-center gap-1">💧 Agua</span>
+                  <span className="inline-flex items-center gap-1">🐕 Mascota</span>
+                  <span className="inline-flex items-center gap-1">💡 Luz</span>
+                </div>
               </div>
-            ) : (
-              otbReports.map((rep) => (
+            )}
+
+            {/* Vista 2: Lista de Reportes (o si no hay mapa activo) */}
+            {(muroViewMode === 'lista' || otbReports.length === 0) && (
+              <>
+                {otbReports.length === 0 ? (
+                  <div className="p-8 text-center bg-[#020617] border border-slate-700 rounded-2xl text-slate-400 space-y-2">
+                    <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                    <p className="font-bold text-white text-base">Tranquilidad en {currentOtbInfo.name}</p>
+                    <p className="text-xs text-slate-400">
+                      No hay incidentes sin resolver reportados en esta OTB. Los datos no se mezclan con otras zonas.
+                    </p>
+                  </div>
+                ) : (
+                  otbReports.map((rep) => (
                 <div
                   key={rep.id}
                   className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-3 shadow-md"
@@ -802,6 +884,8 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                   </div>
                 </div>
               ))
+            )}
+              </>
             )}
           </div>
         )}

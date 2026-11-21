@@ -17,6 +17,7 @@ import {
 import QRCode from 'qrcode';
 import { formatBOB } from '@xentra/shared';
 import { XentraLogo } from './XentraLogo';
+import { BoliviaCoatOfArms } from './BoliviaCoatOfArms';
 
 export interface MonthlyReceiptData {
   receiptNumber: string;
@@ -117,57 +118,6 @@ const DEFAULT_SAMPLE_RECEIPTS: MonthlyReceiptData[] = [
   }
 ];
 
-// Emblema Cívico Institucional de Bolivia Vectorial de Alta Resolución
-export const BoliviaCivicEmblem: React.FC<{ size?: number; className?: string }> = ({
-  size = 48,
-  className = ''
-}) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 64 64"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={`flex-shrink-0 ${className}`}
-  >
-    {/* Escudo Base */}
-    <path
-      d="M32 4C18 4 10 12 10 26C10 44 26 56 32 60C38 56 54 44 54 26C54 12 46 4 32 4Z"
-      fill="#FFFFFF"
-      stroke="#0F172A"
-      strokeWidth="2.5"
-    />
-    {/* Franja Roja Tricolor */}
-    <path
-      d="M12 18C16 12 24 8 32 8C40 8 48 12 52 18H12Z"
-      fill="#DC2626"
-    />
-    {/* Franja Amarilla Tricolor */}
-    <rect x="11" y="18" width="42" height="10" fill="#F59E0B" />
-    {/* Franja Verde Tricolor */}
-    <path
-      d="M11 28H53C52 38 44 48 32 54C20 48 12 38 11 28Z"
-      fill="#10B981"
-    />
-    {/* Sol Andino y Laurel Central */}
-    <circle cx="32" cy="23" r="4.5" fill="#FEF08A" stroke="#B45309" strokeWidth="1" />
-    <path
-      d="M32 15V17M32 29V31M24 23H26M38 23H40M26.5 17.5L28 19M36 27L37.5 28.5M26.5 28.5L28 27M36 19L37.5 17.5"
-      stroke="#B45309"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-    />
-    {/* Montaña Cerro Rico de Potosí */}
-    <polygon points="32,32 24,46 40,46" fill="#D97706" />
-    <polygon points="32,32 30,46 34,46" fill="#F59E0B" />
-    {/* Estrella de Consenso Comunal */}
-    <polygon
-      points="32,49 33.5,52 37,52 34,54 35.5,57 32,55 28.5,57 30,54 27,52 30.5,52"
-      fill="#FFFFFF"
-    />
-  </svg>
-);
-
 interface OfficialMonthlyReceiptsPrintModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -206,7 +156,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
           const qrDataUrl = await QRCode.toDataURL(verificationUrl, {
             errorCorrectionLevel: 'H',
             margin: 2,
-            width: 280,
+            width: 380,
             color: {
               dark: '#000000',
               light: '#FFFFFF'
@@ -249,42 +199,57 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
       : [filteredReceipts[selectedReceiptIndex as number] || filteredReceipts[0]];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static print:inset-auto">
-      {/* Estilos CSS Específicos para Impresión de Alta Precisión */}
+    <div
+      id="printable-receipts-container"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto"
+    >
+      {/* Estilos CSS Específicos para Aislamiento de Impresión Limpia (NO imprime la web de fondo) */}
       <style>{`
         @media print {
+          body > * {
+            visibility: hidden !important;
+          }
+          #printable-receipts-container,
+          #printable-receipts-container * {
+            visibility: visible !important;
+          }
+          #printable-receipts-container {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            min-height: 100% !important;
+            background: #FFFFFF !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: block !important;
+          }
+          .no-print-action {
+            display: none !important;
+          }
+          .receipt-sheet {
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 8mm !important;
+          }
+          .receipt-sheet:last-child {
+            page-break-after: auto !important;
+          }
           @page {
             size: portrait;
             margin: 8mm 10mm;
           }
-          body {
-            background-color: #FFFFFF !important;
-            color: #000000 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .no-print, header, nav, aside {
-            display: none !important;
-          }
-          .receipt-sheet {
-            page-break-after: always;
-            page-break-inside: avoid;
-            box-shadow: none !important;
-            border-color: #000000 !important;
-            margin-bottom: 0 !important;
-            padding: 12px !important;
-          }
-          .receipt-sheet:last-child {
-            page-break-after: auto;
-          }
         }
       `}</style>
 
-      <div className="bg-white text-slate-900 w-full max-w-4xl rounded-3xl p-4 sm:p-8 shadow-2xl relative my-auto border border-slate-200 print:border-none print:shadow-none print:rounded-none print:p-0 print:max-w-none">
+      <div className="bg-white text-slate-900 w-full max-w-4xl rounded-3xl p-4 sm:p-8 shadow-2xl relative my-auto border border-slate-200">
         {/* ======================================================== */}
         {/* BARRA SUPERIOR DE ACCIONES Y CONTROLES (OCULTA EN PRINT) */}
         {/* ======================================================== */}
-        <div className="pb-4 mb-6 border-b border-slate-200 space-y-4 print:hidden">
+        <div className="no-print-action pb-4 mb-6 border-b border-slate-200 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-black mb-1 border border-blue-300">
@@ -292,7 +257,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                 <span>Módulo Oficial de Talonario e Impresión de Recibos</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Recibos Comunitarios con Código QR y Sello Inmutable
+                Recibos Comunitarios con Código QR Central y Sello Inmutable
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
                 Formato legal boliviano: incluye duplicado para el vecino y talón de archivo para Tesorería. Cada QR abre en el celular la certificación oficial y saldo en vivo.
@@ -365,20 +330,20 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
         {/* ======================================================== */}
         {/* RECIBOS FORMALES LISTOS PARA IMPRIMIR (FORMATO OFICIAL)  */}
         {/* ======================================================== */}
-        <div className="space-y-10 print:space-y-0">
+        <div className="space-y-10">
           {displayReceipts.map((receipt, index) => (
             <div
               key={receipt.receiptNumber}
-              className="receipt-sheet p-6 sm:p-8 rounded-3xl border-2 border-slate-900 bg-white shadow-md space-y-6 print:border-2 print:border-slate-900 print:shadow-none print:rounded-none print:p-5"
+              className="receipt-sheet p-6 sm:p-8 rounded-3xl border-2 border-slate-900 bg-white shadow-md space-y-6"
             >
               {/* ==================================================== */}
               {/* CUERPO 1: ORIGINAL PARA EL SOCIO / APORTANTE          */}
               {/* ==================================================== */}
               <div className="space-y-4">
-                {/* Encabezado Institucional con Emblemas Oficiales */}
-                <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3 gap-3">
-                  <div className="flex items-center gap-3">
-                    <BoliviaCivicEmblem size={52} />
+                {/* Encabezado Institucional con Escudo Oficial de Bolivia */}
+                <div className="flex items-start justify-between border-b-2 border-slate-900 pb-3 gap-4">
+                  <div className="flex items-center gap-4">
+                    <BoliviaCoatOfArms size={68} />
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
                         <XentraLogo size="sm" variant="dark" />
@@ -389,11 +354,11 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                       <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">
                         {receipt.otbName}
                       </h3>
-                      <p className="text-[11px] text-slate-600 font-semibold">
+                      <p className="text-[11px] text-slate-700 font-semibold">
                         Personería Jurídica R.P. N° 412/2018 • {receipt.municipality} • {receipt.department}
                       </p>
                       <p className="text-[10px] text-slate-500">
-                        Código de Registro OTB: <strong className="text-slate-900 font-mono">{receipt.otbCode}</strong> • Ley N° 1551
+                        Código de Registro OTB: <strong className="text-slate-900 font-mono">{receipt.otbCode}</strong> • Ley N° 1551 de Participación Popular
                       </p>
                     </div>
                   </div>
@@ -405,7 +370,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                     <span className="text-[10px] uppercase font-bold text-slate-500 block">
                       RECIBO OFICIAL DE CAJA
                     </span>
-                    <div className="px-3.5 py-1.5 bg-slate-900 text-white rounded-xl font-mono font-black text-sm tracking-wide inline-block print:border-2 print:border-slate-900 print:bg-white print:text-slate-900">
+                    <div className="px-3.5 py-1.5 bg-slate-900 text-white rounded-xl font-mono font-black text-sm tracking-wide inline-block">
                       N° {receipt.receiptNumber}
                     </div>
                     <p className="text-[11px] text-slate-600">
@@ -415,7 +380,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                 </div>
 
                 {/* Fila de Datos del Vecino / Aportante */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 text-xs print:bg-white print:border-slate-400">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 text-xs">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-black block">Socio Aportante</span>
                     <strong className="text-slate-900 block font-bold text-sm truncate">{receipt.socioName}</strong>
@@ -435,9 +400,9 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                 </div>
 
                 {/* Detalle del Concepto y Liquidación */}
-                <div className="border-2 border-slate-300 rounded-2xl overflow-hidden print:border-slate-400">
+                <div className="border-2 border-slate-300 rounded-2xl overflow-hidden">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-800 font-black uppercase text-[10px] border-b-2 border-slate-300 print:bg-slate-100">
+                    <thead className="bg-slate-100 text-slate-800 font-black uppercase text-[10px] border-b-2 border-slate-300">
                       <tr>
                         <th className="py-2.5 px-3">Periodo</th>
                         <th className="py-2.5 px-3">Concepto / Glosa Oficial</th>
@@ -455,7 +420,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                         </td>
                       </tr>
                     </tbody>
-                    <tfoot className="bg-slate-50 font-bold border-t-2 border-slate-300 print:bg-white">
+                    <tfoot className="bg-slate-50 font-bold border-t-2 border-slate-300">
                       <tr>
                         <td colSpan={3} className="py-3 px-3 text-right text-slate-800 uppercase font-black text-xs">
                           Total Pagado en Caja:
@@ -469,7 +434,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                 </div>
 
                 {/* Monto Literal */}
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs flex items-center justify-between print:bg-white">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase font-black text-slate-500 mr-2">Son:</span>
                     <strong className="text-slate-900 font-bold tracking-wide">{receipt.amountLiteral}</strong>
@@ -479,43 +444,43 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                   </span>
                 </div>
 
-                {/* Código QR Dinámico Personalizado y Sello Criptográfico TRACE */}
-                <div className="p-4 rounded-2xl border-2 border-blue-300 bg-blue-50/50 flex items-center justify-between gap-4 print:bg-white print:border-slate-800">
-                  <div className="space-y-1.5 text-xs flex-1">
-                    <div className="flex items-center gap-1.5 text-blue-950 font-black">
-                      <ShieldCheck className="w-5 h-5 text-blue-700 flex-shrink-0" />
-                      <span className="text-sm">Certificación Digital Inmutable XENTRA TRACE</span>
-                    </div>
-                    <p className="text-[11px] text-slate-700 leading-relaxed font-medium">
-                      Escanea este código con la cámara de cualquier teléfono celular para autenticar este recibo en el portal en vivo, comprobar el registro contable en caja y ver el estado de aportes de <strong>{receipt.socioName}</strong>.
-                    </p>
-                    <div className="pt-1 flex flex-wrap items-center gap-2">
-                      <span className="text-[10px] bg-white border border-blue-200 px-2 py-0.5 rounded font-mono font-bold text-slate-800">
-                        Token: {receipt.token.slice(0, 24)}...
-                      </span>
-                      <span className="text-[10px] text-blue-800 font-bold">
-                        Enlace: xentra-two.vercel.app/verificar-recibo
-                      </span>
-                    </div>
+                {/* ======================================================== */}
+                {/* CÓDIGO QR AL MEDIO Y MÁS GRANDE (CERTIFICACIÓN DIGITAL)   */}
+                {/* ======================================================== */}
+                <div className="p-5 rounded-2xl border-2 border-slate-900 bg-slate-50/80 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="flex items-center gap-2 text-blue-950 font-black text-sm uppercase tracking-wide">
+                    <ShieldCheck className="w-5 h-5 text-blue-700" />
+                    <span>Certificación Digital Inmutable XENTRA TRACE</span>
                   </div>
 
-                  {/* Imagen del Código QR Real Generado */}
-                  <div className="flex flex-col items-center flex-shrink-0 text-center">
-                    <div className="p-2 bg-white border-2 border-slate-800 rounded-2xl shadow-sm">
-                      {qrCodeUrls[receipt.receiptNumber] ? (
-                        <img
-                          src={qrCodeUrls[receipt.receiptNumber]}
-                          alt={`QR Recibo ${receipt.receiptNumber}`}
-                          className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
-                        />
-                      ) : (
-                        <div className="w-28 h-28 flex items-center justify-center">
-                          <QrCode className="w-14 h-14 text-slate-400" />
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-[9px] font-black text-slate-900 mt-1 uppercase tracking-wider">
-                      Escanear para Verificar
+                  <p className="text-xs text-slate-600 max-w-md leading-relaxed">
+                    Escanea este código con la cámara de cualquier teléfono celular para autenticar este recibo en el libro mayor de la OTB y ver el historial de <strong>{receipt.socioName}</strong>.
+                  </p>
+
+                  {/* Código QR Grande y Nítido en el Centro */}
+                  <div className="p-3 bg-white rounded-2xl border-2 border-slate-900 shadow-md">
+                    {qrCodeUrls[receipt.receiptNumber] ? (
+                      <img
+                        src={qrCodeUrls[receipt.receiptNumber]}
+                        alt={`QR Recibo ${receipt.receiptNumber}`}
+                        className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
+                      />
+                    ) : (
+                      <div className="w-48 h-48 flex items-center justify-center">
+                        <QrCode className="w-20 h-20 text-slate-800 animate-pulse" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-wider block">
+                      Escanear con Cámara de Celular para Certificar
+                    </span>
+                    <p className="text-[9px] font-mono text-slate-500 max-w-sm truncate">
+                      Token SHA-256: {receipt.token}
+                    </p>
+                    <span className="text-[10px] text-blue-800 font-bold block">
+                      xentra-two.vercel.app/verificar-recibo
                     </span>
                   </div>
                 </div>
@@ -558,7 +523,7 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
               {/* ==================================================== */}
               {/* CUERPO 2: TALÓN DE CONTROL (COPIA PARA TESORERÍA)     */}
               {/* ==================================================== */}
-              <div className="p-4 rounded-2xl border-2 border-slate-800 bg-slate-50/60 space-y-3 text-xs print:bg-white">
+              <div className="p-4 rounded-2xl border-2 border-slate-800 bg-slate-50/60 space-y-3 text-xs">
                 <div className="flex items-center justify-between border-b border-slate-300 pb-2">
                   <div className="flex items-center gap-2">
                     <XentraLogo size="sm" variant="dark" />

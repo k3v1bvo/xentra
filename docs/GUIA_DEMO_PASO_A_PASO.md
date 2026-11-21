@@ -25,14 +25,12 @@
      - Señala el badge ámbar: **`Saldo Pendiente: Bs. 50.00`** (Cuota Ordinaria Noviembre).
      - Señala la protección de privacidad: *"Nadie más puede ver deudas ajenas ni listas públicas expuestas."*
 
-### PASO 2: Modo Senior para Personas de 40 a 60 años (15 segundos)
-- **Qué decir:** *"Si el vecino es una persona mayor, activa el Modo Adulto con un solo toque."*
-- **Qué hacer en pantalla:**
-  1. Haz clic en el botón superior **"Modo Adultos (A+)"**.
-  2. **Muestra la transformación visual:**
-     - El texto se amplía automáticamente a más de **20px**.
-     - El contraste se eleva al estándar **WCAG AAA (7:1)**.
-     - Los botones táctiles crecen a más de **56px de altura**, haciéndolos cómodos y fáciles de pulsar.
+### PASO 2: Accesibilidad Universal Directa (Senior Friendly por Defecto) (15 segundos)
+- **Qué decir:** *"Noten que no hay botones molestos para 'activar modo accesible': la plataforma es 100% cómoda y legible por defecto."*
+- **Qué destacar en pantalla:**
+  - El texto base es grande (18px-20px), nítido y con contraste **WCAG AAA (7:1)**.
+  - Los botones táctiles miden más de **56px de altura**, permitiendo pulsaciones precisas sin toques accidentales en pantallas táctiles o dedos con temblores.
+  - El footer inferior despliega la identidad institucional de la OTB, marco jurídico (Leyes 1551, 3488, 031) y teléfonos de auxilio 24/7.
 
 ### PASO 3: Flujo de Pago por QR Simple Bolivia y Subida de Voucher (25 segundos)
 - **Qué decir:** *"Pagar sus expensas le toma menos de un minuto desde su celular sin hacer filas."*

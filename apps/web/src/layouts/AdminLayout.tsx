@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { NotificationBell } from '../notifications/NotificationBell';
+import { CommunityFooter } from '../components/CommunityFooter';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { AppRole } from '@xentra/shared';
@@ -292,8 +293,13 @@ export const AdminLayout: React.FC = () => {
         </header>
 
         {/* Viewport Principal */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-950">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-950 flex flex-col justify-between">
+          <div>
+            <Outlet />
+          </div>
+          <div className="mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+            <CommunityFooter />
+          </div>
         </main>
       </div>
     </div>

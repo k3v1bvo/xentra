@@ -641,6 +641,12 @@ export const LandingPage: React.FC = () => {
           onClose={() => setIsInstallModalOpen(false)}
         />
       )}
+
+      {/* Footer Comunal con Información Útil, Teléfonos de Auxilio y Enlaces */}
+      <CommunityFooter
+        onOpenEmergency={() => setIsEmergencyModalOpen(true)}
+        onOpenInstallApp={() => setIsInstallModalOpen(true)}
+      />
     </div>
   );
 };

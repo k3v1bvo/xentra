@@ -42,30 +42,38 @@
 }
 
 /* =========================================================================
-   DISEÑO CÓMODO DIRECTO & ACCESIBILIDAD UNIVERSAL (WCAG AAA & ELDER STANDARD)
+   DISEÑO CÓMODO DIRECTO POR DEFECTO (WCAG AAA & ELDER ACCESSIBILITY STANDARD)
    - Contraste Alto 7:1 (Nivel AAA)
-   - Tipografía Base Cómoda (≥ 16px móvil, 17-18px desktop)
-   - Interlineado Cómodo ≥ 1.5x
-   - Objetivos Táctiles Nativos ≥ 48-56px
+   - Tipografía Base Cómoda (≥ 18px base móvil y desktop directo por defecto)
+   - Interlineado Cómodo ≥ 1.6x
+   - Objetivos Táctiles Nativos ≥ 52-60px
+   - Cero necesidad de botones para activar o desactivar: VISTA CÓMODA NATIVA
    ========================================================================= */
 
 :root {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 @media (min-width: 640px) {
   :root {
-    font-size: 17px;
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    font-size: 19px;
   }
 }
 
 body {
-  line-height: 1.5;
+  font-size: 18px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 p, span, label, li {
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Evitar textos demasiado oscuros o atenuados que cansen la vista */
@@ -77,7 +85,7 @@ p, span, label, li {
   color: #94A3B8;
 }
 
-/* Soporte de compatibilidad clase senior-mode */
+/* Soporte y refuerzo para clase senior-mode activa por defecto */
 .senior-mode {
   font-size: 18px;
 }
@@ -86,12 +94,12 @@ p, span, label, li {
 .senior-mode span,
 .senior-mode label,
 .senior-mode li {
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .senior-mode button,
 .senior-mode .btn-touch,
 .senior-mode a[role="button"],
 .senior-mode select {
-  min-height: 56px;
+  min-height: 52px;
 }

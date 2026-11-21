@@ -19,7 +19,7 @@
 
 **Respuesta Contundente:**
 > *"No diseñamos la plataforma pensando en usuarios de 20 años ni en interfaces complicadas de Silicon Valley. Diseñamos bajo el estándar internacional de **Ingeniería de Accesibilidad Senior (WCAG AAA)**:*
-> 1. **Modo Adulto (A+):** Con un solo toque, el texto crece a **18px-24px** y el contraste fondo/texto se eleva a **7:1**, garantizando visibilidad ante problemas de presbicia o cataratas.
+> 1. **Vista Cómoda Nativa Directa (Sin Botones de Configuración):** Desde el primer segundo, el texto se renderiza en **18px-20px base** y el contraste fondo/texto es **7:1 (WCAG AAA)** por defecto, garantizando legibilidad inmediata ante problemas de presbicia o cataratas sin exigirle al usuario que active ninguna opción.
 > 2. **Objetivos Táctiles Gigantes:** Los botones tienen áreas de toque de **56px a 64px**, evitando clics erróneos en dedos con temblores o artritis.
 > 3. **Eliminación Total de Anglicismos:** Sustituimos tecnicismos por expresiones del barrio boliviano: *'Cuentas Claras'*, *'Aporte al Día'*, *'Recibo Sellado'*, *'Muro Vecinal'*.
 > 4. **Didáctica de Pago QR:** El 80% de los adultos mayores no sabe cómo escanear un QR que está en la misma pantalla de su celular. Implementamos el botón verde **'📥 Guardar QR en Galería'** con una guía visual de 4 pasos para abrir su banca móvil y pagar sin frustración.*"

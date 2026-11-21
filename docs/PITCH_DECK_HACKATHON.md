@@ -72,14 +72,14 @@
 
 ### BLOQUE 4: ACCESIBILIDAD SENIOR — DISEÑADO PARA ADULTOS DE 40 A 60 AÑOS (3:00 – 3:45)
 
-*(Muestra en pantalla el interruptor "Modo Adultos (A+)" y agranda la interfaz).*
+*(Señala la claridad visual, el tamaño de letra grande y los botones generosos en la pantalla).*
 
 > *"El jurado seguramente se estará preguntando:  
 > **'La idea es excelente, ¿pero cómo van a convencer a dirigentes de 50 o 60 años de usarla?'**
 >
 > *Esa fue nuestra prioridad desde el día uno. No diseñamos pensando en Silicon Valley, diseñamos pensando en el vecino boliviano:*
 >
-> 1. **Ingeniería Senior (WCAG AAA):** Implementamos un **Modo Adulto** que eleva el contraste a **7:1**, con fuentes grandes de más de **18px** y botones táctiles gigantes de **56px a 64px**, imposibles de fallar.
+> 1. **Diseño Cómodo y Accesible Directo por Defecto (WCAG AAA):** La plataforma NO requiere activar ningún botón ni configurar nada: **viene en vista cómoda por defecto**, con contraste **7:1**, fuentes grandes base de **18px-20px** y botones táctiles gigantes de **56px a 64px**, imposibles de fallar para cualquier persona con presbicia o temblores.
 > 2. **Cero Anglicismos:** En vez de palabras confusas como 'Dashboard', 'Login' o 'Ledger', usamos el lenguaje cotidiano de la OTB: **'Cuentas Claras'**, **'Aporte al Día'**, **'Recibo Sellado'** y **'Asamblea Barrial'**.
 > 3. **Solución al dilema del QR en celular:** La app incluye un botón destacado para **'Guardar QR en Galería'** y una guía en 4 pasos para que la persona mayor pague desde su aplicación bancaria sin enredos."*
 

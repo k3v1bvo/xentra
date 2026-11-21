@@ -26,6 +26,9 @@ export interface CommunityReport {
   lotName: string;
   reportedByPublic: string;
   phoneContact?: string;
+  ciNumber?: string;
+  isVerifiedNeighbor?: boolean;
+  reporterType?: 'socio_acreditado' | 'vecino_externo';
   photoName?: string;
   photoUrl?: string;
   latitude?: number;
@@ -50,6 +53,9 @@ interface NewReportInput {
   neighborName: string;
   lotName: string;
   phoneContact?: string;
+  ciNumber?: string;
+  isVerifiedNeighbor?: boolean;
+  reporterType?: 'socio_acreditado' | 'vecino_externo';
   photoName?: string;
   photoUrl?: string;
   latitude?: number;
@@ -243,6 +249,11 @@ export const useCommunityReportsStore = create<CommunityReportsState>((set, get)
     const meta = CATEGORY_METADATA[input.category] || CATEGORY_METADATA.borracho_cancha;
 
     // Crear reporte firmado por el socio y aislado para su OTB
+    const isAccredited = input.isVerifiedNeighbor !== false;
+    const reportedByPublic = isAccredited
+      ? `${input.neighborName} (${input.socioCode} • ${input.lotName})`
+      : `${input.neighborName} (Vecino no censado • ${input.lotName})`;
+
     const newReport: CommunityReport = {
       id: `rep-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       otbId: input.otbId,
@@ -255,8 +266,11 @@ export const useCommunityReportsStore = create<CommunityReportsState>((set, get)
       socioCode: input.socioCode,
       neighborName: input.neighborName,
       lotName: input.lotName,
-      reportedByPublic: `Vecino ${input.lotName} (${input.socioCode})`,
+      reportedByPublic,
       phoneContact: input.phoneContact,
+      ciNumber: input.ciNumber,
+      isVerifiedNeighbor: isAccredited,
+      reporterType: isAccredited ? 'socio_acreditado' : 'vecino_externo',
       photoName: input.photoName,
       photoUrl: input.photoUrl,
       latitude: input.latitude,

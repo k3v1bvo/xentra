@@ -24,7 +24,11 @@ import {
   ExternalLink,
   Loader2,
   Map as MapIcon,
-  List
+  List,
+  ShieldCheck,
+  Search,
+  KeyRound,
+  Lock
 } from 'lucide-react';
 import {
   useCommunityReportsStore,
@@ -32,6 +36,11 @@ import {
   CATEGORY_METADATA
 } from '../stores/communityReportsStore';
 import { CommunityInteractiveMap } from './CommunityInteractiveMap';
+import {
+  findNeighborByCodeOrCi,
+  getNeighborsByOtb,
+  CensusNeighbor
+} from '../data/censusNeighbors';
 
 interface CommunityAlertsAndEmergencyModalProps {
   isOpen: boolean;
@@ -56,10 +65,10 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
   initialTab = 'emergencias',
   otbId = '11111111-1111-1111-1111-111111111111',
   otbName = 'Villa Esperanza',
-  socioCode = 'SOC-012',
-  neighborName = 'Juan José Flores Morales',
-  lotName = 'Manzana A, Lote 12',
-  phoneContact = '74567890'
+  socioCode,
+  neighborName,
+  lotName,
+  phoneContact
 }) => {
   const [activeTab, setActiveTab] = useState<'emergencias' | 'reportar' | 'muro'>(initialTab);
 
@@ -73,14 +82,30 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
     defaultAddress: 'Sede Social'
   };
 
+  const otbCensusNeighbors = getNeighborsByOtb(selectedOtbId);
+
+  // Inicializar socio verificado si viene pre-autenticado y es específico (ej. Don Juan José en NeighborDashboard)
+  const initialResolved = socioCode && socioCode !== 'SOC-001' && socioCode !== 'ADM-PRES' && socioCode !== 'SOC-DEMO'
+    ? findNeighborByCodeOrCi(socioCode, selectedOtbId)
+    : null;
+
+  const [verifiedNeighbor, setVerifiedNeighbor] = useState<CensusNeighbor | null>(initialResolved);
+  const [lookupInput, setLookupInput] = useState('');
+  const [lookupError, setLookupError] = useState<string | null>(null);
+  const [isUnregistered, setIsUnregistered] = useState(false);
+
+  // Datos manuales para vecinos no censados
+  const [manualName, setManualName] = useState(neighborName && neighborName !== 'Vecino OTB' ? neighborName : '');
+  const [manualCi, setManualCi] = useState('');
+  const [manualPhone, setManualPhone] = useState(phoneContact || '');
+  const [manualLot, setManualLot] = useState(lotName && lotName !== 'Manzana A, Lote 01' ? lotName : '');
+
   const { addReport, updateReportStatus, getReportsByOtb } = useCommunityReportsStore();
   // SOLO reportes de la OTB seleccionada
   const otbReports = getReportsByOtb(selectedOtbId);
 
   // Formulario de nuevo reporte
   const [category, setCategory] = useState<ReportCategory>('borracho_cancha');
-  const [customSocioCode, setCustomSocioCode] = useState(socioCode);
-  const [customLotName, setCustomLotName] = useState(lotName);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('Cancha Polifuncional - Manzana B');
@@ -99,6 +124,27 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
   const [muroViewMode, setMuroViewMode] = useState<'lista' | 'mapa'>('mapa');
 
   if (!isOpen) return null;
+
+  const handleVerifyNeighbor = () => {
+    if (!lookupInput.trim()) {
+      setLookupError('Por favor ingresa tu código de socio (ej. SOC-012) o tu número de Carnet (C.I.).');
+      return;
+    }
+    const found = findNeighborByCodeOrCi(lookupInput, selectedOtbId);
+    if (found) {
+      setVerifiedNeighbor(found);
+      setLookupError(null);
+      setIsUnregistered(false);
+    } else {
+      setLookupError(`No se encontró el socio o carnet "${lookupInput}" en el padrón de ${currentOtbInfo.name}. Revisa los dígitos o presiona abajo tu nombre para acceso rápido.`);
+    }
+  };
+
+  const handleSelectNeighbor = (neighbor: CensusNeighbor) => {
+    setVerifiedNeighbor(neighbor);
+    setLookupError(null);
+    setIsUnregistered(false);
+  };
 
   const handleGetGPS = () => {
     if (!navigator.geolocation) {
@@ -153,6 +199,22 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
     e.preventDefault();
     if (!title || !description) return;
 
+    if (!verifiedNeighbor && !isUnregistered) {
+      setLookupError('⚠️ Paso Obligatorio: Primero debes validar tu Código de Socio o seleccionar la opción de vecino en proceso.');
+      return;
+    }
+
+    if (isUnregistered && (!manualName.trim() || !manualPhone.trim() || !manualLot.trim())) {
+      setLookupError('⚠️ Completa tu nombre, celular y manzana/lote para que la Ronda Vecinal pueda validar el reporte.');
+      return;
+    }
+
+    const finalSocioCode = verifiedNeighbor ? verifiedNeighbor.socioCode : 'SIN-CÓDIGO';
+    const finalNeighborName = verifiedNeighbor ? verifiedNeighbor.name : manualName;
+    const finalLotName = verifiedNeighbor ? `${verifiedNeighbor.block}, ${verifiedNeighbor.house}` : manualLot;
+    const finalPhone = verifiedNeighbor ? verifiedNeighbor.phone : manualPhone;
+    const finalCi = verifiedNeighbor ? verifiedNeighbor.ci : manualCi;
+
     setIsSubmitting(true);
     setTimeout(() => {
       addReport({
@@ -162,10 +224,13 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
         title,
         description,
         location,
-        socioCode: customSocioCode || socioCode,
-        neighborName: neighborName || 'Vecino Acreditado',
-        lotName: customLotName || lotName,
-        phoneContact,
+        socioCode: finalSocioCode,
+        neighborName: finalNeighborName,
+        lotName: finalLotName,
+        phoneContact: finalPhone,
+        ciNumber: finalCi,
+        isVerifiedNeighbor: Boolean(verifiedNeighbor),
+        reporterType: verifiedNeighbor ? 'socio_acreditado' : 'vecino_externo',
         photoName: photoName || undefined,
         photoUrl: photoUrl || undefined,
         latitude: latitude || undefined,
@@ -256,22 +321,44 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
           </p>
         </div>
 
-        {/* Identidad del Vecino Conectado */}
-        <div className="mb-4 p-3 rounded-2xl bg-[#020617] border border-blue-500/40 flex items-center justify-between gap-3 text-xs sm:text-sm">
+        {/* Identidad del Vecino Conectado / Estado de Acreditación */}
+        <div className={`mb-4 p-3 rounded-2xl bg-[#020617] border flex items-center justify-between gap-3 text-xs sm:text-sm ${
+          verifiedNeighbor
+            ? 'border-emerald-500/60 shadow-lg shadow-emerald-500/10'
+            : isUnregistered
+            ? 'border-amber-500/60'
+            : 'border-blue-500/40'
+        }`}>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-sm">
-              <UserCheck className="w-5 h-5" />
+            <div className={`w-9 h-9 rounded-xl text-white font-black flex items-center justify-center text-sm shadow-sm ${
+              verifiedNeighbor
+                ? 'bg-emerald-600'
+                : isUnregistered
+                ? 'bg-amber-600'
+                : 'bg-blue-600'
+            }`}>
+              {verifiedNeighbor ? <ShieldCheck className="w-5 h-5" /> : <UserCheck className="w-5 h-5" />}
             </div>
             <div>
-              <span className="text-[11px] text-blue-300 font-bold block uppercase tracking-wide">
-                Identificado como Socio Oficial:
+              <span className={`text-[11px] font-bold block uppercase tracking-wide ${
+                verifiedNeighbor ? 'text-emerald-300' : isUnregistered ? 'text-amber-300' : 'text-blue-300'
+              }`}>
+                {verifiedNeighbor
+                  ? '✓ Socio Acreditado en Padrón Comunal:'
+                  : isUnregistered
+                  ? '⚠️ Vecino No Censado (En Verificación):'
+                  : 'Acreditación Comunal de Vecino:'}
               </span>
-              <strong className="text-white font-extrabold text-sm sm:text-base">
-                {customSocioCode} • {customLotName}
+              <strong className="text-white font-extrabold text-xs sm:text-sm">
+                {verifiedNeighbor
+                  ? `${verifiedNeighbor.name} (${verifiedNeighbor.socioCode} • ${verifiedNeighbor.house})`
+                  : isUnregistered
+                  ? `${manualName || 'Vecino Externo'} • ${manualLot || 'Sin lote'}`
+                  : 'Ingresa tu Código de Socio para emitir reportes'}
               </strong>
             </div>
           </div>
-          <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700">
+          <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-700 whitespace-nowrap">
             {currentOtbInfo.name}
           </span>
         </div>
@@ -473,9 +560,194 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
               </div>
             )}
 
+            {/* PASO 1 OBLIGATORIO: CONTROL DE IDENTIDAD Y ACREDITACIÓN DE SOCIO */}
+            {!verifiedNeighbor && !isUnregistered ? (
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#020617] border-2 border-amber-500 shadow-xl space-y-3.5">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border-2 border-amber-500 text-amber-400 flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-white">
+                      Paso 1: Acreditación de Socio Obligatoria
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      Para la seguridad de <strong className="text-emerald-400">{currentOtbInfo.name}</strong> y evitar falsas alarmas, ingresa tu Código de Socio o Carnet (C.I.):
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type="text"
+                      value={lookupInput}
+                      onChange={(e) => {
+                        setLookupInput(e.target.value);
+                        setLookupError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyNeighbor();
+                        }
+                      }}
+                      placeholder="Ej: SOC-012, SOC-005 o Carnet 7412589..."
+                      className="w-full bg-slate-900 border-2 border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-white font-mono font-bold text-xs sm:text-sm focus:border-amber-400 placeholder:text-slate-500"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleVerifyNeighbor}
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md whitespace-nowrap"
+                  >
+                    <UserCheck className="w-4 h-4 text-slate-950" />
+                    <span>Validar Mi Socio</span>
+                  </button>
+                </div>
+
+                {lookupError && (
+                  <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs font-bold flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <span>{lookupError}</span>
+                  </div>
+                )}
+
+                {/* Acceso Rápido 1-Toque para Adultos Mayores 50+ */}
+                <div className="pt-2 border-t border-slate-800">
+                  <span className="text-[11px] font-bold text-slate-400 block mb-2 uppercase tracking-wide">
+                    👴👵 Socios Registrados en {currentOtbInfo.name} (Toca tu nombre):
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {otbCensusNeighbors.slice(0, 6).map((n) => (
+                      <button
+                        key={n.id}
+                        type="button"
+                        onClick={() => handleSelectNeighbor(n)}
+                        className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-amber-400/80 text-left transition-all cursor-pointer group"
+                      >
+                        <span className="text-xs font-black text-white block group-hover:text-amber-300 truncate">
+                          {n.name}
+                        </span>
+                        <span className="text-[11px] font-mono text-emerald-400 block">
+                          {n.socioCode} • {n.house}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-1 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUnregistered(true);
+                      setLookupError(null);
+                    }}
+                    className="text-xs text-blue-400 hover:text-blue-300 font-bold underline cursor-pointer"
+                  >
+                    ¿Eres nuevo vecino, inquilino o visitante del barrio? Pulsa aquí para reportar →
+                  </button>
+                </div>
+              </div>
+            ) : isUnregistered ? (
+              <div className="p-4 rounded-2xl bg-amber-950/40 border-2 border-amber-500/70 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-amber-300 font-black text-xs sm:text-sm">
+                    <AlertTriangle className="w-4 h-4 text-amber-400" />
+                    <span>Reporte de Vecino en Proceso de Empadronamiento</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUnregistered(false);
+                      setLookupError(null);
+                    }}
+                    className="text-[11px] text-slate-300 hover:text-white underline font-bold cursor-pointer"
+                  >
+                    Tengo código de socio
+                  </button>
+                </div>
+                <p className="text-xs text-slate-300">
+                  Ingresa tus datos para vincular el aviso a tu domicilio en {currentOtbInfo.name}:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <input
+                    type="text"
+                    required
+                    value={manualName}
+                    onChange={(e) => setManualName(e.target.value)}
+                    placeholder="Tu Nombre Completo..."
+                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                  />
+                  <input
+                    type="text"
+                    required
+                    value={manualCi}
+                    onChange={(e) => setManualCi(e.target.value)}
+                    placeholder="Carnet de Identidad (C.I.)..."
+                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                  />
+                  <input
+                    type="text"
+                    required
+                    value={manualPhone}
+                    onChange={(e) => setManualPhone(e.target.value)}
+                    placeholder="Celular de Contacto..."
+                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                  />
+                  <input
+                    type="text"
+                    required
+                    value={manualLot}
+                    onChange={(e) => setManualLot(e.target.value)}
+                    placeholder="Manzana y Lote referencial..."
+                    className="w-full bg-[#020617] border border-slate-600 rounded-xl px-3 py-2 text-white font-bold text-xs sm:text-sm"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Vecino Verificado y Acreditado */
+              <div className="p-4 rounded-2xl bg-[#020617] border-2 border-emerald-500 shadow-lg shadow-emerald-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center font-black flex-shrink-0">
+                    <UserCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-black text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-md border border-emerald-700">
+                        ✓ Socio Acreditado en {currentOtbInfo.name}
+                      </span>
+                      <span className="text-xs font-mono font-bold text-slate-300">
+                        {verifiedNeighbor?.socioCode}
+                      </span>
+                    </div>
+                    <h4 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                      {verifiedNeighbor?.name}
+                    </h4>
+                    <p className="text-xs text-slate-300">
+                      📍 {verifiedNeighbor?.block}, {verifiedNeighbor?.house} • C.I. {verifiedNeighbor?.ci} • Cel: {verifiedNeighbor?.phone}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVerifiedNeighbor(null);
+                    setLookupInput('');
+                    setLookupError(null);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold border border-slate-600 transition-all cursor-pointer whitespace-nowrap"
+                >
+                  Cambiar Socio
+                </button>
+              </div>
+            )}
+
             <div>
               <label className="font-black text-slate-200 block mb-2 text-xs sm:text-sm uppercase tracking-wide">
-                1. Selecciona el problema que estás viendo en {currentOtbInfo.name}:
+                2. Selecciona el problema que estás viendo en {currentOtbInfo.name}:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {(Object.keys(CATEGORY_METADATA) as ReportCategory[]).map((catKey) => {
@@ -510,36 +782,6 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     </button>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Código de Socio y Lote */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="font-black text-slate-200 block mb-1 text-xs">
-                  Tu Código de Socio / Cliente:
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={customSocioCode}
-                  onChange={(e) => setCustomSocioCode(e.target.value)}
-                  placeholder="ej. SOC-012"
-                  className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-mono font-bold focus:border-amber-400 text-xs sm:text-sm"
-                />
-              </div>
-              <div>
-                <label className="font-black text-slate-200 block mb-1 text-xs">
-                  Tu Manzana y Lote:
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={customLotName}
-                  onChange={(e) => setCustomLotName(e.target.value)}
-                  placeholder="ej. Manzana A, Lote 12"
-                  className="w-full bg-[#020617] border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-bold focus:border-amber-400 text-xs sm:text-sm"
-                />
               </div>
             </div>
 
@@ -682,11 +924,21 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-amber-500/30 transition-all cursor-pointer"
+              disabled={isSubmitting || (!verifiedNeighbor && !isUnregistered)}
+              className={`w-full py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all cursor-pointer ${
+                !verifiedNeighbor && !isUnregistered
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                  : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/30'
+              }`}
             >
-              <Send className="w-5 h-5 text-slate-950" />
-              <span>{isSubmitting ? 'Transmitiendo Alerta al Barrio...' : `Publicar Alerta Inmediata en ${currentOtbInfo.name}`}</span>
+              <Send className="w-5 h-5" />
+              <span>
+                {isSubmitting
+                  ? 'Transmitiendo Alerta al Barrio...'
+                  : !verifiedNeighbor && !isUnregistered
+                  ? '⚠️ Primero Valida tu Código de Socio para Transmitir'
+                  : `🚨 Publicar Alerta Comunal Acreditada (${verifiedNeighbor ? verifiedNeighbor.socioCode : 'Vecino Externo'})`}
+              </span>
             </button>
           </form>
         )}
@@ -855,13 +1107,35 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     </div>
                   )}
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      Reportado por: <strong className="text-slate-200 font-bold">{rep.reportedByPublic}</strong>
-                    </span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-xs text-slate-400">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {rep.isVerifiedNeighbor !== false ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-black">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          Socio Acreditado:
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-black">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                          Vecino No Censado:
+                        </span>
+                      )}
+                      <strong className="text-white font-bold">{rep.neighborName}</strong>
+                      <span className="text-slate-400 font-mono text-[11px]">({rep.socioCode} • {rep.lotName})</span>
+                    </div>
 
-                    {/* Acciones de Mesa Directiva / Vecinos para cambiar estado */}
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {rep.phoneContact && (
+                        <a
+                          href={`tel:${rep.phoneContact}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/40 text-[11px] font-bold transition-colors"
+                        >
+                          <PhoneCall className="w-3 h-3 text-blue-300" />
+                          <span>Llamar ({rep.phoneContact})</span>
+                        </a>
+                      )}
+
+                      {/* Acciones de Mesa Directiva / Vecinos para cambiar estado */}
                       {rep.status !== 'en_camino' && rep.status !== 'resuelto' && (
                         <button
                           type="button"

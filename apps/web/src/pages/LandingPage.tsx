@@ -635,10 +635,8 @@ export const LandingPage: React.FC = () => {
         <CommunityAlertsAndEmergencyModal
           isOpen={isEmergencyModalOpen}
           onClose={() => setIsEmergencyModalOpen(false)}
+          otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
           otbName={currentOtb?.name || 'OTB Villa Esperanza'}
-          neighborName="Vecino OTB"
-          socioCode="SOC-001"
-          lotName="Manzana A, Lote 01"
         />
       )}
 

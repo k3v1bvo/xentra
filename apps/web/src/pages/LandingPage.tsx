@@ -36,7 +36,8 @@ import {
   Eye,
   AlertTriangle,
   Lightbulb,
-  Download
+  Download,
+  MapPin
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
@@ -46,6 +47,7 @@ import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsA
 import { InstallAppModal } from '../components/InstallAppModal';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
+import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
 import { formatBOB, AppRole } from '@xentra/shared';
 import { sendNeighborEmailNotification, GOOGLE_SMTP_CONFIG } from '../services/emailNotificationService';
 
@@ -82,6 +84,7 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { setUser, setProfile, setCurrentRole } = useAuthStore();
   const { availableOtbs, setCurrentOtb } = useTenantStore();
+  const { config: otbPaymentConfig, submitVoucher } = usePaymentVerificationStore();
 
   // Input de búsqueda
   const [searchInput, setSearchInput] = useState('');
@@ -326,7 +329,7 @@ export const LandingPage: React.FC = () => {
 
   // Copiar Cuenta Bancaria
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('10000034891230');
+    navigator.clipboard.writeText(otbPaymentConfig.accountNumber);
     setCopiedAccount(true);
     setTimeout(() => setCopiedAccount(false), 2000);
   };
@@ -343,10 +346,10 @@ export const LandingPage: React.FC = () => {
       ctx.fillStyle = '#0F172A';
       ctx.font = 'bold 20px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('XENTRA OTB - QR SIMPLE', 200, 38);
+      ctx.fillText(`${otbPaymentConfig.otbName} - QR SIMPLE`, 200, 38);
       ctx.font = '13px sans-serif';
       ctx.fillStyle = '#475569';
-      ctx.fillText('Banco Unión • Cta: 10000034891230', 200, 62);
+      ctx.fillText(`${otbPaymentConfig.bankName} • Cta: ${otbPaymentConfig.accountNumber}`, 200, 62);
 
       // Cuadros esquinas QR
       ctx.fillStyle = '#0F172A';
@@ -791,6 +794,24 @@ export const LandingPage: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Dirección de la Sede Comunal y Horarios de Cobranza Presencial */}
+                  <div className="p-3.5 rounded-2xl bg-[#030712] border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-300">
+                    <div className="flex items-start gap-2.5">
+                      <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-white block font-bold">
+                          Sede Comunal & Cobranza Presencial ({otbPaymentConfig.otbName}):
+                        </strong>
+                        <span className="text-[11px] text-slate-400">
+                          Av. Petrolera Km 4, Manzana A frente a Cancha Polifuncional • Sábados y Domingos de 08:30 a 12:30
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold px-2 py-1 rounded-lg bg-emerald-950/60 border border-emerald-800 self-start sm:self-auto">
+                      Cobranza Ventanilla
+                    </span>
+                  </div>
+
                   {/* Botones de Acción de Alto Contraste */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                     {resolvedResult.totalDebt > 0 && (
@@ -1191,34 +1212,45 @@ export const LandingPage: React.FC = () => {
 
             {/* Código QR Visual Grande y Nítido */}
             <div className="p-4 bg-[#020617] border-2 border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-lg flex items-center justify-center">
-                <svg className="w-full h-full text-slate-950" viewBox="0 0 100 100" fill="currentColor">
-                  <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="5" y="5" width="20" height="20" fill="white" />
-                  <rect x="10" y="10" width="10" height="10" fill="#0F172A" />
-                  <rect x="70" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="75" y="5" width="20" height="20" fill="white" />
-                  <rect x="80" y="10" width="10" height="10" fill="#0F172A" />
-                  <rect x="0" y="70" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="5" y="75" width="20" height="20" fill="white" />
-                  <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
-                  <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
-                  <circle cx="50" cy="50" r="8" fill="white" />
-                  <circle cx="50" cy="50" r="4" fill="#10B981" />
-                  <rect x="70" y="70" width="10" height="10" fill="#0F172A" />
-                  <rect x="45" y="15" width="8" height="8" fill="#0F172A" />
-                  <rect x="15" y="45" width="8" height="8" fill="#0F172A" />
-                  <rect x="45" y="75" width="8" height="8" fill="#0F172A" />
-                  <rect x="75" y="45" width="8" height="8" fill="#0F172A" />
-                </svg>
+              <div className="w-48 h-48 bg-white rounded-2xl p-3 shadow-lg flex items-center justify-center overflow-hidden">
+                {otbPaymentConfig.qrImageUrl ? (
+                  <img
+                    src={otbPaymentConfig.qrImageUrl}
+                    alt="QR Simple de Cobro OTB"
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <svg className="w-full h-full text-slate-950" viewBox="0 0 100 100" fill="currentColor">
+                    <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="5" y="5" width="20" height="20" fill="white" />
+                    <rect x="10" y="10" width="10" height="10" fill="#0F172A" />
+                    <rect x="70" y="0" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="75" y="5" width="20" height="20" fill="white" />
+                    <rect x="80" y="10" width="10" height="10" fill="#0F172A" />
+                    <rect x="0" y="70" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="5" y="75" width="20" height="20" fill="white" />
+                    <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
+                    <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
+                    <circle cx="50" cy="50" r="8" fill="white" />
+                    <circle cx="50" cy="50" r="4" fill="#10B981" />
+                    <rect x="70" y="70" width="10" height="10" fill="#0F172A" />
+                    <rect x="45" y="15" width="8" height="8" fill="#0F172A" />
+                    <rect x="15" y="45" width="8" height="8" fill="#0F172A" />
+                    <rect x="45" y="75" width="8" height="8" fill="#0F172A" />
+                    <rect x="75" y="45" width="8" height="8" fill="#0F172A" />
+                  </svg>
+                )}
               </div>
 
               <div>
                 <p className="text-base font-black text-white">
                   Monto a Pagar: <span className="text-emerald-400 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span>
                 </p>
-                <p className="text-xs text-slate-300 font-mono mt-0.5">
-                  Banco Unión • Cta Fiscal: 10000034891230
+                <p className="text-xs text-blue-300 font-bold mt-0.5">
+                  {otbPaymentConfig.bankName} • Cta Fiscal: <span className="font-mono text-emerald-300">{otbPaymentConfig.accountNumber}</span>
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                  Titular: {otbPaymentConfig.accountHolder} ({otbPaymentConfig.nitOrCi})
                 </p>
               </div>
 
@@ -1258,16 +1290,27 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Formulario de Comprobante */}
+            {/* Formulario de Comprobante con Notificación a Tesorería */}
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 setIsUploading(true);
-                setTimeout(() => {
-                  setIsUploading(false);
-                  setIsQrModalOpen(false);
-                  alert('¡Comprobante enviado con éxito a la Tesorería! Queda registrado en estado "Pendiente de Verificación" y se emitirá el recibo sellado.');
-                }, 1000);
+                await submitVoucher({
+                  otbId: otbPaymentConfig.otbId,
+                  neighborName: resolvedResult?.fullName || 'Juan José Flores Morales',
+                  neighborSocioCode: resolvedResult?.socioCode || resolvedResult?.code || 'SOC-012',
+                  neighborCi: resolvedResult?.ciNumber || '7412589 CBBA',
+                  block: resolvedResult?.blockName || 'Manzana A',
+                  lot: resolvedResult?.lotName?.split(',')[1]?.trim() || 'Lote 12',
+                  amount: parseFloat(payAmount) || 50,
+                  concept: resolvedResult?.unsettledConcept || 'Cuota Comunitaria Oficial',
+                  method: 'QR',
+                  evidenceName: selectedFileName || 'comprobante_banco_union.jpg'
+                });
+                setIsUploading(false);
+                setIsQrModalOpen(false);
+                setSelectedFileName(null);
+                alert('¡Comprobante enviado a la Tesorería de la OTB! El Tesorero ha recibido la alerta en su panel para verificarlo contra el extracto bancario y emitir tu recibo oficial.');
               }}
               className="space-y-4 text-xs"
             >

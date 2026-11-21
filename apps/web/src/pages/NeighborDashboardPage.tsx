@@ -24,6 +24,7 @@ import {
 import { formatBOB } from '@xentra/shared';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
+import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
 import { useNavigate } from 'react-router-dom';
 import { PrintableStatementModal } from '../components/PrintableStatementModal';
 import { CommunityAlertsAndEmergencyModal } from '../components/CommunityAlertsAndEmergencyModal';
@@ -88,6 +89,7 @@ export const NeighborDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { profile } = useAuthStore();
   const { currentOtb } = useTenantStore();
+  const { config: otbPaymentConfig, submitVoucher } = usePaymentVerificationStore();
 
   const [fees] = useState<NeighborFee[]>(INITIAL_FEES);
   const [submissions, setSubmissions] = useState<SubmittedPayment[]>(INITIAL_SUBMISSIONS);
@@ -114,7 +116,7 @@ export const NeighborDashboardPage: React.FC = () => {
   const totalDebt = Math.max(0, totalAssigned - totalPaid);
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('10000034891230');
+    navigator.clipboard.writeText(otbPaymentConfig.accountNumber);
     setCopiedAccount(true);
     setTimeout(() => setCopiedAccount(false), 2000);
   };
@@ -130,10 +132,10 @@ export const NeighborDashboardPage: React.FC = () => {
       ctx.fillStyle = '#0F172A';
       ctx.font = 'bold 20px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('XENTRA OTB - QR SIMPLE', 200, 38);
+      ctx.fillText(`${otbPaymentConfig.otbName} - QR SIMPLE`, 200, 38);
       ctx.font = '13px sans-serif';
       ctx.fillStyle = '#475569';
-      ctx.fillText('Banco Unión • Cta: 10000034891230', 200, 62);
+      ctx.fillText(`${otbPaymentConfig.bankName} • Cta: ${otbPaymentConfig.accountNumber}`, 200, 62);
 
       ctx.fillStyle = '#0F172A';
       ctx.fillRect(45, 90, 80, 80);
@@ -193,27 +195,27 @@ export const NeighborDashboardPage: React.FC = () => {
     }
   };
 
-  const handleSendProof = (e: React.FormEvent) => {
+  const handleSendProof = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUploading(true);
 
-    setTimeout(() => {
-      const newSubmission: SubmittedPayment = {
-        id: `sub-${Date.now()}`,
-        amount: parseFloat(payAmount) || 50,
-        concept: 'Pago reportado por QR Simple',
-        method: 'QR',
-        submittedAt: new Date().toLocaleString('es-BO'),
-        status: 'PendingVerification',
-        evidenceName: selectedFileName || 'captura_transferencia_qr.png'
-      };
+    await submitVoucher({
+      otbId: otbPaymentConfig.otbId,
+      neighborName: `${profile?.first_name || 'Juan José'} ${profile?.last_name || 'Flores Morales'}`,
+      neighborSocioCode: 'SOC-012',
+      neighborCi: `${profile?.ci_number || '7412589'} ${profile?.ci_extension || 'CBBA'}`,
+      block: 'Manzana A',
+      lot: 'Lote 12',
+      amount: parseFloat(payAmount) || 50,
+      concept: 'Pago reportado por QR Simple',
+      method: 'QR',
+      evidenceName: selectedFileName || 'captura_transferencia_qr.png'
+    });
 
-      setSubmissions([newSubmission, ...submissions]);
-      setIsUploading(false);
-      setIsQrModalOpen(false);
-      setSelectedFileName(null);
-      alert('¡Comprobante enviado a la Tesorería! Queda en estado "Pendiente de Verificación" hasta que la directiva confirme el ingreso en la cuenta.');
-    }, 1000);
+    setIsUploading(false);
+    setIsQrModalOpen(false);
+    setSelectedFileName(null);
+    alert('¡Comprobante enviado a la Tesorería de la OTB! El Tesorero ha recibido la alerta en su panel para verificarlo contra el extracto bancario.');
   };
 
   return (
@@ -486,51 +488,57 @@ export const NeighborDashboardPage: React.FC = () => {
 
             {/* Código QR Visual */}
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-48 h-48 bg-white border-2 border-slate-800 rounded-2xl p-2.5 shadow-sm flex items-center justify-center relative">
-                {/* Visual SVG QR */}
-                <svg className="w-full h-full text-slate-900" viewBox="0 0 100 100" fill="currentColor">
-                  {/* Patrón simulado de QR de alta resolución */}
-                  <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="5" y="5" width="20" height="20" fill="white" />
-                  <rect x="10" y="10" width="10" height="10" fill="#0F172A" />
+              <div className="w-48 h-48 bg-white border-2 border-slate-800 rounded-2xl p-2.5 shadow-sm flex items-center justify-center relative overflow-hidden">
+                {otbPaymentConfig.qrImageUrl ? (
+                  <img
+                    src={otbPaymentConfig.qrImageUrl}
+                    alt="QR Simple OTB"
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <svg className="w-full h-full text-slate-900" viewBox="0 0 100 100" fill="currentColor">
+                    <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="5" y="5" width="20" height="20" fill="white" />
+                    <rect x="10" y="10" width="10" height="10" fill="#0F172A" />
 
-                  <rect x="70" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="75" y="5" width="20" height="20" fill="white" />
-                  <rect x="80" y="10" width="10" height="10" fill="#0F172A" />
+                    <rect x="70" y="0" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="75" y="5" width="20" height="20" fill="white" />
+                    <rect x="80" y="10" width="10" height="10" fill="#0F172A" />
 
-                  <rect x="0" y="70" width="30" height="30" rx="3" fill="#0F172A" />
-                  <rect x="5" y="75" width="20" height="20" fill="white" />
-                  <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
+                    <rect x="0" y="70" width="30" height="30" rx="3" fill="#0F172A" />
+                    <rect x="5" y="75" width="20" height="20" fill="white" />
+                    <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
 
-                  {/* Datos del QR */}
-                  <rect x="36" y="5" width="8" height="8" fill="#2563EB" />
-                  <rect x="48" y="5" width="8" height="8" fill="#0F172A" />
-                  <rect x="36" y="18" width="8" height="8" fill="#0F172A" />
-                  <rect x="48" y="18" width="8" height="8" fill="#2563EB" />
+                    <rect x="36" y="5" width="8" height="8" fill="#2563EB" />
+                    <rect x="48" y="5" width="8" height="8" fill="#0F172A" />
+                    <rect x="36" y="18" width="8" height="8" fill="#0F172A" />
+                    <rect x="48" y="18" width="8" height="8" fill="#2563EB" />
 
-                  <rect x="5" y="36" width="8" height="8" fill="#0F172A" />
-                  <rect x="18" y="36" width="8" height="8" fill="#2563EB" />
-                  <rect x="5" y="48" width="8" height="8" fill="#2563EB" />
-                  <rect x="18" y="48" width="8" height="8" fill="#0F172A" />
+                    <rect x="5" y="36" width="8" height="8" fill="#0F172A" />
+                    <rect x="18" y="36" width="8" height="8" fill="#2563EB" />
+                    <rect x="5" y="48" width="8" height="8" fill="#2563EB" />
+                    <rect x="18" y="48" width="8" height="8" fill="#0F172A" />
 
-                  <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
-                  <circle cx="50" cy="50" r="8" fill="white" />
+                    <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
+                    <circle cx="50" cy="50" r="8" fill="white" />
+                    <circle cx="50" cy="50" r="4" fill="#10B981" />
 
-                  <rect x="70" y="36" width="8" height="8" fill="#0F172A" />
-                  <rect x="82" y="36" width="8" height="8" fill="#2563EB" />
-                  <rect x="70" y="48" width="8" height="8" fill="#2563EB" />
-                  <rect x="82" y="48" width="8" height="8" fill="#0F172A" />
+                    <rect x="70" y="36" width="8" height="8" fill="#0F172A" />
+                    <rect x="82" y="36" width="8" height="8" fill="#2563EB" />
+                    <rect x="70" y="48" width="8" height="8" fill="#2563EB" />
+                    <rect x="82" y="48" width="8" height="8" fill="#0F172A" />
 
-                  <rect x="36" y="70" width="8" height="8" fill="#0F172A" />
-                  <rect x="48" y="70" width="8" height="8" fill="#2563EB" />
-                  <rect x="36" y="82" width="8" height="8" fill="#2563EB" />
-                  <rect x="48" y="82" width="8" height="8" fill="#0F172A" />
+                    <rect x="36" y="70" width="8" height="8" fill="#0F172A" />
+                    <rect x="48" y="70" width="8" height="8" fill="#2563EB" />
+                    <rect x="36" y="82" width="8" height="8" fill="#2563EB" />
+                    <rect x="48" y="82" width="8" height="8" fill="#0F172A" />
 
-                  <rect x="70" y="70" width="8" height="8" fill="#0F172A" />
-                  <rect x="82" y="70" width="8" height="8" fill="#0F172A" />
-                  <rect x="70" y="82" width="8" height="8" fill="#2563EB" />
-                  <rect x="82" y="82" width="8" height="8" fill="#0F172A" />
-                </svg>
+                    <rect x="70" y="70" width="8" height="8" fill="#0F172A" />
+                    <rect x="82" y="70" width="8" height="8" fill="#0F172A" />
+                    <rect x="70" y="82" width="8" height="8" fill="#2563EB" />
+                    <rect x="82" y="82" width="8" height="8" fill="#0F172A" />
+                  </svg>
+                )}
               </div>
 
               {/* 4 Pasos Didácticos para el Vecino de 40 a 60 años */}
@@ -559,7 +567,12 @@ export const NeighborDashboardPage: React.FC = () => {
 
               <div>
                 <p className="text-sm font-black text-slate-900">Monto a pagar: <span className="text-emerald-600 font-mono">{formatBOB(parseFloat(payAmount) || 50)}</span></p>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Banco Unión • Cta Fiscal: 10000034891230</p>
+                <p className="text-xs text-blue-700 font-bold font-mono mt-0.5">
+                  {otbPaymentConfig.bankName} • Cta Fiscal: {otbPaymentConfig.accountNumber}
+                </p>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  Titular: {otbPaymentConfig.accountHolder} ({otbPaymentConfig.nitOrCi})
+                </p>
               </div>
 
               {/* Botones de Acción QR */}

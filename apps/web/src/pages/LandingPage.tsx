@@ -118,9 +118,6 @@ export const LandingPage: React.FC = () => {
   // Modal de Transparencia Comunitaria & Asamblea de Vecinos
   const [isTransparencyModalOpen, setIsTransparencyModalOpen] = useState(false);
 
-  // Modo Accesibilidad Adulto Mayor (40 a 60 años: letra grande y alto contraste)
-  const [isSeniorMode, setIsSeniorMode] = useState(false);
-
   // Modal para solicitar nueva OTB
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
@@ -459,102 +456,64 @@ export const LandingPage: React.FC = () => {
       <header className="px-3 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-between">
         <XentraLogo size="md" variant="light" />
 
-        <div className="flex items-center gap-1.5 sm:gap-3">
-          {/* Botón Accesibilidad Adultos (40 a 60 años) */}
-          <button
-            onClick={() => setIsSeniorMode(!isSeniorMode)}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
-              isSeniorMode
-                ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md'
-                : 'text-slate-200 bg-slate-900/90 hover:bg-slate-800 border-slate-700'
-            }`}
-            title="Activar/Desactivar letra grande para lectura fácil"
-          >
-            <Type className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{isSeniorMode ? 'Letra Normal (A)' : 'Modo Adultos (A+)'}</span>
-            <span className="sm:hidden">{isSeniorMode ? 'A' : 'A+'}</span>
-          </button>
-
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Botón Reportes y Emergencias Barriales */}
           <button
             onClick={() => {
               setAlertModalTab('emergencias');
               setIsAlertModalOpen(true);
             }}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black text-rose-300 bg-rose-950/60 hover:bg-rose-900/70 border-2 border-rose-500/60 shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-black text-rose-300 bg-rose-950/60 hover:bg-rose-900/70 border-2 border-rose-500/60 shadow-sm transition-all cursor-pointer"
           >
-            <PhoneCall className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-            <span className="hidden sm:inline">Auxilio & Reportes</span>
-            <span className="sm:hidden">110 Auxilio</span>
+            <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
+            <span>Auxilio & Reportes 24/7</span>
           </button>
 
           {/* Botón Instalar App Celular (APK / PWA) */}
           <button
             onClick={() => setIsInstallModalOpen(true)}
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/50 transition-all cursor-pointer"
+            className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/50 transition-all cursor-pointer"
           >
-            <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Instalar App</span>
+            <Smartphone className="w-4 h-4 text-emerald-400" />
+            <span>Instalar App Móvil</span>
           </button>
 
           <button
             onClick={() => navigate('/verificar-recibo')}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm transition-colors cursor-pointer"
+            className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm transition-colors cursor-pointer"
           >
-            <QrCode className="w-3.5 h-3.5 text-blue-400" />
+            <QrCode className="w-4 h-4 text-blue-400" />
             <span>Verificar QR</span>
           </button>
 
           <button
             onClick={() => navigate('/login')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/25 transition-all cursor-pointer"
           >
-            <Lock className="w-3.5 h-3.5" />
+            <Lock className="w-4 h-4" />
             <span>Iniciar Sesión</span>
           </button>
         </div>
       </header>
 
       {/* Hero Central con Buscador Inteligente por Código */}
-      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col justify-center space-y-6 sm:space-y-8 relative z-10">
+      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center space-y-6 sm:space-y-8 relative z-10">
         
-        {/* Banner Modo Lectura Fácil (para 40 a 60 años) */}
-        {isSeniorMode && (
-          <div className="p-3.5 rounded-2xl bg-amber-400 text-slate-950 border-2 border-amber-300 font-bold text-xs sm:text-sm flex items-center justify-between shadow-xl animate-in fade-in duration-200">
-            <div className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-slate-950 flex-shrink-0" />
-              <span>
-                <strong>Modo Lectura Fácil Activado:</strong> Letras más grandes, explicaciones claras y botones táctiles gigantes para mayor comodidad visual.
-              </span>
-            </div>
-            <button
-              onClick={() => setIsSeniorMode(false)}
-              className="text-xs underline font-black ml-2 cursor-pointer flex-shrink-0"
-            >
-              Desactivar
-            </button>
-          </div>
-        )}
-
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-bold backdrop-blur-md shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>🇧🇴 Red Financiera Comunitaria Bolivia • 3D Spatial Grid</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs sm:text-sm font-bold backdrop-blur-md shadow-sm">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>🇧🇴 Red Financiera Comunitaria Bolivia • Gestión Transparente OTB</span>
           </div>
-          <h1 className={`font-black text-white leading-tight tracking-tight ${
-            isSeniorMode ? 'text-3xl sm:text-5xl md:text-6xl' : 'text-2xl sm:text-4xl md:text-5xl'
-          }`}>
+          <h1 className="font-black text-white leading-tight tracking-tight text-3xl sm:text-5xl md:text-6xl">
             Consulta tu Estado Comunitario por <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Código de Cliente</span>
           </h1>
-          <p className={`text-slate-300 max-w-xl mx-auto leading-relaxed ${
-            isSeniorMode ? 'text-sm sm:text-base font-semibold' : 'text-xs sm:text-sm'
-          }`}>
+          <p className="text-slate-200 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base font-medium">
             Ingresa tu código de lote o vivienda. El sistema identificará tu OTB y mostrará solo tus obligaciones pendientes, <strong className="text-white">resguardando tu privacidad sin exponer datos sensibles a terceros</strong>.
           </p>
         </div>
 
         {/* Buscador Interactivo con Efecto 3D Tilt */}
-        <TiltCard3D intensity={5} className="bg-slate-900/90 border-2 border-slate-700/80 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl space-y-4">
+        <TiltCard3D intensity={5} className="bg-slate-900/90 border-2 border-slate-700/80 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-xl space-y-4">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -563,23 +522,19 @@ export const LandingPage: React.FC = () => {
             className="flex flex-col sm:flex-row gap-3"
           >
             <div className="relative flex-1">
-              <Search className="w-5 h-5 text-blue-400 absolute left-3.5 top-3.5" />
+              <Search className="w-5 h-5 text-blue-400 absolute left-4 top-4" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Ingresa tu Código (ej. Lote 12, SOC-012, 7412589, ADM-TES)..."
-                className={`w-full bg-[#020617] border-2 border-slate-600 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-slate-400 font-mono focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all ${
-                  isSeniorMode ? 'text-base font-bold' : 'text-sm'
-                }`}
+                className="w-full bg-[#020617] border-2 border-slate-600 rounded-2xl pl-12 pr-4 py-3.5 text-white placeholder-slate-400 font-mono focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all text-base sm:text-lg font-bold"
               />
             </div>
 
             <button
               type="submit"
-              className={`py-3 px-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex-shrink-0 ${
-                isSeniorMode ? 'text-sm sm:text-base py-3.5 px-8' : 'text-xs'
-              }`}
+              className="py-3.5 px-8 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex-shrink-0 text-sm sm:text-base"
             >
               <span>Buscar Estado</span>
               <ArrowRight className="w-4 h-4" />
@@ -588,7 +543,7 @@ export const LandingPage: React.FC = () => {
 
           {/* Chips Sugeridos para Prueba Rápida de Alto Contraste */}
           <div className="flex flex-wrap items-center gap-2 text-xs pt-1">
-            <span className="text-[11px] text-slate-300 font-bold">Pruebas sugeridas:</span>
+            <span className="text-xs text-slate-300 font-bold">Pruebas sugeridas:</span>
             {[
               { label: 'Lote 12 (Vecino con deuda)', val: 'Lote 12' },
               { label: 'SOC-005 (Vecino al día)', val: 'SOC-005' },
@@ -604,9 +559,7 @@ export const LandingPage: React.FC = () => {
                   setSearchInput(chip.val);
                   handleSearchCode(chip.val);
                 }}
-                className={`px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600 text-slate-100 hover:text-white font-bold border border-slate-600 hover:border-blue-400 backdrop-blur-sm transition-all shadow-sm cursor-pointer ${
-                  isSeniorMode ? 'text-xs py-2 px-3.5' : 'text-[11px]'
-                }`}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-slate-100 hover:text-white font-bold border border-slate-600 hover:border-blue-400 backdrop-blur-sm transition-all shadow-sm cursor-pointer text-xs"
               >
                 {chip.label}
               </button>

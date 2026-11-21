@@ -28,6 +28,10 @@ export interface CommunityReport {
   phoneContact?: string;
   photoName?: string;
   photoUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  gpsAccuracy?: number;
+  mapUrl?: string;
   status: ReportStatus;
   statusLabel: string;
   createdAt: string;
@@ -48,6 +52,9 @@ interface NewReportInput {
   phoneContact?: string;
   photoName?: string;
   photoUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  gpsAccuracy?: number;
 }
 
 interface CommunityReportsState {
@@ -252,6 +259,12 @@ export const useCommunityReportsStore = create<CommunityReportsState>((set, get)
       phoneContact: input.phoneContact,
       photoName: input.photoName,
       photoUrl: input.photoUrl,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      gpsAccuracy: input.gpsAccuracy,
+      mapUrl: input.latitude && input.longitude
+        ? `https://www.google.com/maps?q=${input.latitude},${input.longitude}`
+        : undefined,
       status: 'pendiente',
       statusLabel: 'Alerta enviada a la Mesa Directiva y Ronda Vecinal',
       createdAt: new Date().toISOString(),

@@ -37,7 +37,52 @@ BEGIN
     (v_otb3_id, 'OTB-SCZ-003', 'San Miguel', 'Santa Cruz', 'Santa Cruz de la Sierra', 'Plan 3000', 'Av. Paurito', 'BOB')
   ON CONFLICT (id) DO NOTHING;
 
-  -- 2. Perfiles Demo (En entorno de desarrollo usamos mock ids compatibles)
+  -- 1.5. Usuarios Demo en auth.users (necesarios para satisfacer la foreign key profiles_id_fkey)
+  INSERT INTO auth.users (
+    id,
+    instance_id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at
+  )
+  VALUES 
+    (v_admin_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'carlos.admin@xentra.app', crypt('xentra2026', gen_salt('bf')), now(), '{"provider":"email","providers":["email"],"admin_created":"true"}'::jsonb, '{"first_name":"Carlos","last_name":"Mamani"}'::jsonb, now(), now()),
+    (v_pres1_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'roberto.presidencia@xentra.app', crypt('xentra2026', gen_salt('bf')), now(), '{"provider":"email","providers":["email"],"admin_created":"true"}'::jsonb, '{"first_name":"Roberto","last_name":"Fernández"}'::jsonb, now(), now()),
+    (v_tes1_id,  '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'marina.tesoreria@xentra.app', crypt('xentra2026', gen_salt('bf')), now(), '{"provider":"email","providers":["email"],"admin_created":"true"}'::jsonb, '{"first_name":"Marina","last_name":"Condori"}'::jsonb, now(), now()),
+    (v_vec1_id,  '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'juan.vecino@xentra.app', crypt('xentra2026', gen_salt('bf')), now(), '{"provider":"email","providers":["email"],"admin_created":"true"}'::jsonb, '{"first_name":"Juan José","last_name":"Flores"}'::jsonb, now(), now()),
+    (v_vec2_id,  '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'silvia.vecina@xentra.app', crypt('xentra2026', gen_salt('bf')), now(), '{"provider":"email","providers":["email"],"admin_created":"true"}'::jsonb, '{"first_name":"Silvia","last_name":"Rojas"}'::jsonb, now(), now())
+  ON CONFLICT (id) DO NOTHING;
+
+  -- 1.6. Identidades Demo para inicio de sesión por email
+  BEGIN
+    INSERT INTO auth.identities (
+      id,
+      user_id,
+      identity_data,
+      provider,
+      provider_id,
+      last_sign_in_at,
+      created_at,
+      updated_at
+    )
+    VALUES
+      (v_admin_id, v_admin_id, format('{"sub":"%s","email":"%s"}', v_admin_id, 'carlos.admin@xentra.app')::jsonb, 'email', v_admin_id::text, now(), now(), now()),
+      (v_pres1_id, v_pres1_id, format('{"sub":"%s","email":"%s"}', v_pres1_id, 'roberto.presidencia@xentra.app')::jsonb, 'email', v_pres1_id::text, now(), now(), now()),
+      (v_tes1_id,  v_tes1_id,  format('{"sub":"%s","email":"%s"}', v_tes1_id,  'marina.tesoreria@xentra.app')::jsonb, 'email', v_tes1_id::text, now(), now(), now()),
+      (v_vec1_id,  v_vec1_id,  format('{"sub":"%s","email":"%s"}', v_vec1_id,  'juan.vecino@xentra.app')::jsonb, 'email', v_vec1_id::text, now(), now(), now()),
+      (v_vec2_id,  v_vec2_id,  format('{"sub":"%s","email":"%s"}', v_vec2_id,  'silvia.vecina@xentra.app')::jsonb, 'email', v_vec2_id::text, now(), now(), now())
+    ON CONFLICT DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    NULL;
+  END;
+
+  -- 2. Perfiles Demo (Enlazados correctamente a auth.users)
   INSERT INTO profiles (id, first_name, last_name, ci_number, ci_extension, phone)
   VALUES
     (v_admin_id, 'Carlos', 'Mamani Quispe', '4589210', 'CBBA', '71234567'),

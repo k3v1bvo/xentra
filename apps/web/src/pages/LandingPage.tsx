@@ -642,8 +642,9 @@ export const LandingPage: React.FC = () => {
         />
       )}
 
-      {/* Footer Comunal con Información Útil, Teléfonos de Auxilio y Enlaces */}
+      {/* Footer Público Institucional de la Plataforma Nacional */}
       <CommunityFooter
+        variant="public"
         onOpenEmergency={() => setIsEmergencyModalOpen(true)}
         onOpenInstallApp={() => setIsInstallModalOpen(true)}
       />

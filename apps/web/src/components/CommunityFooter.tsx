@@ -12,22 +12,29 @@ import {
   ExternalLink,
   Vote,
   FileCheck,
-  FileText,
-  AlertTriangle,
-  Flame,
-  Ambulance,
-  HeartHandshake
+  Building2,
+  Users,
+  Compass,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { BoliviaCoatOfArms } from './BoliviaCoatOfArms';
 import { useTenantStore } from '../stores/tenantStore';
 
 interface CommunityFooterProps {
+  /**
+   * 'public': Footer institucional para la portada pública (LandingPage).
+   *           NO muestra datos privados ni dirigentes de ninguna OTB particular.
+   * 'internal': Footer con datos específicos de la OTB activa para usuarios autenticados.
+   */
+  variant?: 'public' | 'internal';
   onOpenEmergency?: () => void;
   onOpenInstallApp?: () => void;
   onOpenTransparency?: () => void;
 }
 
 export const CommunityFooter: React.FC<CommunityFooterProps> = ({
+  variant = 'internal',
   onOpenEmergency,
   onOpenInstallApp,
   onOpenTransparency
@@ -35,44 +42,84 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
 
+  const isPublic = variant === 'public';
+
   return (
     <footer className="relative z-10 border-t-2 border-slate-800 bg-[#020617] text-slate-300">
-      {/* Franja Superior Informativa de la OTB Activa */}
+      {/* =================================================================== */}
+      {/* FRANJA SUPERIOR INFORMATIVA                                         */}
+      {/* =================================================================== */}
       <div className="bg-[#0B132B]/90 border-b border-slate-800/80 px-4 sm:px-8 py-5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <BoliviaCoatOfArms size={36} />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-white uppercase tracking-wider">
-                  Organización Territorial de Base (OTB)
-                </span>
-                <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  {currentOtb?.code || 'OTB-CBBA-001'}
-                </span>
-              </div>
-              <p className="text-base font-black text-white">
-                {currentOtb?.name || 'OTB Villa Esperanza'} — {currentOtb?.department || 'Cochabamba'}
-              </p>
+              {isPublic ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-white uppercase tracking-wider">
+                      Plataforma Nacional de Organizaciones Territoriales de Base
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                      BOLIVIA
+                    </span>
+                  </div>
+                  <p className="text-base font-black text-white">
+                    Estado Plurinacional de Bolivia — Sistema Soberano de Gestión Comunal
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-white uppercase tracking-wider">
+                      Organización Territorial de Base (OTB)
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                      {currentOtb?.code || 'OTB-CBBA-001'}
+                    </span>
+                  </div>
+                  <p className="text-base font-black text-white">
+                    {currentOtb?.name || 'OTB Registrada'} — {currentOtb?.department || 'Bolivia'}
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
-            <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-              <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>{currentOtb?.zone || 'Distrito 4'}, {currentOtb?.municipality || 'Cochabamba (Cercado)'}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
-              <Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
-              <span>Sede: <strong>+591 {currentOtb?.contact_phone || '76543210'}</strong></span>
-            </div>
+            {isPublic ? (
+              <>
+                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
+                  <Compass className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>Cobertura Nacional: <strong>9 Departamentos</strong></span>
+                </div>
+                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
+                  <ShieldCheck className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  <span>Ley N° 1551 de Participación Popular</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
+                  <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span>{currentOtb?.zone || 'Zona Urbana'}, {currentOtb?.municipality || 'Municipio'}</span>
+                </div>
+                <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-2 rounded-xl border border-slate-800">
+                  <Phone className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                  <span>Sede: <strong>+591 {currentOtb?.contact_phone || '76543210'}</strong></span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Cuerpo Principal del Footer en 4 Columnas Estratégicas */}
+      {/* =================================================================== */}
+      {/* CUERPO PRINCIPAL DEL FOOTER EN 4 COLUMNAS                           */}
+      {/* =================================================================== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+          
           {/* Columna 1: Identidad Institucional & Marco Jurídico */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
@@ -159,20 +206,20 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
               </a>
 
               <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] text-slate-300 space-y-1">
-                <p>💧 <strong>Agua (SEMAPA / EPSAS):</strong> 800-10-8888</p>
-                <p>⚡ <strong>Luz Eléctrica (ELFEC / DELAPAZ):</strong> 800-10-3333</p>
+                <p>💧 <strong>Agua (SEMAPA / EPSAS / SAGUAPAC):</strong> 800-10-8888</p>
+                <p>⚡ <strong>Luz Eléctrica (ELFEC / DELAPAZ / CRE):</strong> 800-10-3333</p>
               </div>
             </div>
           </div>
 
-          {/* Columna 3: Servicios para el Vecino & Transparencia */}
+          {/* Columna 3: Servicios para el Ciudadano / Vecino */}
           <div className="space-y-3.5">
             <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
               <FileCheck className="w-4 h-4 text-blue-400" />
-              <span>Servicios para el Vecino</span>
+              <span>Servicios de la Plataforma</span>
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Accede a las herramientas oficiales para consultar cuotas, validar comprobantes o instalar la app:
+              Herramientas oficiales para consultar cuotas, validar comprobantes o instalar la app:
             </p>
 
             <ul className="space-y-2 text-xs sm:text-sm">
@@ -205,71 +252,148 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 </button>
               </li>
 
-              <li>
-                <button
-                  onClick={() => navigate('/vecino')}
-                  className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-purple-400" />
-                    <span>Portal Vecinal (Mis Cuotas)</span>
-                  </span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Acceso</span>
-                </button>
-              </li>
-
-              <li>
-                <button
-                  onClick={() => navigate('/admin/vota')}
-                  className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
-                >
-                  <span className="flex items-center gap-2">
-                    <Vote className="w-4 h-4 text-amber-400" />
-                    <span>Votaciones & Asambleas OTB</span>
-                  </span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Directa</span>
-                </button>
-              </li>
+              {isPublic ? (
+                <>
+                  <li>
+                    <button
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        const searchEl = document.querySelector('input');
+                        if (searchEl) searchEl.focus();
+                      }}
+                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-purple-400" />
+                        <span>Consultar Estado de mi Lote</span>
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Buscar</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-amber-400" />
+                        <span>Ingresar con mi Cuenta</span>
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Acceso</span>
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <button
+                      onClick={() => navigate('/vecino')}
+                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Building className="w-4 h-4 text-purple-400" />
+                        <span>Portal Vecinal (Mis Cuotas)</span>
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Acceso</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate('/admin/vota')}
+                      className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Vote className="w-4 h-4 text-amber-400" />
+                        <span>Votaciones & Asambleas OTB</span>
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Directa</span>
+                    </button>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
-          {/* Columna 4: Mesa Directiva & Sede Comunal */}
-          <div className="space-y-3.5">
-            <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
-              <Building className="w-4 h-4 text-emerald-400" />
-              <span>Mesa Directiva & Sede</span>
-            </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Atención presencial a socios y vecinos para trámites de derecho propietario y aportes:
-            </p>
+          {/* Columna 4: Según variante Pública o Interna */}
+          {isPublic ? (
+            /* Vista Pública: Invitación a Juntas Vecinales y Dirigentes de Bolivia */
+            <div className="space-y-3.5">
+              <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
+                <Building2 className="w-4 h-4 text-emerald-400" />
+                <span>Gobernanza Digital Barrial</span>
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                ¿Eres Presidente o Tesorero de una OTB en Bolivia? Digitaliza la administración de tu comunidad:
+              </p>
 
-            <div className="p-4 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-3 text-xs text-slate-300">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Presidente de la OTB</span>
-                <strong className="text-white text-sm block">{currentOtb?.president_name || 'Roberto Gutiérrez Vargas'}</strong>
-              </div>
+              <div className="p-4 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-2.5 text-xs text-slate-300">
+                <div className="space-y-1.5">
+                  <p className="flex items-center gap-2 text-slate-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                    <span>Cobros con QR Simple sin comisión bancaria.</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                    <span>Recibos oficiales sellados con código QR.</span>
+                  </p>
+                  <p className="flex items-center gap-2 text-slate-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0" />
+                    <span>Consultas y asambleas democráticas directas.</span>
+                  </p>
+                </div>
 
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Tesorería Comunal</span>
-                <strong className="text-white text-sm block">{currentOtb?.treasurer_name || 'Silvia Rojas Torrico'}</strong>
-              </div>
-
-              <div className="pt-1 border-t border-slate-800 space-y-1 text-[11px]">
-                <p className="flex items-center gap-1.5 text-slate-300">
-                  <Clock className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                  <span><strong>Horario Sede:</strong> Lun a Sáb 08:30 - 18:30</span>
-                </p>
-                <p className="flex items-center gap-1.5 text-slate-300">
-                  <MapPin className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-                  <span>{currentOtb?.address || 'Av. Petrolera Km 4'}</span>
-                </p>
+                <div className="pt-2 border-t border-slate-800">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
+                  >
+                    <span>Ingresar al Sistema</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Vista Interna: Datos específicos de la OTB una vez iniciada sesión */
+            <div className="space-y-3.5">
+              <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
+                <Building className="w-4 h-4 text-emerald-400" />
+                <span>Mesa Directiva & Sede</span>
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Atención presencial a socios y vecinos de {currentOtb?.name || 'la OTB'}:
+              </p>
+
+              <div className="p-4 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-3 text-xs text-slate-300">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Presidente de la OTB</span>
+                  <strong className="text-white text-sm block">{currentOtb?.president_name || 'Directiva Comunal'}</strong>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Tesorería Comunal</span>
+                  <strong className="text-white text-sm block">{currentOtb?.treasurer_name || 'Comisión de Finanzas'}</strong>
+                </div>
+
+                <div className="pt-1 border-t border-slate-800 space-y-1 text-[11px]">
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <Clock className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span><strong>Horario Sede:</strong> Lun a Sáb 08:30 - 18:30</span>
+                  </p>
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <MapPin className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                    <span>{currentOtb?.address || 'Sede Social'}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Franja Inferior: Sellos Criptográficos & Derechos Reservados */}
+      {/* =================================================================== */}
+      {/* FRANJA INFERIOR: SELLOS CRIPTOGRÁFICOS & DERECHOS                   */}
+      {/* =================================================================== */}
       <div className="border-t border-slate-800/80 bg-[#01040D] px-4 sm:px-8 py-5">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-slate-400">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">

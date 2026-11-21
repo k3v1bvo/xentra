@@ -104,9 +104,9 @@ export const TracePage: React.FC = () => {
         <div className="pt-4 border-t border-slate-100">
           <h3 className="text-xs font-bold text-slate-800 mb-3">Comprobantes y Evidencias de Respaldo</h3>
           <div className="space-y-2.5">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-blue-600 flex items-center justify-center font-bold flex-shrink-0">
                   F
                 </div>
                 <div>
@@ -114,15 +114,15 @@ export const TracePage: React.FC = () => {
                   <p className="text-[11px] text-slate-500">Proveedor: "Ferretería El Tornillo S.R.L." • Factura N° 004819</p>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <span className="font-mono font-bold text-slate-900">{formatBOB(3800.00)}</span>
                 <span className="block text-[10px] text-emerald-600 font-semibold">Respaldo Digital Verificado</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-purple-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-purple-600 flex items-center justify-center font-bold flex-shrink-0">
                   R
                 </div>
                 <div>
@@ -130,7 +130,7 @@ export const TracePage: React.FC = () => {
                   <p className="text-[11px] text-slate-500">Maestro Soldador: Faustino Choque • Recibo Oficial con Fotocopia CI</p>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <span className="font-mono font-bold text-slate-900">{formatBOB(2400.00)}</span>
                 <span className="block text-[10px] text-emerald-600 font-semibold">Respaldo Digital Verificado</span>
               </div>

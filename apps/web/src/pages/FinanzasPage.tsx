@@ -145,8 +145,8 @@ export const FinanzasPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200">
+      {/* Tabs con scroll horizontal en móvil */}
+      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto whitespace-nowrap pb-1">
         <button
           onClick={() => setActiveTab('pagos')}
           className={`pb-2.5 px-3 text-xs font-bold transition-all border-b-2 ${

@@ -92,7 +92,7 @@ export const VotaPage: React.FC = () => {
                   <h2 className="text-base font-bold text-slate-900">{poll.title}</h2>
                   <p className="text-xs text-slate-500 mt-1">{poll.description}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-left sm:text-right flex-shrink-0">
                   <span className="text-[11px] text-slate-400 block font-mono">Cierre: {poll.endDate}</span>
                   <span className="text-xs font-bold text-blue-600 font-mono">
                     Presupuesto Ref: {formatBOB(poll.estimatedBudget)}

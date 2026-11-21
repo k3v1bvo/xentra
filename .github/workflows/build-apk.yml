@@ -50,9 +50,16 @@ jobs:
           pnpm --filter @xentra/sync-engine build || true
           pnpm --filter @xentra/web build
 
+      - name: 📱 Pre-export Expo Android Bundle
+        run: |
+          cd apps/mobile
+          npx expo export --platform android
+          cd ../..
+
       - name: 📱 Build Real Android APK with Gradle
         run: |
           mkdir -p build/apk
+          echo "sdk.dir=$ANDROID_HOME" > apps/mobile/android/local.properties
           cd apps/mobile/android
           chmod +x gradlew
           # Ejecutar compilación de Android
@@ -85,12 +92,17 @@ jobs:
             ls -lh build/apk/ || true
           fi
 
+          if [ ! -f "build/apk/xentra-otb-v3.0.apk" ]; then
+            echo "❌ Error crítico: no se generó el binario APK de Android."
+            exit 1
+          fi
+
       - name: 🚀 Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: xentra-otb-android-apk
           path: build/apk/xentra-otb-v3.0.apk
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
 
       - name: 🏷️ Publish Official GitHub Release with Real APK
@@ -99,6 +111,8 @@ jobs:
         with:
           tag_name: v3.0.0
           name: "Xentra OTB v3.0.0 - Oficial Android APK"
+          overwrite: true
+          make_latest: true
           body: |
             ### 📱 Xentra OTB - Instalador Oficial Android APK (v3.0.0)
 

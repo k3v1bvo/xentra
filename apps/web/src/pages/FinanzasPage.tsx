@@ -40,6 +40,7 @@ import {
 import { OfficialMonthlyReceiptsPrintModal } from '../components/OfficialMonthlyReceiptsPrintModal';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
+import { getNeighborsByOtb } from '../data/censusNeighbors';
 
 interface PaymentMock {
   id: string;
@@ -205,12 +206,24 @@ export const FinanzasPage: React.FC = () => {
 
   const pendingCount = visibleSubmissions.filter((s) => s.status === 'PendingVerification').length;
 
+  // Vecinos del Padrón Censal de la OTB actual
+  const otbCensusNeighbors = getNeighborsByOtb(currentOtbId);
+
   // Modal Cobro Manual
   const [showPayModal, setShowPayModal] = useState(false);
-  const [neighborName, setNeighborName] = useState('Juan José Flores Morales');
+  const [neighborName, setNeighborName] = useState(
+    otbCensusNeighbors[0]?.name || 'Juan José Flores Morales'
+  );
   const [payAmount, setPayAmount] = useState('50.00');
   const [payMethod, setPayMethod] = useState<PaymentMethod>('Efectivo');
   const [payConcept, setPayConcept] = useState('Cuota Ordinaria Noviembre 2026');
+
+  // Sincronizar vecino por defecto al cambiar de OTB
+  React.useEffect(() => {
+    if (otbCensusNeighbors.length > 0) {
+      setNeighborName(otbCensusNeighbors[0].name);
+    }
+  }, [currentOtbId]);
 
   // Recibo recién emitido
   const [generatedReceipt, setGeneratedReceipt] = useState<PaymentMock | null>(null);
@@ -1221,7 +1234,7 @@ export const FinanzasPage: React.FC = () => {
             <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 flex flex-col items-center justify-center text-center space-y-3">
               <div className="w-full max-w-xs bg-white text-slate-900 p-4 rounded-xl shadow-md border border-slate-200 font-mono text-xs text-left space-y-1.5">
                 <div className="text-center pb-2 border-b border-slate-200 font-sans">
-                  <strong className="text-sm text-slate-900 block font-black">BANCO UNIÓN S.A.</strong>
+                  <strong className="text-sm text-slate-900 block font-black">{otbPaymentConfig.bankName.toUpperCase()}</strong>
                   <span className="text-[10px] text-slate-500">Comprobante de Transferencia QR Simple</span>
                 </div>
                 <div className="pt-1 text-[11px]">
@@ -1252,7 +1265,7 @@ export const FinanzasPage: React.FC = () => {
                   rows={2}
                   value={rejectionReasonInput}
                   onChange={(e) => setRejectionReasonInput(e.target.value)}
-                  placeholder="ej. El número de transacción no figura en el extracto de Banco Unión..."
+                  placeholder={`ej. El número de transacción no figura en el extracto de ${otbPaymentConfig.bankName}...`}
                   className="w-full p-3 bg-[#030712] border-2 border-rose-500/40 rounded-xl focus:outline-none focus:border-rose-400 text-white text-xs"
                 />
                 <div className="flex justify-end gap-2">
@@ -1322,10 +1335,17 @@ export const FinanzasPage: React.FC = () => {
                   onChange={(e) => setNeighborName(e.target.value)}
                   className="w-full px-3 py-2.5 bg-[#030712] border-2 border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white font-medium"
                 >
-                  <option value="Juan José Flores Morales" className="bg-slate-900 text-white">Juan José Flores Morales (Lote 12 - Deuda: Bs. 50)</option>
-                  <option value="Silvia Rojas Torrico" className="bg-slate-900 text-white">Silvia Rojas Torrico (Lote 05 - Deuda: Bs. 125)</option>
-                  <option value="Roberto Fernández Vargas" className="bg-slate-900 text-white">Roberto Fernández Vargas (Lote 01 - Al Día)</option>
-                  <option value="Marina Condori Rocha" className="bg-slate-900 text-white">Marina Condori Rocha (Lote 08 - Al Día)</option>
+                  {otbCensusNeighbors.length > 0 ? (
+                    otbCensusNeighbors.map((n) => (
+                      <option key={n.id} value={n.name} className="bg-slate-900 text-white">
+                        {n.name} ({n.house} - {n.socioCode} - CI: {n.ci})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="Vecino General" className="bg-slate-900 text-white">
+                      Vecino Registrado en Padrón
+                    </option>
+                  )}
                 </select>
               </div>
 

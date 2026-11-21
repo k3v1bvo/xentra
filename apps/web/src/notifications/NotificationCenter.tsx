@@ -11,6 +11,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useNotificationStore } from '../stores/notificationStore';
+import { useTenantStore } from '../stores/tenantStore';
+import { useAuthStore } from '../stores/authStore';
 import { NotificationCategory } from '@xentra/shared';
 
 interface NotificationCenterProps {
@@ -28,16 +30,25 @@ const CATEGORIES: { label: string; value: NotificationCategory | 'ALL' }[] = [
 
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose }) => {
   const navigate = useNavigate();
+  const { currentOtb } = useTenantStore();
+  const { currentRole } = useAuthStore();
   const {
     notifications,
-    unreadCount,
     filterCategory,
     setFilterCategory,
     markAsRead,
     markAllAsRead
   } = useNotificationStore();
 
-  const filtered = notifications
+  const isSuperadmin = currentRole === 'superadmin';
+
+  const visibleNotifications = notifications.filter(
+    (n) => (isSuperadmin ? true : !n.otb_id || n.otb_id === currentOtb?.id)
+  );
+
+  const unreadCount = visibleNotifications.filter((n) => !n.read_at && !n.archived_at).length;
+
+  const filtered = visibleNotifications
     .filter((n) => !n.archived_at)
     .filter((n) => (filterCategory === 'ALL' ? true : n.category === filterCategory));
 

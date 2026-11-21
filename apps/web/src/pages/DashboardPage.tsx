@@ -61,7 +61,7 @@ export const DashboardPage: React.FC = () => {
             Panel de Control Financiero
           </h1>
           <p className="text-xs text-slate-400 mt-1 font-medium">
-            Gestión en tiempo real de <strong className="text-emerald-400">{currentOtb?.name}</strong> • Cochabamba, Bolivia
+            Gestión en tiempo real de <strong className="text-emerald-400">{currentOtb?.name}</strong> • {currentOtb?.department || 'Cochabamba'}, Bolivia
           </p>
         </div>
 

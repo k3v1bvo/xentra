@@ -218,6 +218,26 @@ const INITIAL_REPORTS: CommunityReport[] = [
     statusLabel: 'Reclamo ingresado a DePaz',
     createdAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
     timestamp: 'Hace 3 horas'
+  },
+  // Reporte en OTB Barrio Lindo (Santa Cruz)
+  {
+    id: 'rep-bl-01',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    otbName: 'Barrio Lindo Plan 4000',
+    category: 'fuga_agua',
+    categoryLabel: 'Fuga de agua potable / desagüe colapsado',
+    title: 'Rotura de matriz de agua en Calle 4',
+    description: 'Fuga de agua considerable saliendo del pavimento en la esquina con Manzana 12.',
+    location: 'UV 45, Calle 4 esq. Pasaje 2',
+    socioCode: 'SOC-SCZ-010',
+    neighborName: 'Wilder Peña Justiniano',
+    lotName: 'UV 45, Mz 12, Lote 03',
+    reportedByPublic: 'Vecino UV 45 (SOC-SCZ-010)',
+    status: 'en_camino',
+    statusLabel: 'Cuadrilla de SAGUAPAC notificada y en camino',
+    createdAt: new Date(Date.now() - 1 * 3600 * 1000).toISOString(),
+    timestamp: 'Hace 1 hora',
+    actionNotes: 'Se coordinó con el técnico de turno de la cooperativa de agua.'
   }
 ];
 

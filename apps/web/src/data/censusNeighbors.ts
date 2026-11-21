@@ -135,6 +135,37 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     debt: 60.0,
     latitude: -16.541,
     longitude: -66.0819
+  },
+  // OTB Barrio Lindo Plan 4000 (Santa Cruz)
+  {
+    id: '9',
+    socioCode: 'SOC-SCZ-010',
+    name: 'Wilder Peña Justiniano',
+    ci: '6128490 SCZ',
+    phone: '78512490',
+    block: 'UV 45',
+    house: 'Mz 12, Lote 03',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    otbName: 'Barrio Lindo Plan 4000',
+    status: 'Al Día',
+    debt: 0.0,
+    latitude: -17.7845,
+    longitude: -63.1610
+  },
+  {
+    id: '10',
+    socioCode: 'SOC-SCZ-018',
+    name: 'Carla Melgar Aguilera',
+    ci: '7392104 SCZ',
+    phone: '76319842',
+    block: 'UV 45',
+    house: 'Mz 12, Lote 09',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    otbName: 'Barrio Lindo Plan 4000',
+    status: 'En Mora',
+    debt: 30.0,
+    latitude: -17.7850,
+    longitude: -63.1605
   }
 ];
 

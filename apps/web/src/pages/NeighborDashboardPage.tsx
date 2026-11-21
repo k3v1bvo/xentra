@@ -95,10 +95,20 @@ export const NeighborDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { profile } = useAuthStore();
   const { currentOtb } = useTenantStore();
-  const { config: otbPaymentConfig, submitVoucher } = usePaymentVerificationStore();
+  const { config, getConfigForOtb, submissions: storeSubmissions, submitVoucher, cancelVoucher } = usePaymentVerificationStore();
+  const otbPaymentConfig = getConfigForOtb(currentOtb?.id) || config;
 
   const [fees] = useState<NeighborFee[]>(INITIAL_FEES);
-  const [submissions, setSubmissions] = useState<SubmittedPayment[]>(INITIAL_SUBMISSIONS);
+
+  // Comprobantes de este socio y de su OTB actual en tiempo real
+  const userSubmissions = storeSubmissions
+    .filter((s) => !s.otbId || s.otbId === currentOtb?.id)
+    .filter(
+      (s) =>
+        s.neighborSocioCode === 'SOC-012' ||
+        (profile?.ci_number && s.neighborCi?.includes(profile.ci_number)) ||
+        s.neighborName.includes(profile?.first_name || 'Juan José')
+    );
 
   // Modal de Pago por QR
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -230,7 +240,7 @@ export const NeighborDashboardPage: React.FC = () => {
   // CRUD Vecino: Cancelar / Eliminar Comprobante Pendiente de Verificación
   const handleCancelSubmission = (submissionId: string) => {
     if (window.confirm('¿Deseas retirar este comprobante enviado? Podrás volver a subir el comprobante correcto de inmediato.')) {
-      setSubmissions(submissions.filter((s) => s.id !== submissionId));
+      cancelVoucher(submissionId);
       alert('Comprobante retirado con éxito. Puedes reportar tu pago con la captura correcta.');
     }
   };
@@ -466,78 +476,89 @@ export const NeighborDashboardPage: React.FC = () => {
         </div>
 
         <div className="space-y-3.5">
-          {submissions.map((sub) => (
-            <div
-              key={sub.id}
-              className="p-5 rounded-2xl border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#030712] hover:border-slate-500 transition-all shadow-md"
-            >
-              <div className="flex items-center gap-3.5">
-                <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold flex-shrink-0 ${
-                    sub.status === 'Confirmed'
+          {userSubmissions.length === 0 ? (
+            <div className="p-8 rounded-2xl border-2 border-dashed border-slate-700 text-center text-slate-400">
+              <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+              <p className="font-bold text-base text-white">No tienes comprobantes pendientes ni pagos por verificar en esta OTB</p>
+              <p className="text-xs text-slate-400 mt-1">Presiona "Reportar Nuevo Pago" si realizaste una transferencia QR.</p>
+            </div>
+          ) : (
+            userSubmissions.map((sub) => (
+              <div
+                key={sub.id}
+                className="p-5 rounded-2xl border-2 border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#030712] hover:border-slate-500 transition-all shadow-md"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold flex-shrink-0 ${sub.status === 'Confirmed'
                       ? 'bg-emerald-500/20 text-emerald-300 border-2 border-emerald-500/50'
                       : 'bg-amber-500/20 text-amber-300 border-2 border-amber-500/50'
-                  }`}
-                >
-                  {sub.status === 'Confirmed' ? (
-                    <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                      }`}
+                  >
+                    {sub.status === 'Confirmed' ? (
+                      <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                    ) : (
+                      <Clock className="w-6 h-6 text-amber-400" />
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="text-lg font-black text-white">{sub.concept}</span>
+                      <span
+                        className={`text-sm font-black px-3.5 py-1.5 rounded-full border ${
+                          sub.status === 'Confirmed'
+                            ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/60'
+                            : 'bg-amber-500/25 text-amber-300 border-amber-500/60'
+                        }`}
+                      >
+                        {sub.status === 'Confirmed' ? 'Confirmado ✓' : 'Pendiente de Verificación'}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-slate-200 mt-1.5 font-mono">
+                      {sub.submittedAt} • Método: {sub.method}
+                      {sub.officialReceiptNumber && ` • N° Recibo: ${sub.officialReceiptNumber}`}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 justify-between sm:justify-end">
+                  <span className="text-xl sm:text-2xl font-black font-mono text-white">
+                    {formatBOB(sub.amount)}
+                  </span>
+
+                  {sub.status === 'Confirmed' && sub.officialReceiptNumber ? (
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/verificar-recibo?token=${sub.traceToken || ''}&receipt=${sub.officialReceiptNumber}`
+                        )
+                      }
+                      className="min-h-[54px] flex items-center gap-2.5 px-5 py-3 rounded-2xl text-base font-black text-blue-200 bg-blue-950 hover:bg-blue-900 border-2 border-blue-500/50 transition-colors cursor-pointer whitespace-nowrap shadow-md"
+                    >
+                      <span>Ver Recibo QR</span>
+                      <ExternalLink className="w-5 h-5 text-blue-300" />
+                    </button>
                   ) : (
-                    <Clock className="w-6 h-6 text-amber-400" />
+                    <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2.5">
+                      <span className="text-sm text-amber-300 font-bold italic">
+                        En revisión por Tesorería
+                      </span>
+                      <button
+                        onClick={() => handleCancelSubmission(sub.id)}
+                        className="min-h-[48px] px-4 py-2 rounded-xl text-sm font-black text-rose-300 hover:text-white bg-rose-950/60 hover:bg-rose-900 border border-rose-500/50 transition-colors cursor-pointer flex items-center gap-2"
+                        title="Retirar o anular este comprobante subido por error"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Cancelar Envío</span>
+                      </button>
+                    </div>
                   )}
                 </div>
-
-                <div>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="text-lg font-black text-white">{sub.concept}</span>
-                    <span
-                      className={`text-sm font-black px-3.5 py-1.5 rounded-full border ${
-                        sub.status === 'Confirmed'
-                          ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/60'
-                          : 'bg-amber-500/25 text-amber-300 border-amber-500/60'
-                      }`}
-                    >
-                      {sub.status === 'Confirmed' ? 'Confirmado ✓' : 'Pendiente de Verificación'}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-slate-200 mt-1.5 font-mono">
-                    {sub.submittedAt} • Método: {sub.method}
-                    {sub.receiptNumber && ` • N° Recibo: ${sub.receiptNumber}`}
-                  </p>
-                </div>
               </div>
-
-              <div className="flex items-center gap-4 justify-between sm:justify-end">
-                <span className="text-xl sm:text-2xl font-black font-mono text-white">
-                  {formatBOB(sub.amount)}
-                </span>
-
-                {sub.status === 'Confirmed' && sub.receiptNumber ? (
-                  <button
-                    onClick={() => navigate(`/verificar-recibo?receipt=${sub.receiptNumber}`)}
-                    className="min-h-[54px] flex items-center gap-2.5 px-5 py-3 rounded-2xl text-base font-black text-blue-200 bg-blue-950 hover:bg-blue-900 border-2 border-blue-500/50 transition-colors cursor-pointer whitespace-nowrap shadow-md"
-                  >
-                    <span>Ver Recibo QR</span>
-                    <ExternalLink className="w-5 h-5 text-blue-300" />
-                  </button>
-                ) : (
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2.5">
-                    <span className="text-sm text-amber-300 font-bold italic">
-                      En revisión por Tesorería
-                    </span>
-                    <button
-                      onClick={() => handleCancelSubmission(sub.id)}
-                      className="min-h-[48px] px-4 py-2 rounded-xl text-sm font-black text-rose-300 hover:text-white bg-rose-950/60 hover:bg-rose-900 border border-rose-500/50 transition-colors cursor-pointer flex items-center gap-2"
-                      title="Retirar o anular este comprobante subido por error"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Cancelar Envío</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 

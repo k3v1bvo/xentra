@@ -39,9 +39,11 @@ import {
 } from '../stores/paymentVerificationStore';
 import { OfficialMonthlyReceiptsPrintModal } from '../components/OfficialMonthlyReceiptsPrintModal';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
 
 interface PaymentMock {
   id: string;
+  otbId?: string;
   receiptNumber: string;
   neighborName: string;
   amount: number;
@@ -55,6 +57,7 @@ interface PaymentMock {
 const INITIAL_PAYMENTS: PaymentMock[] = [
   {
     id: 'pay-1',
+    otbId: '11111111-1111-1111-1111-111111111111',
     receiptNumber: 'OTB-CBBA-001-2026-00042',
     neighborName: 'Juan José Flores Morales',
     amount: 50.0,
@@ -66,6 +69,7 @@ const INITIAL_PAYMENTS: PaymentMock[] = [
   },
   {
     id: 'pay-2',
+    otbId: '11111111-1111-1111-1111-111111111111',
     receiptNumber: 'OTB-CBBA-001-2026-00041',
     neighborName: 'Marina Condori Rocha',
     amount: 25.0,
@@ -77,6 +81,7 @@ const INITIAL_PAYMENTS: PaymentMock[] = [
   },
   {
     id: 'pay-3',
+    otbId: '11111111-1111-1111-1111-111111111111',
     receiptNumber: 'OTB-CBBA-001-2026-00040',
     neighborName: 'Silvia Rojas Torrico',
     amount: 100.0,
@@ -85,11 +90,24 @@ const INITIAL_PAYMENTS: PaymentMock[] = [
     date: '2026-11-19 14:00',
     status: 'PendingVerification',
     token: 'c9203b4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef0123456789'
+  },
+  {
+    id: 'pay-lpz-1',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    receiptNumber: 'OTB-LPZ-002-2026-00001',
+    neighborName: 'Gonzalo Apaza Quispe',
+    amount: 35.0,
+    method: 'QR',
+    concept: 'Cuota Seguridad Los Pinos',
+    date: '2026-11-20 11:00',
+    status: 'Confirmed',
+    token: 'e1029384756abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
   }
 ];
 
 export interface OtbFee {
   id: string;
+  otbId?: string;
   title: string;
   type: 'Ordinaria' | 'AporteEspecial' | 'ServicioAgua' | 'Alumbrado';
   dueDate: string;
@@ -103,6 +121,7 @@ export interface OtbFee {
 const INITIAL_FEES_OTB: OtbFee[] = [
   {
     id: 'fee-1',
+    otbId: '11111111-1111-1111-1111-111111111111',
     title: 'Cuota Ordinaria Noviembre 2026',
     type: 'Ordinaria',
     dueDate: '30/11/2026',
@@ -114,6 +133,7 @@ const INITIAL_FEES_OTB: OtbFee[] = [
   },
   {
     id: 'fee-2',
+    otbId: '11111111-1111-1111-1111-111111111111',
     title: 'Aporte Pro-Tinglado (Cuota 1 de 2)',
     type: 'AporteEspecial',
     dueDate: '15/12/2026',
@@ -122,23 +142,40 @@ const INITIAL_FEES_OTB: OtbFee[] = [
     status: 'Activa',
     assignedLots: 48,
     paidLots: 22
+  },
+  {
+    id: 'fee-lpz-1',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    title: 'Aporte Seguridad & Cámaras Los Pinos',
+    type: 'AporteEspecial',
+    dueDate: '20/12/2026',
+    amount: 35.0,
+    description: 'Mantenimiento de cámaras de circuito cerrado en Calacoto.',
+    status: 'Activa',
+    assignedLots: 32,
+    paidLots: 28
   }
 ];
 
 export const FinanzasPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
+  const { currentRole } = useAuthStore();
   const { addNotification } = useNotificationStore();
   const {
-    config: otbPaymentConfig,
     submissions,
     updateConfig: updateOtbPaymentConfig,
     approveVoucher,
     rejectVoucher,
-    getPendingCount
+    getConfigForOtb
   } = usePaymentVerificationStore();
 
+  const isSuperadmin = currentRole === 'superadmin';
+  const currentOtbId = currentOtb?.id || '11111111-1111-1111-1111-111111111111';
+  const otbPaymentConfig = getConfigForOtb(currentOtbId);
+
   const [payments, setPayments] = useState(INITIAL_PAYMENTS);
+  const [fees, setFees] = useState<OtbFee[]>(INITIAL_FEES_OTB);
   const [searchParams] = useSearchParams();
   const urlTab = searchParams.get('tab') as 'pagos' | 'verificaciones' | 'config_qr' | 'cuotas' | 'arqueo' | null;
 
@@ -152,6 +189,21 @@ export const FinanzasPage: React.FC = () => {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
+
+  // Filtrado Estricto Multi-Tenant: solo superadmin ve todo; resto solo su OTB
+  const visibleSubmissions = isSuperadmin
+    ? submissions
+    : submissions.filter((s) => s.otbId === currentOtbId);
+
+  const visiblePayments = isSuperadmin
+    ? payments
+    : payments.filter((p) => !p.otbId || p.otbId === currentOtbId);
+
+  const visibleFees = isSuperadmin
+    ? fees
+    : fees.filter((f) => !f.otbId || f.otbId === currentOtbId);
+
+  const pendingCount = visibleSubmissions.filter((s) => s.status === 'PendingVerification').length;
 
   // Modal Cobro Manual
   const [showPayModal, setShowPayModal] = useState(false);
@@ -182,8 +234,22 @@ export const FinanzasPage: React.FC = () => {
   const [qrFilePreview, setQrFilePreview] = useState<string>(otbPaymentConfig.qrImageUrl || '');
   const [configSavedNotice, setConfigSavedNotice] = useState(false);
 
+  // Sincronizar formulario de banco al cambiar de OTB
+  React.useEffect(() => {
+    const cfg = getConfigForOtb(currentOtbId);
+    if (cfg) {
+      setFormBank(cfg.bankName);
+      setFormAccountType(cfg.accountType);
+      setFormAccountNumber(cfg.accountNumber);
+      setFormAccountHolder(cfg.accountHolder);
+      setFormNitOrCi(cfg.nitOrCi);
+      setFormWhatsapp(cfg.whatsappContact);
+      setFormInstructions(cfg.instructions);
+      setQrFilePreview(cfg.qrImageUrl || '');
+    }
+  }, [currentOtbId, getConfigForOtb]);
+
   // Estados CRUD Cuotas Comunales (Rol Tesorero)
-  const [fees, setFees] = useState<OtbFee[]>(INITIAL_FEES_OTB);
   const [showCreateFeeModal, setShowCreateFeeModal] = useState(false);
   const [newFeeTitle, setNewFeeTitle] = useState('');
   const [newFeeType, setNewFeeType] = useState<OtbFee['type']>('Ordinaria');
@@ -204,8 +270,6 @@ export const FinanzasPage: React.FC = () => {
   // Estado para Revertir / Anular Recibo Contable (Auditoría)
   const [reversingPayment, setReversingPayment] = useState<PaymentMock | null>(null);
   const [reversalReason, setReversalReason] = useState('');
-
-  const pendingCount = getPendingCount();
 
   // Subir imagen del QR de la OTB
   const handleQrImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +298,7 @@ export const FinanzasPage: React.FC = () => {
       instructions: formInstructions,
       qrImageUrl: qrFilePreview,
       updatedBy: 'Directiva OTB'
-    });
+    }, currentOtbId);
 
     setConfigSavedNotice(true);
     setTimeout(() => setConfigSavedNotice(false), 3000);
@@ -248,6 +312,7 @@ export const FinanzasPage: React.FC = () => {
       // También agregarlo al historial de pagos
       const newPay: PaymentMock = {
         id: approved.id,
+        otbId: approved.otbId || currentOtbId,
         receiptNumber: approved.officialReceiptNumber || `${currentOtb?.code || 'OTB-CBBA-001'}-2026-00043`,
         neighborName: approved.neighborName,
         amount: approved.amount,
@@ -288,6 +353,7 @@ export const FinanzasPage: React.FC = () => {
 
     const newPayment: PaymentMock = {
       id: `pay-${Date.now()}`,
+      otbId: currentOtbId,
       receiptNumber: receiptNum,
       neighborName,
       amount: amountNum,
@@ -327,6 +393,7 @@ export const FinanzasPage: React.FC = () => {
 
     const createdFee: OtbFee = {
       id: `fee-${Date.now()}`,
+      otbId: currentOtbId,
       title: newFeeTitle.trim(),
       type: newFeeType,
       dueDate: newFeeDueDate,
@@ -568,7 +635,7 @@ export const FinanzasPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
-                  {submissions.map((sub) => (
+                  {visibleSubmissions.map((sub) => (
                     <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="px-5 py-3.5 font-mono text-slate-400 whitespace-nowrap">
                         {sub.submittedAt}
@@ -896,7 +963,7 @@ export const FinanzasPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {payments.map((p) => (
+                {visiblePayments.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="px-5 py-3.5">
                       <p className="font-bold font-mono text-white">{p.receiptNumber}</p>
@@ -978,7 +1045,7 @@ export const FinanzasPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#0B132B]/90 border border-slate-700">
             <div>
               <h2 className="text-sm sm:text-base font-black text-white">
-                Cuotas Comunales & Obligaciones Aprobadas ({fees.length})
+                Cuotas Comunales & Obligaciones Aprobadas ({visibleFees.length})
               </h2>
               <p className="text-xs text-slate-400">
                 Tarifas aprobadas en asamblea general asignadas a las viviendas para recaudación comunal.
@@ -994,7 +1061,7 @@ export const FinanzasPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {fees.map((fee) => {
+            {visibleFees.map((fee) => {
               const isOrdinaria = fee.type === 'Ordinaria';
               const isSpecial = fee.type === 'AporteEspecial';
               const isAgua = fee.type === 'ServicioAgua';

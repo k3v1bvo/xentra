@@ -1,11 +1,20 @@
 import React, { useRef, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { useNotificationStore } from '../stores/notificationStore';
+import { useTenantStore } from '../stores/tenantStore';
+import { useAuthStore } from '../stores/authStore';
 import { NotificationCenter } from './NotificationCenter';
 
 export const NotificationBell: React.FC = () => {
-  const { unreadCount, isOpen, toggleOpen, setIsOpen } = useNotificationStore();
+  const { notifications, isOpen, toggleOpen, setIsOpen } = useNotificationStore();
+  const { currentOtb } = useTenantStore();
+  const { currentRole } = useAuthStore();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const isSuperadmin = currentRole === 'superadmin';
+  const unreadCount = notifications.filter(
+    (n) => !n.read_at && !n.archived_at && (isSuperadmin ? true : !n.otb_id || n.otb_id === currentOtb?.id)
+  ).length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

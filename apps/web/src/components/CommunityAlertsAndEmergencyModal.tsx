@@ -56,7 +56,8 @@ interface CommunityAlertsAndEmergencyModalProps {
 
 const OTBS_SISTEMA = [
   { id: '11111111-1111-1111-1111-111111111111', name: 'Villa Esperanza', city: 'Cochabamba', code: 'OTB-CBBA-001', defaultAddress: 'Av. Petrolera Km 4' },
-  { id: '22222222-2222-2222-2222-222222222222', name: 'Los Pinos', city: 'La Paz', code: 'OTB-LPZ-002', defaultAddress: 'Zona Sur - Calacoto' }
+  { id: '22222222-2222-2222-2222-222222222222', name: 'Los Pinos', city: 'La Paz', code: 'OTB-LPZ-002', defaultAddress: 'Zona Sur - Calacoto' },
+  { id: '33333333-3333-3333-3333-333333333333', name: 'Barrio Lindo Plan 4000', city: 'Santa Cruz', code: 'OTB-SCZ-003', defaultAddress: 'Distrito 8 - Plan 3000' }
 ];
 
 export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmergencyModalProps> = ({
@@ -74,6 +75,11 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
 
   // Aislamiento estricto por OTB
   const [selectedOtbId, setSelectedOtbId] = useState(otbId);
+
+  React.useEffect(() => {
+    if (otbId) setSelectedOtbId(otbId);
+  }, [otbId]);
+
   const currentOtbInfo = OTBS_SISTEMA.find(o => o.id === selectedOtbId) || {
     id: selectedOtbId,
     name: otbName,

@@ -26,6 +26,7 @@ import { TiltCard3D } from '../components/TiltCard3D';
 
 interface PollMock {
   id: string;
+  otbId?: string;
   title: string;
   description: string;
   estimatedBudget: number;
@@ -38,6 +39,7 @@ interface PollMock {
 
 interface CommunityNewsMock {
   id: string;
+  otbId?: string;
   title: string;
   type: 'asamblea' | 'noticia' | 'balance' | 'urgente';
   date: string;
@@ -51,6 +53,7 @@ interface CommunityNewsMock {
 const INITIAL_POLLS: PollMock[] = [
   {
     id: 'poll-1',
+    otbId: '11111111-1111-1111-1111-111111111111',
     title: 'Priorización de Obras Comunitarias — Gestión 2027',
     description: 'Consulta a los vecinos para definir el destino del fondo de inversión municipal y contraparte comunitaria.',
     estimatedBudget: 35000.00,
@@ -63,12 +66,43 @@ const INITIAL_POLLS: PollMock[] = [
     totalVotes: 50,
     userVotedOptionId: undefined,
     createdBy: 'Mesa Directiva OTB'
+  },
+  {
+    id: 'poll-lpz-1',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    title: 'Ampliación de Muros de Contención y Graderías en Sector 2',
+    description: 'Votación para aprobar el aporte pro-estabilización de taludes antes de la temporada de lluvias.',
+    estimatedBudget: 42000.00,
+    endDate: '20/12/2026',
+    options: [
+      { id: 'opt-lpz-1', title: 'Muro de gaviones en el pasaje superior', votes: 18 },
+      { id: 'opt-lpz-2', title: 'Iluminación solar en graderías peatonales', votes: 12 }
+    ],
+    totalVotes: 30,
+    userVotedOptionId: undefined,
+    createdBy: 'Directiva OTB Los Pinos'
+  },
+  {
+    id: 'poll-scz-1',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    title: 'Mejoramiento de Pavimento Articulado y Drenaje Pluvial UV 45',
+    description: 'Priorización de losetas y desagües para evitar anegamientos en época de lluvia.',
+    estimatedBudget: 55000.00,
+    endDate: '28/12/2026',
+    options: [
+      { id: 'opt-scz-1', title: 'Canal de drenaje pluvial hacia el 4to Anillo', votes: 25 },
+      { id: 'opt-scz-2', title: 'Pavimentado con losetas de la calle central', votes: 31 }
+    ],
+    totalVotes: 56,
+    userVotedOptionId: undefined,
+    createdBy: 'Junta Vecinal Barrio Lindo'
   }
 ];
 
 const INITIAL_NEWS: CommunityNewsMock[] = [
   {
     id: 'news-1',
+    otbId: '11111111-1111-1111-1111-111111111111',
     title: 'Convocatoria a Asamblea General Ordinaria — Rendición Trimestral',
     type: 'asamblea',
     date: 'Domingo 29 de Noviembre, 2026',
@@ -85,6 +119,7 @@ const INITIAL_NEWS: CommunityNewsMock[] = [
   },
   {
     id: 'news-2',
+    otbId: '11111111-1111-1111-1111-111111111111',
     title: 'Corte Programado de Agua Potable por Mantenimiento de Matriz',
     type: 'urgente',
     date: 'Miércoles 25 de Noviembre, 2026',
@@ -92,17 +127,55 @@ const INITIAL_NEWS: CommunityNewsMock[] = [
     location: 'Manzanas B y C — Calles Las Retamas y Los Pinos',
     description: 'Se realizarán trabajos de reparación en la tubería principal de distribución. Tomar previsiones y almacenar agua con anticipación.',
     publishedBy: 'Comité de Agua y Servicios'
+  },
+  {
+    id: 'news-lpz-1',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    title: 'Asamblea Extraordinaria — Seguridad Ciudadana y Sirenas',
+    type: 'asamblea',
+    date: 'Sábado 28 de Noviembre, 2026',
+    time: '18:30 PM',
+    location: 'Sede Comunal Los Pinos (Calle 25)',
+    description: 'Coordinación con la Estación Policial Integral (EPI) Sur para patrullajes nocturnos.',
+    agenda: [
+      '1. Instalación de pulsadores de pánico vecinales.',
+      '2. Turnos de vigilancia ciudadana comunitaria.'
+    ],
+    publishedBy: 'Directiva OTB Los Pinos'
+  },
+  {
+    id: 'news-scz-1',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    title: 'Campaña de Fumigación y Limpieza Barrial contra el Dengue',
+    type: 'urgente',
+    date: 'Domingo 30 de Noviembre, 2026',
+    time: '07:30 AM',
+    location: 'Plaza Principal Barrio Lindo',
+    description: 'Jornada de deschatarrización comunitaria coordinada con el centro de salud municipal.',
+    publishedBy: 'Comité de Salud y Medio Ambiente'
   }
 ];
 
 export const VotaPage: React.FC = () => {
   const { currentRole } = useAuthStore();
   const { currentOtb } = useTenantStore();
+  const isSuperadmin = currentRole === 'superadmin';
+  const currentOtbId = currentOtb?.id || '11111111-1111-1111-1111-111111111111';
+
   const [activeTab, setActiveTab] = useState<'votaciones' | 'asambleas'>('votaciones');
 
   const [polls, setPolls] = useState<PollMock[]>(INITIAL_POLLS);
   const [news, setNews] = useState<CommunityNewsMock[]>(INITIAL_NEWS);
   const [selectedOption, setSelectedOption] = useState<string>('');
+
+  // Filtrado Estricto por OTB (solo superadmin ve a nivel nacional)
+  const visiblePolls = isSuperadmin
+    ? polls
+    : polls.filter((p) => !p.otbId || p.otbId === currentOtbId);
+
+  const visibleNews = isSuperadmin
+    ? news
+    : news.filter((n) => !n.otbId || n.otbId === currentOtbId);
 
   // Modales de creación (Solo para Directiva / Admin)
   const [showCreatePollModal, setShowCreatePollModal] = useState(false);
@@ -182,6 +255,7 @@ export const VotaPage: React.FC = () => {
 
     const created: PollMock = {
       id: `poll-${Date.now()}`,
+      otbId: currentOtbId,
       title: newPollTitle,
       description: newPollDesc || 'Consulta vecinal para decisión comunitaria.',
       estimatedBudget: parseFloat(newPollBudget) || 0,
@@ -214,6 +288,7 @@ export const VotaPage: React.FC = () => {
 
     const created: CommunityNewsMock = {
       id: `news-${Date.now()}`,
+      otbId: currentOtbId,
       title: newNewsTitle,
       type: newNewsType,
       date: newNewsDate || 'Próximo Fin de Semana',
@@ -221,7 +296,7 @@ export const VotaPage: React.FC = () => {
       location: newNewsLocation,
       description: newNewsDesc,
       agenda: agendaList,
-      publishedBy: 'Directiva OTB'
+      publishedBy: `${currentOtb?.name || 'Directiva OTB'}`
     };
 
     setNews([created, ...news]);
@@ -369,7 +444,7 @@ export const VotaPage: React.FC = () => {
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <span>🗳️ Consultas y Votaciones Activas ({polls.length})</span>
+          <span>🗳️ Consultas y Votaciones Activas ({visiblePolls.length})</span>
         </button>
 
         <button
@@ -380,7 +455,7 @@ export const VotaPage: React.FC = () => {
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <span>📢 Convocatorias de Asambleas & Avisos ({news.length})</span>
+          <span>📢 Convocatorias de Asambleas & Avisos ({visibleNews.length})</span>
         </button>
       </div>
 
@@ -389,7 +464,7 @@ export const VotaPage: React.FC = () => {
       {/* =================================================================== */}
       {activeTab === 'votaciones' && (
         <div className="space-y-6">
-          {polls.map((poll) => {
+          {visiblePolls.map((poll) => {
             const hasVoted = !!poll.userVotedOptionId;
 
             return (
@@ -543,7 +618,7 @@ export const VotaPage: React.FC = () => {
       {/* =================================================================== */}
       {activeTab === 'asambleas' && (
         <div className="space-y-5">
-          {news.map((item) => (
+          {visibleNews.map((item) => (
             <TiltCard3D key={item.id}>
               <div className="p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">

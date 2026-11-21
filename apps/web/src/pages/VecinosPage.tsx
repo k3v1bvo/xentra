@@ -29,9 +29,11 @@ import { TiltCard3D } from '../components/TiltCard3D';
 import { PrintableStatementModal, StatementData } from '../components/PrintableStatementModal';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 import { useTenantStore } from '../stores/tenantStore';
+import { useAuthStore } from '../stores/authStore';
 
 interface NeighborMock {
   id: string;
+  otbId?: string;
   socioCode: string;
   name: string;
   ci: string;
@@ -47,6 +49,7 @@ interface NeighborMock {
 const INITIAL_NEIGHBORS: NeighborMock[] = [
   {
     id: '1',
+    otbId: '11111111-1111-1111-1111-111111111111',
     socioCode: 'SOC-012',
     name: 'Juan José Flores Morales',
     ci: '7412589 CBBA',
@@ -60,6 +63,7 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
   },
   {
     id: '2',
+    otbId: '11111111-1111-1111-1111-111111111111',
     socioCode: 'SOC-005',
     name: 'Silvia Rojas Torrico',
     ci: '8521479 CBBA',
@@ -73,6 +77,7 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
   },
   {
     id: '3',
+    otbId: '11111111-1111-1111-1111-111111111111',
     socioCode: 'SOC-001',
     name: 'Roberto Fernández Vargas',
     ci: '5289341 CBBA',
@@ -86,6 +91,7 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
   },
   {
     id: '4',
+    otbId: '11111111-1111-1111-1111-111111111111',
     socioCode: 'SOC-008',
     name: 'Marina Condori Rocha',
     ci: '6398412 CBBA',
@@ -99,6 +105,7 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
   },
   {
     id: '5',
+    otbId: '11111111-1111-1111-1111-111111111111',
     socioCode: 'SOC-014',
     name: 'Pedro Gonzalo Canaviri',
     ci: '4896325 CBBA',
@@ -109,18 +116,94 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     debt: 0.00,
     latitude: -17.4140,
     longitude: -66.1651
+  },
+  // Vecinos OTB Los Pinos (La Paz)
+  {
+    id: 'lpz-1',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    socioCode: 'SOC-LPZ-004',
+    name: 'Gonzalo Apaza Quispe',
+    ci: '4821903 LPZ',
+    phone: '71542890',
+    block: 'Sector 2',
+    house: 'Vivienda 14',
+    status: 'Al Día',
+    debt: 0.00,
+    latitude: -16.5385,
+    longitude: -68.0820
+  },
+  {
+    id: 'lpz-2',
+    otbId: '22222222-2222-2222-2222-222222222222',
+    socioCode: 'SOC-LPZ-009',
+    name: 'Beatriz Mamani Laura',
+    ci: '5923180 LPZ',
+    phone: '72590123',
+    block: 'Sector 1',
+    house: 'Vivienda 08',
+    status: 'En Mora',
+    debt: 35.00,
+    latitude: -16.5390,
+    longitude: -68.0815
+  },
+  // Vecinos OTB Barrio Lindo (Santa Cruz)
+  {
+    id: 'scz-1',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    socioCode: 'SOC-SCZ-010',
+    name: 'Wilder Peña Justiniano',
+    ci: '6128490 SCZ',
+    phone: '78512490',
+    block: 'UV 45',
+    house: 'Mz 12, Lote 03',
+    status: 'Al Día',
+    debt: 0.00,
+    latitude: -17.7845,
+    longitude: -63.1610
+  },
+  {
+    id: 'scz-2',
+    otbId: '33333333-3333-3333-3333-333333333333',
+    socioCode: 'SOC-SCZ-018',
+    name: 'Carla Melgar Aguilera',
+    ci: '7392104 SCZ',
+    phone: '76319842',
+    block: 'UV 45',
+    house: 'Mz 12, Lote 09',
+    status: 'En Mora',
+    debt: 30.00,
+    latitude: -17.7850,
+    longitude: -63.1605
   }
 ];
 
 export const VecinosPage: React.FC = () => {
+  const { currentRole } = useAuthStore();
   const { currentOtb } = useTenantStore();
+  const isSuperadmin = currentRole === 'superadmin';
+  const currentOtbId = currentOtb?.id || '11111111-1111-1111-1111-111111111111';
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showMapSection, setShowMapSection] = useState(true);
   const [neighbors, setNeighbors] = useState(INITIAL_NEIGHBORS);
 
+  // Filtrado Estricto por OTB (solo superadmin ve todas las OTBs de Bolivia)
+  const visibleNeighbors = isSuperadmin
+    ? neighbors
+    : neighbors.filter((n) => !n.otbId || n.otbId === currentOtbId);
+
   // Vecino seleccionado para enfocar su casa en el mapa
-  const [focusedNeighbor, setFocusedNeighbor] = useState<NeighborMock | null>(INITIAL_NEIGHBORS[0]);
+  const [focusedNeighbor, setFocusedNeighbor] = useState<NeighborMock | null>(
+    visibleNeighbors[0] || null
+  );
+
+  // Sincronizar vecino enfocado al cambiar de OTB
+  React.useEffect(() => {
+    if (visibleNeighbors.length > 0 && (!focusedNeighbor || !visibleNeighbors.some((n) => n.id === focusedNeighbor.id))) {
+      setFocusedNeighbor(visibleNeighbors[0]);
+    }
+  }, [currentOtbId, visibleNeighbors, focusedNeighbor]);
 
   // Estado para la Ficha Oficial Imprimible
   const [selectedStatement, setSelectedStatement] = useState<StatementData | null>(null);
@@ -150,7 +233,7 @@ export const VecinosPage: React.FC = () => {
   // Estados para CRUD - Dar de Baja / Eliminar Vecino (Delete)
   const [deletingNeighbor, setDeletingNeighbor] = useState<NeighborMock | null>(null);
 
-  const filtered = neighbors.filter(
+  const filtered = visibleNeighbors.filter(
     (n) =>
       n.socioCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -224,6 +307,7 @@ export const VecinosPage: React.FC = () => {
 
     const created: NeighborMock = {
       id: Date.now().toString(),
+      otbId: currentOtbId,
       socioCode: `SOC-${Math.floor(100 + Math.random() * 900)}`,
       name: newName,
       ci: newCi,

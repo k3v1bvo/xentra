@@ -38,7 +38,7 @@ import { CommunityTransparencyModal } from '../components/CommunityTransparencyM
 import { InstallAppModal } from '../components/InstallAppModal';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 import { BoliviaCoatOfArms } from '../components/BoliviaCoatOfArms';
-import { SeniorModeToggle } from '../components/SeniorModeToggle';
+import { CommunityFooter } from '../components/CommunityFooter';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
@@ -219,9 +219,6 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Interruptor Modo Senior / Alta Legibilidad */}
-          <SeniorModeToggle />
-
           <button
             onClick={() => setIsEmergencyModalOpen(true)}
             className="min-h-[48px] px-4 rounded-2xl bg-rose-600/25 hover:bg-rose-600 text-rose-200 hover:text-white border-2 border-rose-500/50 text-xs sm:text-sm font-black flex items-center gap-2 transition-all cursor-pointer shadow-md"
@@ -510,21 +507,13 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* =================================================================== */}
-      {/* 5. FOOTER INSTITUCIONAL                                             */}
+      {/* 5. FOOTER INSTITUCIONAL COMPLETO & SERVICIOS COMUNALES              */}
       {/* =================================================================== */}
-      <footer className="relative z-10 border-t border-slate-800 bg-[#030712] py-8 px-4 sm:px-8 text-center text-xs text-slate-400 space-y-3">
-        <div className="flex items-center justify-center gap-3">
-          <BoliviaCoatOfArms size={28} />
-          <span className="font-black text-white text-sm">XENTRA OTB BOLIVIA</span>
-        </div>
-        <p className="max-w-xl mx-auto leading-relaxed text-[11px] text-slate-500">
-          Desarrollado bajo el marco de la <strong>Ley N° 1551 de Participación Popular</strong> y normativas
-          municipales de Cochabamba, La Paz y Santa Cruz para la honestidad contable en organizaciones de base.
-        </p>
-        <p className="text-[10px] text-slate-600 font-mono">
-          © 2026 Xentra Network • Todos los derechos reservados.
-        </p>
-      </footer>
+      <CommunityFooter
+        onOpenEmergency={() => setIsEmergencyModalOpen(true)}
+        onOpenInstallApp={() => setIsInstallModalOpen(true)}
+        onOpenTransparency={() => setIsTransparencyModalOpen(true)}
+      />
 
       {/* =================================================================== */}
       {/* MODAL 1: PAGAR CON CÓDIGO QR SIMPLE DE LA OTB                       */}

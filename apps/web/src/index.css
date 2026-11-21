@@ -42,13 +42,42 @@
 }
 
 /* =========================================================================
-   ELDER FRAMEWORK & WCAG AAA ACCESSIBILITY (PERSONAS MAYORES 50+)
-   - Contraste 7:1 (Nivel AAA)
-   - Fuente Base ≥ 18px (o 18-20px)
-   - Área Táctil (Target) ≥ 56-64px / 60x60pt WeChat Senior
-   - Interlineado ≥ 1.35x - 1.5x
+   DISEÑO CÓMODO DIRECTO & ACCESIBILIDAD UNIVERSAL (WCAG AAA & ELDER STANDARD)
+   - Contraste Alto 7:1 (Nivel AAA)
+   - Tipografía Base Cómoda (≥ 16px móvil, 17-18px desktop)
+   - Interlineado Cómodo ≥ 1.5x
+   - Objetivos Táctiles Nativos ≥ 48-56px
    ========================================================================= */
 
+:root {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    font-size: 17px;
+  }
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+p, span, label, li {
+  line-height: 1.5;
+}
+
+/* Evitar textos demasiado oscuros o atenuados que cansen la vista */
+.text-slate-400 {
+  color: #CBD5E1;
+}
+
+.text-slate-500 {
+  color: #94A3B8;
+}
+
+/* Soporte de compatibilidad clase senior-mode */
 .senior-mode {
   font-size: 18px;
 }
@@ -57,23 +86,12 @@
 .senior-mode span,
 .senior-mode label,
 .senior-mode li {
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
-/* Objetivos Táctiles Generosos para evitar pulsaciones erróneas */
 .senior-mode button,
 .senior-mode .btn-touch,
 .senior-mode a[role="button"],
 .senior-mode select {
   min-height: 56px;
-}
-
-/* Evitar textos atenuados que dificulten la lectura a personas con baja visión */
-.senior-mode .text-slate-400,
-.senior-mode .text-slate-500 {
-  color: #F1F5F9 !important;
-}
-
-.senior-mode .text-slate-300 {
-  color: #FFFFFF !important;
 }

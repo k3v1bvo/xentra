@@ -92,53 +92,53 @@ export const LoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-3 py-3 bg-[#030712] border-2 border-slate-600 rounded-xl focus:outline-none focus:border-blue-400 font-medium text-white text-sm"
+                  className="w-full pl-10 pr-3 py-3.5 bg-[#030712] border-2 border-slate-600 rounded-xl focus:outline-none focus:border-blue-400 font-medium text-white text-base min-h-[52px]"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer text-sm"
+              className="w-full min-h-[54px] py-3.5 rounded-xl font-black text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer text-base"
             >
               <span>Ingresar al Sistema</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-5 h-5" />
             </button>
           </form>
 
           {/* Acceso Rápido Demo para Evaluación Inmediata */}
           <div className="pt-4 border-t border-slate-800">
-            <p className="text-[11px] font-black text-slate-400 mb-2.5 text-center uppercase tracking-wider">
+            <p className="text-xs font-black text-slate-300 mb-2.5 text-center uppercase tracking-wider">
               Acceso Rápido por Rol (Entorno Demo)
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-2.5 text-xs sm:text-sm">
               <button
                 onClick={() => handleQuickDemo('tesorero', 'Marina Condori', '6398412')}
-                className="p-3 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
+                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
               >
-                <strong className="block text-white font-bold">Tesorero</strong>
-                <span className="text-[10px] text-slate-400">Cobranzas y Cajas</span>
+                <strong className="block text-white font-black text-sm sm:text-base">Tesorero</strong>
+                <span className="text-xs text-slate-300">Cobranzas y Cajas</span>
               </button>
               <button
                 onClick={() => handleQuickDemo('presidente', 'Roberto Fernández', '5289341')}
-                className="p-3 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
+                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
               >
-                <strong className="block text-white font-bold">Presidente</strong>
-                <span className="text-[10px] text-slate-400">Proyectos y VOTA</span>
+                <strong className="block text-white font-black text-sm sm:text-base">Presidente</strong>
+                <span className="text-xs text-slate-300">Proyectos y VOTA</span>
               </button>
               <button
                 onClick={() => handleQuickDemo('fiscalizador', 'Carlos Mamani', '4589210')}
-                className="p-3 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
+                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
               >
-                <strong className="block text-white font-bold">Fiscalizador</strong>
-                <span className="text-[10px] text-slate-400">AI Auditor & TRACE</span>
+                <strong className="block text-white font-black text-sm sm:text-base">Fiscalizador</strong>
+                <span className="text-xs text-slate-300">AI Auditor & TRACE</span>
               </button>
               <button
                 onClick={() => handleQuickDemo('vecino', 'Juan José Flores', '7412589')}
-                className="p-3 rounded-xl bg-[#030712] hover:bg-emerald-950/60 border border-slate-700 hover:border-emerald-500/50 text-left transition-colors cursor-pointer"
+                className="p-3.5 rounded-xl bg-[#030712] hover:bg-emerald-950/60 border border-slate-700 hover:border-emerald-500/50 text-left transition-colors cursor-pointer"
               >
-                <strong className="block text-emerald-400 font-bold">Vecino</strong>
-                <span className="text-[10px] text-slate-400">Portal & Recibos QR</span>
+                <strong className="block text-emerald-400 font-black text-sm sm:text-base">Vecino</strong>
+                <span className="text-xs text-slate-300">Portal & Recibos QR</span>
               </button>
             </div>
 

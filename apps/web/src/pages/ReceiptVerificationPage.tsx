@@ -29,6 +29,7 @@ import { XentraLogo } from '../components/XentraLogo';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
 import { PrintableStatementModal } from '../components/PrintableStatementModal';
 import { BoliviaCoatOfArms } from '../components/BoliviaCoatOfArms';
+import { CommunityFooter } from '../components/CommunityFooter';
 
 interface SocioAccountMock {
   socioCode: string;
@@ -622,6 +623,9 @@ export const ReceiptVerificationPage: React.FC = () => {
           ]
         }}
       />
+
+      {/* Footer Comunal con Información Útil y Emergencias 24/7 */}
+      <CommunityFooter />
     </div>
   );
 };

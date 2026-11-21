@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { NotificationBell } from '../notifications/NotificationBell';
-import { SeniorModeToggle } from '../components/SeniorModeToggle';
 import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { AppRole } from '@xentra/shared';
@@ -255,9 +254,6 @@ export const AdminLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Interruptor Global Modo Senior (+50 Años) */}
-            <SeniorModeToggle />
-
             {/* Selector Rápido de Rol (Demo) */}
             <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
               <button

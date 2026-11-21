@@ -447,19 +447,19 @@ export const VecinosPage: React.FC = () => {
         <div className="rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl overflow-hidden">
           <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-blue-400" />
-              <h2 className="text-sm sm:text-base font-black text-white">
+              <Users className="w-6 h-6 text-blue-400" />
+              <h2 className="text-base sm:text-lg font-black text-white">
                 Lista de Socios Activos ({filtered.length})
               </h2>
             </div>
-            <span className="text-xs text-slate-400 font-mono">
-              OTB Villa Esperanza • Código: OTB-CBBA-001
+            <span className="text-xs sm:text-sm text-slate-300 font-mono font-bold">
+              {currentOtb?.name || 'OTB Villa Esperanza'} • Código: {currentOtb?.code || 'OTB-CBBA-001'}
             </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-[#030712]/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px] font-black">
+            <table className="w-full text-left text-sm sm:text-base">
+              <thead className="bg-[#030712]/90 border-b-2 border-slate-800 text-slate-300 uppercase tracking-wider text-xs sm:text-sm font-black">
                 <tr>
                   <th className="px-5 py-4">Cód. Socio</th>
                   <th className="px-5 py-4">Vecino / Titular</th>
@@ -491,21 +491,21 @@ export const VecinosPage: React.FC = () => {
                             {vecino.name[0]}
                           </div>
                           <div>
-                            <p className="font-bold text-white text-sm">{vecino.name}</p>
-                            <p className="text-xs text-slate-400 font-mono">CI: {vecino.ci}</p>
+                            <p className="font-black text-white text-base">{vecino.name}</p>
+                            <p className="text-xs sm:text-sm text-slate-300 font-mono">CI: {vecino.ci}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <div className="flex items-center gap-2 text-slate-300">
+                        <div className="flex items-center gap-2 text-slate-200">
                           <Home className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                          <span className="font-semibold">{vecino.block}, {vecino.house}</span>
+                          <span className="font-bold text-sm sm:text-base text-white">{vecino.block}, {vecino.house}</span>
                         </div>
                         <button
                           onClick={() => handleFocusNeighborOnMap(vecino)}
-                          className="mt-1 text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
+                          className="mt-1 text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer"
                         >
-                          <MapPin className="w-3 h-3 text-red-400" />
+                          <MapPin className="w-3.5 h-3.5 text-red-400" />
                           <span>Ver casa en mapa</span>
                         </button>
                       </td>
@@ -517,46 +517,46 @@ export const VecinosPage: React.FC = () => {
                       </td>
                       <td className="px-5 py-4 text-center">
                         {vecino.status === 'Al Día' ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Al Día
+                          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Al Día
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                            <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> En Mora
+                          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                            <AlertCircle className="w-4 h-4 text-rose-400" /> En Mora
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-right font-mono font-black text-sm">
+                      <td className="px-5 py-4 text-right font-mono font-black text-base sm:text-lg">
                         {vecino.debt === 0 ? (
-                          <span className="text-slate-500">Bs. 0,00</span>
+                          <span className="text-slate-400">Bs. 0,00</span>
                         ) : (
-                          <span className="text-amber-400">{formatBOB(vecino.debt)}</span>
+                          <span className="text-amber-300">{formatBOB(vecino.debt)}</span>
                         )}
                       </td>
                       <td className="px-5 py-4 text-center">
-                        <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <div className="flex items-center justify-center gap-2 flex-wrap">
                           <button
                             onClick={() => handleFocusNeighborOnMap(vecino)}
-                            className="h-9 px-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all flex items-center gap-1 cursor-pointer"
+                            className="min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
                             title="Centrar casa en mapa"
                           >
-                            <MapPin className="w-3 h-3 text-red-400" />
+                            <MapPin className="w-3.5 h-3.5 text-red-400" />
                             <span>Mapa</span>
                           </button>
 
                           <button
                             onClick={() => handleOpenStatement(vecino)}
-                            className="h-9 px-3 rounded-xl text-xs font-black bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 hover:border-blue-500 transition-all flex items-center gap-1 cursor-pointer"
+                            className="min-h-[38px] px-3.5 rounded-xl text-xs sm:text-sm font-black bg-blue-600/25 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/40 hover:border-blue-500 transition-all flex items-center gap-1.5 cursor-pointer"
                             title="Abrir e imprimir Ficha Oficial & Estado de Cuenta"
                           >
-                            <FileText className="w-3.5 h-3.5" />
+                            <FileText className="w-4 h-4" />
                             <span>Ficha</span>
                           </button>
 
                           {/* Botón Editar Vecino (CRUD Update) */}
                           <button
                             onClick={() => handleStartEdit(vecino)}
-                            className="h-9 px-2.5 rounded-xl text-xs font-bold bg-amber-500/15 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/30 hover:border-amber-400 transition-all flex items-center gap-1 cursor-pointer"
+                            className="min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-black bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 transition-all flex items-center gap-1.5 cursor-pointer"
                             title="Editar datos del socio o reubicar vivienda"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -566,10 +566,11 @@ export const VecinosPage: React.FC = () => {
                           {/* Botón Dar de Baja (CRUD Delete) */}
                           <button
                             onClick={() => setDeletingNeighbor(vecino)}
-                            className="h-9 px-2 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/30 hover:border-rose-400 transition-all flex items-center gap-1 cursor-pointer"
+                            className="min-h-[38px] px-2.5 rounded-xl text-xs sm:text-sm font-black bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/40 transition-all flex items-center gap-1 cursor-pointer"
                             title="Dar de baja / archivar socio del padrón"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
+                            <span>Baja</span>
                           </button>
                         </div>
                       </td>

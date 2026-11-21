@@ -35,7 +35,6 @@ import { CommunityTransparencyModal } from '../components/CommunityTransparencyM
 import { InstallAppModal } from '../components/InstallAppModal';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
-import { SeniorModeToggle } from '../components/SeniorModeToggle';
 
 interface NeighborFee {
   id: string;
@@ -237,167 +236,167 @@ export const NeighborDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 text-white">
-      {/* Encabezado Vecino con 3D Depth & Accesibilidad Senior (+50 Años) */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B]/95 border-2 border-blue-500/50 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2.5 max-w-xl">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/25 text-blue-200 text-xs sm:text-sm font-black border border-blue-400/40">
-              <Home className="w-4 h-4 text-blue-300" />
+    <div className="space-y-8 text-white">
+      {/* Encabezado Vecino con Máxima Comodidad y Letra Grande Directa */}
+      <div className="p-6 sm:p-9 rounded-3xl bg-[#0B132B] border-2 border-blue-500/60 text-white shadow-2xl backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-3 max-w-xl">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/25 text-blue-200 text-sm sm:text-base font-black border-2 border-blue-400/50 shadow-sm">
+              <Home className="w-5 h-5 text-blue-300" />
               <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
             </div>
-
-            {/* Interruptor Modo Senior / Alta Legibilidad */}
-            <SeniorModeToggle />
+            <span className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              Socio Registrado
+            </span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
             Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
           </h1>
-          <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed">
-            Portal vecinal accesible: consulta tus cuotas comunales, realiza tus pagos con QR Simple y descarga tus comprobantes oficiales con firma digital.
+          <p className="text-base sm:text-lg text-slate-100 font-medium leading-relaxed">
+            Portal oficial y directo de tu OTB: consulta tus aportes comunales, realiza pagos con QR Simple y descarga tus comprobantes certificados.
           </p>
         </div>
 
-        {/* Tarjeta Deuda y Botón de Pago Rápido (Target Size ≥ 56px WCAG AAA) */}
-        <div className="bg-[#030712] p-6 rounded-3xl border-2 border-slate-600 flex flex-col sm:flex-row sm:items-center gap-5 flex-shrink-0 shadow-2xl">
-          <div className="text-left sm:text-right">
+        {/* Tarjeta Deuda y Botón de Pago Rápido (Target Size ≥ 60px) */}
+        <div className="bg-[#030712] p-6 sm:p-7 rounded-3xl border-2 border-slate-600 flex flex-col sm:flex-row sm:items-center gap-6 flex-shrink-0 shadow-2xl">
+          <div className="text-left sm:text-right space-y-1">
             <span className="text-xs sm:text-sm text-slate-200 block font-black uppercase tracking-wider">Deuda Pendiente</span>
-            <span className="text-3xl sm:text-4xl font-black font-mono text-white block mt-0.5">
+            <span className="text-4xl sm:text-5xl font-black font-mono text-emerald-400 block">
               {formatBOB(totalDebt)}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-300 mt-1">
-              <AlertCircle className="w-4 h-4 text-amber-400" />
-              <span>{totalDebt > 0 ? '1 cuota con saldo pendiente' : '¡Felicidades! Estás al día'}</span>
+            <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-amber-300">
+              <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <span>{totalDebt > 0 ? '1 cuota pendiente de abono' : '¡Excelente! Estás al día'}</span>
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => setIsQrModalOpen(true)}
-              className="min-h-[58px] py-4 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/30 transition-all cursor-pointer scale-100 hover:scale-[1.02]"
+              className="min-h-[62px] py-4 px-7 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base sm:text-lg flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/30 transition-all cursor-pointer scale-100 hover:scale-[1.02]"
             >
-              <QrCode className="w-5 h-5 text-slate-950" />
+              <QrCode className="w-6 h-6 text-slate-950" />
               <span>Pagar con QR</span>
             </button>
 
             <button
               onClick={() => setIsPrintModalOpen(true)}
-              className="min-h-[58px] py-4 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 border-2 border-slate-600 transition-all cursor-pointer"
+              className="min-h-[62px] py-4 px-6 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-base sm:text-lg flex items-center justify-center gap-2.5 border-2 border-slate-600 transition-all cursor-pointer"
             >
-              <Printer className="w-5 h-5 text-blue-300" />
+              <Printer className="w-6 h-6 text-blue-300" />
               <span>Imprimir Ficha</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Barra Rápida de Auxilio, Transparencia y App Móvil (Targets Generosos ≥ 64px) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+      {/* Barra Rápida de Auxilio, Transparencia y App Móvil (Targets Generosos ≥ 80px) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => {
             setAlertModalTab('emergencias');
             setIsAlertModalOpen(true);
           }}
-          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-rose-500/50 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/10"
+          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-rose-500/60 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/20"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-rose-600/30 border-2 border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <PhoneCall className="w-6 h-6 animate-pulse" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-rose-600/30 border-2 border-rose-500 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <PhoneCall className="w-7 h-7 animate-pulse" />
             </div>
             <div>
-              <strong className="text-white font-black text-base sm:text-lg block">🚨 Auxilio & Reportes 24/7</strong>
-              <span className="text-rose-200 text-xs sm:text-sm font-bold block mt-0.5">Policía 110, SAMU 165 y Alerta Vecinal</span>
+              <strong className="text-white font-black text-lg sm:text-xl block">🚨 Auxilio & Reportes 24/7</strong>
+              <span className="text-rose-200 text-sm sm:text-base font-bold block mt-0.5">Policía 110, SAMU 168 y Alerta Barrial</span>
             </div>
           </div>
-          <span className="text-sm font-black text-rose-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Llamar →</span>
+          <span className="text-base font-black text-rose-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Llamar →</span>
         </button>
 
         <button
           onClick={() => setIsTransparencyModalOpen(true)}
-          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-purple-500/50 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/10"
+          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-purple-500/60 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/20"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-purple-600/30 border-2 border-purple-500 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
-              <strong className="text-white font-black text-base sm:text-lg block">🔍 Transparencia & Asamblea</strong>
-              <span className="text-purple-200 text-xs sm:text-sm font-bold block mt-0.5">¿En qué se gastó? y Asamblea 29 Nov</span>
+              <strong className="text-white font-black text-lg sm:text-xl block">🔍 Transparencia & Asamblea</strong>
+              <span className="text-purple-200 text-sm sm:text-base font-bold block mt-0.5">¿En qué se gastó? y Asamblea 29 Nov</span>
             </div>
           </div>
-          <span className="text-sm font-black text-purple-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver Cuentas →</span>
+          <span className="text-base font-black text-purple-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver Cuentas →</span>
         </button>
 
         <button
           onClick={() => setIsInstallModalOpen(true)}
-          className="min-h-[74px] p-5 rounded-2xl bg-[#0F172A] border-2 border-emerald-500/50 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/10"
+          className="min-h-[82px] p-5 sm:p-6 rounded-3xl bg-[#0F172A] border-2 border-emerald-500/60 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/20"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Smartphone className="w-6 h-6" />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-600/30 border-2 border-emerald-500 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Smartphone className="w-7 h-7" />
             </div>
             <div>
-              <strong className="text-white font-black text-base sm:text-lg block">📲 Instalar App Android</strong>
-              <span className="text-emerald-200 text-xs sm:text-sm font-bold block mt-0.5">Instala el APK para avisos y cuotas</span>
+              <strong className="text-white font-black text-lg sm:text-xl block">📲 Instalar App Android</strong>
+              <span className="text-emerald-200 text-sm sm:text-base font-bold block mt-0.5">APK oficial para Xiaomi, Samsung y más</span>
             </div>
           </div>
-          <span className="text-sm font-black text-emerald-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver App →</span>
+          <span className="text-base font-black text-emerald-400 group-hover:translate-x-1.5 transition-transform whitespace-nowrap pl-2">Ver App →</span>
         </button>
       </div>
 
-      {/* Mis Cuotas Asignadas (Legibilidad WCAG AAA y Targets ≥ 56px) */}
+      {/* Mis Cuotas Asignadas (Legibilidad Alta y Letras Grandes) */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
-            <FileCheck className="w-5 h-5 text-blue-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
+            <FileCheck className="w-6 h-6 text-blue-400" />
             <span>Mis Cuotas y Obligaciones Comunitarias</span>
           </h2>
-          <span className="text-sm sm:text-base text-slate-200 font-mono font-bold">Total asignado: <strong className="text-white">{formatBOB(totalAssigned)}</strong></span>
+          <span className="text-base sm:text-lg text-slate-100 font-mono font-bold">Total asignado: <strong className="text-white">{formatBOB(totalAssigned)}</strong></span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {fees.map((fee) => (
             <TiltCard3D
               key={fee.id}
               intensity={5}
-              className="p-6 rounded-3xl bg-[#0B132B]/95 border-2 border-slate-700/80 shadow-2xl backdrop-blur-xl space-y-4"
+              className="p-6 sm:p-7 rounded-3xl bg-[#0B132B] border-2 border-slate-700 shadow-2xl backdrop-blur-xl space-y-5"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-black px-3 py-1 rounded-lg bg-slate-800 text-slate-100 border border-slate-600 uppercase tracking-wide">
+                <span className="text-sm font-black px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-100 border border-slate-600 uppercase tracking-wide">
                   {fee.type}
                 </span>
                 {fee.isSettled ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 px-3 py-1 rounded-full">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Pagada al Día
+                  <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 px-3.5 py-1.5 rounded-full">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Pagada al Día
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-amber-300 bg-amber-500/20 border border-amber-500/50 px-3 py-1 rounded-full">
-                    <AlertCircle className="w-4 h-4 text-amber-400" /> Saldo Pendiente
+                  <span className="inline-flex items-center gap-2 text-sm sm:text-base font-black text-amber-300 bg-amber-500/20 border border-amber-500/50 px-3.5 py-1.5 rounded-full">
+                    <AlertCircle className="w-5 h-5 text-amber-400" /> Saldo Pendiente
                   </span>
                 )}
               </div>
 
               <div>
-                <h3 className="font-black text-white text-lg sm:text-xl leading-snug">{fee.title}</h3>
-                <p className="text-sm text-amber-300 font-bold font-mono mt-1 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-amber-400" />
+                <h3 className="font-black text-white text-xl sm:text-2xl leading-snug">{fee.title}</h3>
+                <p className="text-base text-amber-300 font-bold font-mono mt-1.5 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-amber-400" />
                   <span>Vencimiento: {fee.dueDate}</span>
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 grid grid-cols-3 gap-2 text-center font-mono">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-700 grid grid-cols-3 gap-3 text-center font-mono">
                 <div>
-                  <span className="text-xs text-slate-300 block font-bold uppercase">Asignado</span>
-                  <strong className="text-white font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountAssigned)}</strong>
+                  <span className="text-xs sm:text-sm text-slate-300 block font-bold uppercase">Asignado</span>
+                  <strong className="text-white font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountAssigned)}</strong>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-300 block font-bold uppercase">Abonado</span>
-                  <strong className="text-emerald-400 font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountPaid)}</strong>
+                  <span className="text-xs sm:text-sm text-slate-300 block font-bold uppercase">Abonado</span>
+                  <strong className="text-emerald-400 font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountPaid)}</strong>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-300 block font-bold uppercase">Resta</span>
-                  <strong className="text-rose-400 font-black text-base sm:text-lg block mt-0.5">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
+                  <span className="text-xs sm:text-sm text-slate-300 block font-bold uppercase">Resta</span>
+                  <strong className="text-rose-400 font-black text-lg sm:text-xl block mt-1">{formatBOB(fee.amountAssigned - fee.amountPaid)}</strong>
                 </div>
               </div>
 
@@ -407,9 +406,9 @@ export const NeighborDashboardPage: React.FC = () => {
                     setPayAmount((fee.amountAssigned - fee.amountPaid).toFixed(2));
                     setIsQrModalOpen(true);
                   }}
-                  className="w-full min-h-[56px] py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-sm sm:text-base font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+                  className="w-full min-h-[60px] py-4 px-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-base sm:text-lg font-black flex items-center justify-center gap-2.5 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
                 >
-                  <QrCode className="w-5 h-5" />
+                  <QrCode className="w-6 h-6" />
                   <span>Pagar saldo de esta cuota</span>
                 </button>
               )}
@@ -419,42 +418,49 @@ export const NeighborDashboardPage: React.FC = () => {
       </div>
 
       {/* Mapa Interactivo de la OTB y Ubicación del Inmueble */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-emerald-400" />
-            <span>Plano Comunal Interactivo & Sede de la OTB</span>
-          </h2>
-          <span className="text-xs text-slate-400 font-mono font-bold">Manzana A, Lote 12</span>
+      <div className="p-6 sm:p-7 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl backdrop-blur-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
+              <MapPin className="w-5 h-5 text-emerald-400" />
+              <span>Plano Comunal Interactivo & Sede de la OTB</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
+              Ubicación de tu vivienda en el catastro comunal de {currentOtb?.name || 'la OTB'}.
+            </p>
+          </div>
+          <span className="text-xs sm:text-sm text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-mono font-bold self-start sm:self-auto">
+            Manzana A, Lote 12
+          </span>
         </div>
         <CommunityInteractiveMap
           centerLat={-17.41325}
           centerLng={-66.16543}
           zoom={16}
-          heightClass="h-56 sm:h-64"
+          heightClass="h-64 sm:h-72"
           otbName={currentOtb?.name || 'OTB Villa Esperanza'}
           selectedLotName="Lote 12"
         />
       </div>
 
-      {/* Historial de Pagos y Comprobantes Enviados (Legibilidad WCAG AAA) */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-[#0B132B]/95 border-2 border-slate-700 shadow-2xl backdrop-blur-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Historial de Pagos y Comprobantes Enviados (Legibilidad Completa) */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-slate-700 shadow-2xl backdrop-blur-xl space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
-              <CreditCard className="w-5 h-5 text-emerald-400" />
+            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
+              <CreditCard className="w-6 h-6 text-emerald-400" />
               <span>Historial de Pagos y Recibos Oficiales</span>
             </h2>
-            <p className="text-sm text-slate-100 mt-0.5 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-200 mt-1 leading-relaxed">
               Consulta si tus aportes fueron confirmados por Tesorería o descarga tu comprobante oficial con código QR.
             </p>
           </div>
 
           <button
             onClick={() => setIsQrModalOpen(true)}
-            className="self-start sm:self-auto min-h-[52px] px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm sm:text-base flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-blue-600/30"
+            className="self-start sm:self-auto min-h-[56px] px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-base flex items-center gap-2.5 transition-all cursor-pointer shadow-lg shadow-blue-600/30"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-5 h-5" />
             <span>Reportar Nuevo Pago</span>
           </button>
         </div>
@@ -481,10 +487,10 @@ export const NeighborDashboardPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-base font-black text-white">{sub.concept}</span>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <span className="text-lg font-black text-white">{sub.concept}</span>
                     <span
-                      className={`text-xs font-black px-3 py-1 rounded-full border ${
+                      className={`text-sm font-black px-3.5 py-1.5 rounded-full border ${
                         sub.status === 'Confirmed'
                           ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/60'
                           : 'bg-amber-500/25 text-amber-300 border-amber-500/60'
@@ -494,37 +500,37 @@ export const NeighborDashboardPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-200 mt-1 font-mono">
+                  <p className="text-sm text-slate-200 mt-1.5 font-mono">
                     {sub.submittedAt} • Método: {sub.method}
                     {sub.receiptNumber && ` • N° Recibo: ${sub.receiptNumber}`}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 justify-between sm:justify-end">
-                <span className="text-base sm:text-xl font-black font-mono text-white">
+              <div className="flex items-center gap-4 justify-between sm:justify-end">
+                <span className="text-xl sm:text-2xl font-black font-mono text-white">
                   {formatBOB(sub.amount)}
                 </span>
 
                 {sub.status === 'Confirmed' && sub.receiptNumber ? (
                   <button
                     onClick={() => navigate(`/verificar-recibo?receipt=${sub.receiptNumber}`)}
-                    className="min-h-[50px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black text-blue-200 bg-blue-950/80 hover:bg-blue-900 border-2 border-blue-500/50 transition-colors cursor-pointer whitespace-nowrap shadow-md"
+                    className="min-h-[54px] flex items-center gap-2.5 px-5 py-3 rounded-2xl text-base font-black text-blue-200 bg-blue-950 hover:bg-blue-900 border-2 border-blue-500/50 transition-colors cursor-pointer whitespace-nowrap shadow-md"
                   >
                     <span>Ver Recibo QR</span>
-                    <ExternalLink className="w-4 h-4 text-blue-300" />
+                    <ExternalLink className="w-5 h-5 text-blue-300" />
                   </button>
                 ) : (
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-                    <span className="text-xs sm:text-sm text-amber-300 font-bold italic">
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2.5">
+                    <span className="text-sm text-amber-300 font-bold italic">
                       En revisión por Tesorería
                     </span>
                     <button
                       onClick={() => handleCancelSubmission(sub.id)}
-                      className="min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-black text-rose-300 hover:text-white bg-rose-950/50 hover:bg-rose-900/60 border border-rose-500/40 transition-colors cursor-pointer flex items-center gap-1.5"
+                      className="min-h-[48px] px-4 py-2 rounded-xl text-sm font-black text-rose-300 hover:text-white bg-rose-950/60 hover:bg-rose-900 border border-rose-500/50 transition-colors cursor-pointer flex items-center gap-2"
                       title="Retirar o anular este comprobante subido por error"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                       <span>Cancelar Envío</span>
                     </button>
                   </div>
@@ -547,13 +553,13 @@ export const NeighborDashboardPage: React.FC = () => {
             </button>
 
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold mb-2">
-                <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-sm font-black mb-2">
+                <QrCode className="w-4 h-4 text-emerald-400" />
                 <span>QR Simple • Transferencia Bancaria Directa</span>
               </div>
-              <h3 className="text-xl font-black text-white">Pagar Cuotas por Código QR</h3>
-              <p className="text-xs text-slate-300 mt-1">
-                Escanea el código QR desde cualquier aplicación bancaria de Bolivia (Banco Unión, BCP, BNB, Banco Sol, etc.) y adjunta tu comprobante.
+              <h3 className="text-2xl font-black text-white">Pagar Cuotas por Código QR</h3>
+              <p className="text-sm text-slate-200 mt-1.5 leading-relaxed">
+                Escanea el código QR desde cualquier aplicación bancaria de Bolivia (Banco Unión, BCP, BNB, BancoSol, etc.) y adjunta tu comprobante.
               </p>
             </div>
 

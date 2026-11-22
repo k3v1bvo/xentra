@@ -75,32 +75,15 @@ p, span, label, li {
    LEAFLET MAP & TILE RENDERING FIX (PREVENT TILE CRUSHING & BLACK VOID)
    ========================================================================= */
 .leaflet-container {
-  background-color: #0B132B !important;
+  background-color: #E2E8F0 !important;
   outline: none;
 }
 .leaflet-container img {
   max-width: none !important;
   max-height: none !important;
-  width: auto !important;
-  height: auto !important;
 }
 .leaflet-tile {
   visibility: inherit !important;
-}
-.leaflet-pane {
-  z-index: 10;
-}
-.leaflet-tile-pane {
-  z-index: 5 !important;
-}
-.leaflet-overlay-pane {
-  z-index: 15 !important;
-}
-.leaflet-marker-pane {
-  z-index: 20 !important;
-}
-.leaflet-popup-pane {
-  z-index: 30 !important;
 }
 
 /* =========================================================================

@@ -174,6 +174,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const primaryTileLayerRef = useRef<L.TileLayer | null>(null);
   const selectionMarkerRef = useRef<L.Marker | null>(null);
   const layersGroupRef = useRef<L.LayerGroup | null>(null);
   const editorLayerGroupRef = useRef<L.LayerGroup | null>(null);
@@ -344,16 +345,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       maxZoom: 19,
       attribution: 'Tiles &copy; Esri'
     });
-
-    primaryTileLayer.on('tileerror', () => {
-      // Fallback a OpenStreetMap Oficial con balanceador de carga
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        subdomains: ['a', 'b', 'c'],
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
-    });
-
+    primaryTileLayerRef.current = primaryTileLayer;
     primaryTileLayer.addTo(map);
 
     const mainGroup = L.layerGroup().addTo(map);
@@ -496,49 +488,27 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     };
   }, [effectiveCenterLat, effectiveCenterLng, otbId]);
 
-  // Observador de Redimensionamiento para evitar mapa en negro al abrir/cerrar editor o cambiar tamaño
+  // Observador de Redimensionamiento para evitar desajustes en el canvas de Leaflet
   useEffect(() => {
     if (!mapContainerRef.current) return;
     const ro = new ResizeObserver(() => {
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize({ debounceMoveend: true });
+        mapInstanceRef.current.invalidateSize();
       }
     });
     ro.observe(mapContainerRef.current);
     return () => ro.disconnect();
   }, []);
 
-  // Forzar redimensionamiento y centrado automático sobre la OTB cada vez que se abre/cierra el editor o pantalla completa
+  // Forzar redimensionamiento solo en cambio de pantalla completa
   useEffect(() => {
     if (!mapInstanceRef.current) return;
-    const perimeterToRender = territory.perimeter;
-    
-    const recomputeMapViewport = () => {
-      if (!mapInstanceRef.current) return;
-      mapInstanceRef.current.invalidateSize({ debounceMoveend: true });
-      if (perimeterToRender.length >= 3) {
-        const bounds = L.latLngBounds(perimeterToRender);
-        mapInstanceRef.current.fitBounds(bounds, {
-          padding: [30, 30],
-          maxZoom: 17,
-          animate: false
-        });
-      } else {
-        mapInstanceRef.current.setView([effectiveCenterLat, effectiveCenterLng], territory.zoom || 16);
-      }
-    };
-
-    const t1 = setTimeout(recomputeMapViewport, 50);
-    const t2 = setTimeout(recomputeMapViewport, 150);
-    const t3 = setTimeout(recomputeMapViewport, 300);
-    const t4 = setTimeout(recomputeMapViewport, 600);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-    };
-  }, [isEditorOpen, isFullscreen, territory.perimeter, effectiveCenterLat, effectiveCenterLng]);
+    const t = setTimeout(() => {
+      mapInstanceRef.current?.invalidateSize();
+      primaryTileLayerRef.current?.redraw();
+    }, 150);
+    return () => clearTimeout(t);
+  }, [isFullscreen]);
 
   // =========================================================================
   // 2. RENDERIZADO DE CAPAS (PERÍMETRO, MANZANOS, VECINOS, EQUIPAMIENTO)
@@ -1181,9 +1151,10 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 if (next) {
                   setNewManzanoPoints([]);
                 }
-                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
-                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 150);
-                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 350);
+                setTimeout(() => {
+                  mapInstanceRef.current?.invalidateSize();
+                  primaryTileLayerRef.current?.redraw();
+                }, 60);
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
                 isEditorOpen
@@ -1245,10 +1216,10 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       )}
 
       {/* =================================================================== */}
-      {/* 2. PANEL DEL EDITOR TERRITORIAL CON LÁPIZ Y VÉRTICES                */}
+      {/* 2. PANEL DEL EDITOR TERRITORIAL FLOTANTE (NO DEFORMA EL MAPA)        */}
       {/* =================================================================== */}
       {isEditorOpen && canEditTerritory && (
-        <div className="bg-[#0B132B]/98 border-b-2 border-amber-500/50 p-3 sm:p-4 z-30 shadow-2xl space-y-3 text-left">
+        <div className="absolute top-14 left-3 right-3 sm:left-5 sm:right-5 z-30 max-h-[50%] overflow-y-auto bg-[#0B132B]/95 backdrop-blur-xl border-2 border-amber-500/60 rounded-2xl p-3 sm:p-4 shadow-2xl space-y-3 text-left animate-in fade-in slide-in-from-top-2">
           
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
             <div className="flex flex-wrap items-center gap-2">

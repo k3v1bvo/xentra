@@ -36,15 +36,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🤖 Setup Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          packages: |
-            platform-tools
-            platforms;android-35
-            platforms;android-34
-            build-tools;35.0.0
-            build-tools;34.0.0
+      - name: 🤖 Setup Android SDK Environment & Licenses
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+          if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+            yes | sudo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          fi
+
+      - name: 🐘 Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: ⚙️ Install Root & Workspace Dependencies
         run: pnpm install --no-frozen-lockfile

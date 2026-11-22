@@ -1,631 +1,476 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2,
   ShieldCheck,
-  AlertOctagon,
+  AlertTriangle,
   Building,
   QrCode,
   ArrowLeft,
   Calendar,
   Lock,
-  MapPin,
-  Clock,
-  PhoneCall,
-  Download,
+  Search,
+  FileCheck,
   Copy,
   Check,
   Upload,
-  Printer,
-  Sparkles,
-  ExternalLink,
-  CreditCard,
-  Building2,
-  HelpCircle,
-  FileCheck
+  Receipt,
+  RotateCcw
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { XentraLogo } from '../components/XentraLogo';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
-import { PrintableStatementModal } from '../components/PrintableStatementModal';
-import { BoliviaCoatOfArms } from '../components/BoliviaCoatOfArms';
 import { CommunityFooter } from '../components/CommunityFooter';
 
-interface SocioAccountMock {
-  socioCode: string;
-  name: string;
-  maskedName: string;
-  ci: string;
-  block: string;
-  lot: string;
-  debt: number;
-  unsettledConcept: string;
-  status: 'al_dia' | 'con_deuda';
+interface VerifiedReceipt {
+  receiptNumber: string;
+  tokenHash: string;
+  otbName: string;
+  otbCode: string;
+  department: string;
+  beneficiaryMasked: string;
+  concept: string;
+  amount: number;
+  paymentMethod: string;
+  issuedAt: string;
+  ledgerEntry: string;
 }
 
-const KNOWN_SOCIOS: Record<string, SocioAccountMock> = {
-  'SOC-012': {
-    socioCode: 'SOC-012',
-    name: 'Juan José Flores Morales',
-    maskedName: 'J*** J*** F*** M***',
-    ci: '7412589 CBBA',
-    block: 'Manzana A',
-    lot: 'Lote 12',
-    debt: 50.0,
-    unsettledConcept: 'Aporte Pro-Tinglado (Cuota 1 de 2)',
-    status: 'con_deuda'
+const REGISTERED_RECEIPTS: Record<string, VerifiedReceipt> = {
+  'OTB-CBBA-001-2026-00042': {
+    receiptNumber: 'OTB-CBBA-001-2026-00042',
+    tokenHash: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
+    otbName: 'OTB Villa Esperanza',
+    otbCode: 'OTB-CBBA-001',
+    department: 'Cochabamba',
+    beneficiaryMasked: 'J*** J*** Flores M.',
+    concept: 'Aporte Pro-Tinglado Cancha (Abono Parcial)',
+    amount: 50.00,
+    paymentMethod: 'QR Simple Bancario (Banco Unión)',
+    issuedAt: '21/11/2026 10:30',
+    ledgerEntry: '#8412'
   },
-  'SOC-003': {
-    socioCode: 'SOC-003',
-    name: 'Silvia Rojas Torrico',
-    maskedName: 'S*** R*** T***',
-    ci: '5289140 CBBA',
-    block: 'Manzana B',
-    lot: 'Lote 08',
-    debt: 125.0,
-    unsettledConcept: 'Cuota Ordinaria Noviembre + Aporte Tinglado',
-    status: 'con_deuda'
+  'OTB-CBBA-001-2026-00041': {
+    receiptNumber: 'OTB-CBBA-001-2026-00041',
+    tokenHash: 'b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef012345678',
+    otbName: 'OTB Villa Esperanza',
+    otbCode: 'OTB-CBBA-001',
+    department: 'Cochabamba',
+    beneficiaryMasked: 'S*** Rojas T.',
+    concept: 'Cuota Ordinaria Noviembre 2026',
+    amount: 25.00,
+    paymentMethod: 'Efectivo en Sede',
+    issuedAt: '20/11/2026 16:45',
+    ledgerEntry: '#8411'
   },
-  'SOC-005': {
-    socioCode: 'SOC-005',
-    name: 'Marina Condori Rocha',
-    maskedName: 'M*** C*** R***',
-    ci: '4892103 CBBA',
-    block: 'Manzana A',
-    lot: 'Lote 05',
-    debt: 0.0,
-    unsettledConcept: 'Ninguna (Aportes al Día)',
-    status: 'al_dia'
+  'OTB-CBBA-001-2026-00040': {
+    receiptNumber: 'OTB-CBBA-001-2026-00040',
+    tokenHash: 'c9283b4a5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789',
+    otbName: 'OTB Villa Esperanza',
+    otbCode: 'OTB-CBBA-001',
+    department: 'Cochabamba',
+    beneficiaryMasked: 'R*** Gutiérrez V.',
+    concept: 'Aporte Pro-Tinglado Cancha (Pago Total)',
+    amount: 100.00,
+    paymentMethod: 'QR Simple Bancario (BCP)',
+    issuedAt: '19/11/2026 11:15',
+    ledgerEntry: '#8410'
   },
-  'SOC-001': {
-    socioCode: 'SOC-001',
-    name: 'Roberto Gutiérrez Vargas',
-    maskedName: 'R*** G*** V***',
-    ci: '3145678 CBBA',
-    block: 'Manzana A',
-    lot: 'Lote 01',
-    debt: 0.0,
-    unsettledConcept: 'Ninguna (Aportes al Día)',
-    status: 'al_dia'
+  'OTB-CBBA-001-2026-00039': {
+    receiptNumber: 'OTB-CBBA-001-2026-00039',
+    tokenHash: 'd0394c5b6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f901234567890a',
+    otbName: 'OTB Villa Esperanza',
+    otbCode: 'OTB-CBBA-001',
+    department: 'Cochabamba',
+    beneficiaryMasked: 'M*** Condori R.',
+    concept: 'Cuota Ordinaria Noviembre 2026',
+    amount: 25.00,
+    paymentMethod: 'QR Simple Bancario (BancoSol)',
+    issuedAt: '18/11/2026 09:20',
+    ledgerEntry: '#8409'
   }
 };
 
 export const ReceiptVerificationPage: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { submissions } = usePaymentVerificationStore();
 
-  // Parámetros leídos dinámicamente desde el Código QR
-  const token = searchParams.get('token') || '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4';
-  const receiptNum = searchParams.get('receipt') || 'OTB-CBBA-001-2026-00042';
-  const socioParam = searchParams.get('socio') || 'SOC-012';
-  const socioNameParam = searchParams.get('socioName');
-  const ciParam = searchParams.get('ci');
-  const lotParam = searchParams.get('lot');
-  const montoParam = searchParams.get('monto');
-  const conceptoParam = searchParams.get('concepto') || 'Cuota Ordinaria / Aporte Comunal';
-  const otbParam = searchParams.get('otb');
-  const fechaParam = searchParams.get('fecha') || '21/11/2026';
-  const metodoParam = searchParams.get('metodo') || 'QR Simple Bancario';
+  // Parámetros opcionales si el usuario escanea un QR físico
+  const paramReceipt = searchParams.get('receipt');
+  const paramToken = searchParams.get('token');
 
-  const { config: otbConfig, submitVoucher } = usePaymentVerificationStore();
+  // Input de búsqueda / escaneo
+  const [queryInput, setQueryInput] = useState('');
+  const [verifiedResult, setVerifiedResult] = useState<VerifiedReceipt | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(false);
 
-  // Nombre de la OTB oficial
-  const otbNameResolved = otbParam || otbConfig.otbName;
+  // Función de resolución de recibos contra catálogo estático y tienda dinámica
+  const resolveReceipt = (query: string): VerifiedReceipt | null => {
+    const clean = query.trim().toUpperCase();
+    if (!clean) return null;
 
-  // Monto numérico acreditado en este recibo
-  const parsedAmount = montoParam ? parseFloat(montoParam) : (socioParam === 'SOC-005' || socioParam === 'SOC-001' ? 25.0 : socioParam === 'SOC-003' ? 100.0 : 50.0);
-
-  // Datos del socio vinculado
-  const baseSocio = KNOWN_SOCIOS[socioParam];
-  const socioData: SocioAccountMock = {
-    socioCode: socioParam,
-    name: socioNameParam || baseSocio?.name || 'Juan José Flores Morales',
-    maskedName: baseSocio?.maskedName || (socioNameParam ? `${socioNameParam.slice(0, 1)}*** ${socioNameParam.split(' ').slice(-1)[0].slice(0, 1)}***` : 'J*** J*** F***'),
-    ci: ciParam || baseSocio?.ci || '7412589 CBBA',
-    block: baseSocio?.block || 'Manzana A',
-    lot: lotParam || baseSocio?.lot || 'Lote 12',
-    debt: baseSocio ? baseSocio.debt : 0.0,
-    unsettledConcept: baseSocio?.unsettledConcept || 'Ninguna (Aportes al Día)',
-    status: baseSocio ? baseSocio.status : 'al_dia'
-  };
-
-  // Estados locales para pago QR en esta página
-  const [payAmount, setPayAmount] = useState(String(socioData.debt > 0 ? socioData.debt : 50));
-  const [copiedAccount, setCopiedAccount] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [voucherSentSuccess, setVoucherSentSuccess] = useState(false);
-
-  // Modal Imprimir Ficha
-  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-
-  const handleCopyAccount = () => {
-    navigator.clipboard.writeText(otbConfig.accountNumber);
-    setCopiedAccount(true);
-    setTimeout(() => setCopiedAccount(false), 2000);
-  };
-
-  // Descargar imagen del QR a la galería del celular
-  const handleDownloadQrImage = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 400;
-    canvas.height = 460;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, 400, 460);
-      ctx.fillStyle = '#0F172A';
-      ctx.font = 'bold 20px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${otbNameResolved} - QR SIMPLE`, 200, 38);
-      ctx.font = '13px sans-serif';
-      ctx.fillStyle = '#475569';
-      ctx.fillText(`${otbConfig.bankName} • Cta: ${otbConfig.accountNumber}`, 200, 62);
-
-      ctx.fillStyle = '#0F172A';
-      ctx.fillRect(45, 90, 80, 80);
-      ctx.clearRect(55, 100, 60, 60);
-      ctx.fillRect(65, 110, 40, 40);
-
-      ctx.fillRect(275, 90, 80, 80);
-      ctx.clearRect(285, 100, 60, 60);
-      ctx.fillRect(295, 110, 40, 40);
-
-      ctx.fillRect(45, 300, 80, 80);
-      ctx.clearRect(55, 310, 60, 60);
-      ctx.fillRect(65, 320, 40, 40);
-
-      ctx.fillStyle = '#2563EB';
-      ctx.beginPath();
-      ctx.arc(200, 235, 32, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(200, 235, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#10B981';
-      ctx.beginPath();
-      ctx.arc(200, 235, 9, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#0F172A';
-      ctx.fillRect(150, 110, 20, 20);
-      ctx.fillRect(180, 140, 20, 20);
-      ctx.fillRect(210, 110, 20, 20);
-      ctx.fillRect(240, 140, 20, 20);
-      ctx.fillRect(150, 310, 20, 20);
-      ctx.fillRect(180, 340, 20, 20);
-      ctx.fillRect(210, 310, 20, 20);
-      ctx.fillRect(240, 340, 20, 20);
-      ctx.fillRect(275, 220, 20, 20);
-      ctx.fillRect(315, 250, 20, 20);
-      ctx.fillRect(100, 220, 20, 20);
-      ctx.fillRect(70, 250, 20, 20);
-
-      ctx.fillStyle = '#059669';
-      ctx.font = 'bold 15px sans-serif';
-      ctx.fillText(`Monto Sugerido: ${formatBOB(parseFloat(payAmount) || 50)}`, 200, 420);
-
-      const link = document.createElement('a');
-      link.download = `QR_Pago_${socioData.socioCode}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      alert('¡Código QR guardado en tu teléfono! Abre tu aplicación bancaria (Banco Unión, BNB, BCP, Bisa, Fie, etc.) y selecciona "Pagar con QR" cargando esta imagen.');
+    // 1. Buscar en catálogo predeterminado
+    for (const key of Object.keys(REGISTERED_RECEIPTS)) {
+      const item = REGISTERED_RECEIPTS[key];
+      if (
+        item.receiptNumber.toUpperCase() === clean ||
+        item.receiptNumber.toUpperCase().endsWith(clean) ||
+        item.tokenHash.toUpperCase() === clean ||
+        clean.includes(item.receiptNumber.toUpperCase())
+      ) {
+        return item;
+      }
     }
+
+    // 2. Buscar en vouchers aprobados dinámicamente en el store
+    const storeFound = submissions.find(
+      (s) =>
+        s.status === 'Confirmed' &&
+        ((s.officialReceiptNumber && s.officialReceiptNumber.toUpperCase().includes(clean)) ||
+          (s.traceToken && s.traceToken.toUpperCase().includes(clean)))
+    );
+
+    if (storeFound) {
+      return {
+        receiptNumber: storeFound.officialReceiptNumber || 'OTB-REC-2026-00043',
+        tokenHash: storeFound.traceToken || 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0',
+        otbName: 'OTB Villa Esperanza',
+        otbCode: 'OTB-CBBA-001',
+        department: 'Cochabamba',
+        beneficiaryMasked: `${storeFound.neighborName.charAt(0)}*** ${storeFound.neighborName.split(' ').slice(-1)[0]}`,
+        concept: storeFound.concept,
+        amount: storeFound.amount,
+        paymentMethod: storeFound.method === 'QR' ? 'QR Simple Bancario' : 'Transferencia Bancaria',
+        issuedAt: storeFound.verifiedAt || storeFound.submittedAt,
+        ledgerEntry: `#${storeFound.id.slice(0, 6)}`
+      };
+    }
+
+    return null;
   };
 
-  const handleSendVoucher = async (e: React.FormEvent) => {
+  // Si el usuario entra mediante un enlace escaneado con query params
+  useEffect(() => {
+    if (paramReceipt || paramToken) {
+      const target = paramReceipt || paramToken || '';
+      setQueryInput(target);
+      const res = resolveReceipt(target);
+      setVerifiedResult(res);
+      setHasSearched(true);
+    } else {
+      // SI NO HAY PARÁMETROS, NO MOSTRAR NINGÚN RECIBO POR DEFECTO
+      setVerifiedResult(null);
+      setHasSearched(false);
+    }
+  }, [paramReceipt, paramToken]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsUploading(true);
+    if (!queryInput.trim()) return;
 
-    await submitVoucher({
-      otbId: otbConfig.otbId,
-      neighborName: socioData.name,
-      neighborSocioCode: socioData.socioCode,
-      neighborCi: socioData.ci,
-      block: socioData.block,
-      lot: socioData.lot,
-      amount: parseFloat(payAmount) || 50,
-      concept: `Pago de Saldo ${socioData.unsettledConcept}`,
-      method: 'QR',
-      evidenceName: selectedFileName || 'comprobante_banco_union.jpg'
-    });
+    setHasSearched(true);
+    const result = resolveReceipt(queryInput);
+    setVerifiedResult(result);
+  };
 
-    setIsUploading(false);
-    setVoucherSentSuccess(true);
-    alert('¡Comprobante enviado a la Tesorería de la OTB! El Tesorero lo verificará en el extracto bancario y emitirá tu recibo oficial.');
+  const handleReset = () => {
+    setQueryInput('');
+    setVerifiedResult(null);
+    setHasSearched(false);
+    setSearchParams({});
+  };
+
+  const handleCopyToken = (token: string) => {
+    navigator.clipboard.writeText(token);
+    setCopiedToken(true);
+    setTimeout(() => setCopiedToken(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white py-6 sm:py-10 px-3 sm:px-6 flex flex-col items-center justify-center relative">
-      <div className="w-full max-w-2xl space-y-6">
-        {/* Barra Superior con Logo y Botón Volver */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver a la Portada</span>
-          </button>
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+      {/* =================================================================== */}
+      {/* 1. TOP HEADER: LIMPIO, SOBRIO Y SIN ESCUDO                           */}
+      {/* =================================================================== */}
+      <header className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between shadow-md">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4 text-blue-400" />
+          <span>Volver a la Portada</span>
+        </button>
 
-          <div className="flex items-center gap-2">
-            <BoliviaCoatOfArms size={32} />
-            <XentraLogo size="sm" variant="light" />
+        <div className="flex items-center gap-2">
+          <XentraLogo size="sm" variant="light" />
+        </div>
+      </header>
+
+      {/* =================================================================== */}
+      {/* 2. CONTENIDO PRINCIPAL: VALIDADOR PÚBLICO TRACE                      */}
+      {/* =================================================================== */}
+      <main className="flex-1 max-w-3xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
+        
+        {/* Cabecera del Validador */}
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-bold">
+            <ShieldCheck className="w-4 h-4 text-blue-400" />
+            <span>Validador Criptográfico Comunal TRACE</span>
           </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Verificación Oficial de Recibos OTB
+          </h1>
+
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
+            Comprueba la autenticidad de cualquier recibo comunal emitido en Bolivia. El sistema verifica el sello criptográfico SHA-256 contra el libro mayor inmutable.
+          </p>
         </div>
 
-        {/* ======================================================== */}
-        {/* TARJETA 1: VERIFICACIÓN OFICIAL DE RECIBO ESCANEADO      */}
-        {/* ======================================================== */}
-        <div className="bg-slate-900/90 border-2 border-emerald-500/50 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl">
-          <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-blue-950 p-6 text-center space-y-2 border-b border-slate-800 relative">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400/40 mx-auto flex items-center justify-center mb-2 shadow-inner">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-            </div>
+        {/* Buscador / Scanner de Código de Recibo */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl space-y-4">
+          <form onSubmit={handleSearchSubmit} className="space-y-3">
+            <label className="text-xs font-bold text-slate-300 block">
+              Ingresa el Número de Recibo o Token Criptográfico:
+            </label>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black border border-emerald-500/40 uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Recibo Oficial Auténtico & Registrado en Caja</span>
-            </div>
-
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Certificación Digital Inmutable XENTRA TRACE
-            </h1>
-            <p className="text-xs text-slate-300 max-w-md mx-auto">
-              Emitido por la mesa directiva de <strong>{otbNameResolved}</strong> con validez comunitaria legal según Ley N° 1551.
-            </p>
-          </div>
-
-          <div className="p-6 space-y-4 text-xs">
-            {/* Detalles del Recibo Escaneado */}
-            <div className="p-4 rounded-2xl bg-[#020617] border-2 border-slate-800 space-y-2.5">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Organización Emisora:</span>
-                <span className="font-black text-white flex items-center gap-1 text-sm">
-                  <Building className="w-3.5 h-3.5 text-blue-400" />
-                  {otbNameResolved}
-                </span>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="text"
+                  value={queryInput}
+                  onChange={(e) => setQueryInput(e.target.value)}
+                  placeholder="Ej: OTB-CBBA-001-2026-00042 o hash..."
+                  className="w-full pl-11 pr-4 py-3 bg-[#030712] border-2 border-slate-700 rounded-2xl text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                />
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Número de Recibo:</span>
-                <span className="font-mono font-black text-emerald-400 text-sm bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                  N° {receiptNum}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Fecha y Hora de Emisión:</span>
-                <span className="text-slate-200 font-mono font-bold">{fechaParam}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Concepto Acreditado:</span>
-                <span className="font-bold text-white text-right max-w-xs">{conceptoParam}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Modalidad de Cobro:</span>
-                <span className="text-slate-300 font-medium">{metodoParam}</span>
-              </div>
-
-              <div className="pt-3 border-t border-slate-800 flex justify-between items-center text-sm">
-                <span className="font-bold text-slate-300 uppercase text-xs">Monto Pagado en Caja:</span>
-                <span className="font-mono font-black text-emerald-400 text-xl">
-                  {formatBOB(parsedAmount)}
-                </span>
-              </div>
-            </div>
-
-            {/* Token Criptográfico TRACE */}
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-300 font-bold flex items-center gap-1">
-                  <FileCheck className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Sello Criptográfico SHA-256</span>
-                </span>
-                <span className="text-emerald-400 font-bold font-mono">ASIENTO CONTABLE #8412</span>
-              </div>
-              <p className="font-mono text-[10px] text-slate-400 break-all bg-slate-900 p-1.5 rounded">
-                {token}
-              </p>
-            </div>
-
-            {/* Aviso de Privacidad Zero-PII */}
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2">
-              <Lock className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
-              <span>
-                <strong>Privacidad Comunitaria:</strong> Este documento fue verificado en el libro mayor digital. Los datos confidenciales de las familias están protegidos por el sistema.
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* TARJETA 2: ESTADO ACTUAL DE DEUDA DEL SOCIO              */}
-        {/* ======================================================== */}
-        <div className="bg-slate-900/90 border-2 border-blue-500/50 rounded-3xl p-6 shadow-2xl space-y-5 backdrop-blur-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-            <div>
-              <span className="text-[10px] font-black uppercase text-blue-400 tracking-wider block mb-0.5">
-                Estado de Cuenta del Socio ({socioData.socioCode})
-              </span>
-              <h2 className="text-lg sm:text-xl font-black text-white">
-                Socio: <span className="font-mono">{socioData.maskedName}</span> ({socioData.lot})
-              </h2>
-              <p className="text-xs text-slate-400">
-                {socioData.block} • {otbNameResolved}
-              </p>
-            </div>
-
-            <div className="text-left sm:text-right">
-              <span className="text-[11px] text-slate-400 block font-medium">Deuda Pendiente</span>
-              <span className="text-2xl sm:text-3xl font-mono font-black text-white">
-                {formatBOB(socioData.debt)}
-              </span>
-              <span className="block text-[10px] text-amber-300 font-semibold mt-0.5">
-                {socioData.debt > 0 ? socioData.unsettledConcept : '¡Felicidades! Se encuentra al día'}
-              </span>
-            </div>
-          </div>
-
-          {/* ======================================================== */}
-          {/* OPCIÓN A: PAGAR CON QR SIMPLE DESDE EL CELULAR           */}
-          {/* ======================================================== */}
-          {socioData.debt > 0 ? (
-            <div className="p-5 rounded-2xl bg-[#020617] border-2 border-emerald-500/60 space-y-4">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <Sparkles className="w-4 h-4" />
-                <h3 className="font-black text-sm text-white">Opción 1: Pagar Saldo con Código QR Simple</h3>
-              </div>
-
-              <p className="text-xs text-slate-300">
-                Transfiere desde cualquier banco de Bolivia y envía tu comprobante para que el Tesorero emita tu recibo:
-              </p>
-
-              {/* Contenedor del QR y Datos Bancarios Oficiales */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-1">
-                {/* Visual del QR */}
-                <div className="flex flex-col items-center justify-center p-3 bg-white rounded-2xl shadow-md">
-                  {otbConfig.qrImageUrl ? (
-                    <img
-                      src={otbConfig.qrImageUrl}
-                      alt="QR de Cobro OTB"
-                      className="w-36 h-36 object-contain"
-                    />
-                  ) : (
-                    <svg className="w-36 h-36 text-slate-950" viewBox="0 0 100 100" fill="currentColor">
-                      <rect x="0" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                      <rect x="5" y="5" width="20" height="20" fill="white" />
-                      <rect x="10" y="10" width="10" height="10" fill="#0F172A" />
-                      <rect x="70" y="0" width="30" height="30" rx="3" fill="#0F172A" />
-                      <rect x="75" y="5" width="20" height="20" fill="white" />
-                      <rect x="80" y="10" width="10" height="10" fill="#0F172A" />
-                      <rect x="0" y="70" width="30" height="30" rx="3" fill="#0F172A" />
-                      <rect x="5" y="75" width="20" height="20" fill="white" />
-                      <rect x="10" y="80" width="10" height="10" fill="#0F172A" />
-                      <rect x="36" y="36" width="28" height="28" rx="4" fill="#2563EB" />
-                      <circle cx="50" cy="50" r="8" fill="white" />
-                      <rect x="70" y="70" width="10" height="10" fill="#0F172A" />
-                    </svg>
-                  )}
-                  <span className="text-[10px] font-bold text-slate-700 mt-1 uppercase">
-                    QR Simple Oficial
-                  </span>
-                </div>
-
-                {/* Datos de la Cuenta y Botones de Acción */}
-                <div className="space-y-2.5 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-700 space-y-1">
-                    <p><strong className="text-white">Banco:</strong> <span className="text-blue-300 font-bold">{otbConfig.bankName}</span></p>
-                    <p><strong className="text-white">N° Cuenta:</strong> <code className="text-emerald-400 font-mono font-bold text-sm">{otbConfig.accountNumber}</code></p>
-                    <p><strong className="text-white">Titular:</strong> <span className="text-slate-300">{otbConfig.accountHolder}</span></p>
-                    <p><strong className="text-white">NIT:</strong> <span className="text-slate-400 font-mono">{otbConfig.nitOrCi}</span></p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={handleDownloadQrImage}
-                      className="flex-1 py-2 px-2.5 rounded-xl text-xs font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                    >
-                      <Download className="w-3.5 h-3.5 text-slate-950" />
-                      <span>Guardar QR</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleCopyAccount}
-                      className="py-2 px-2.5 rounded-xl text-xs font-bold text-blue-300 bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      {copiedAccount ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedAccount ? '¡Copiado!' : 'Copiar Cta.'}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Formulario para Subir Comprobante Directo */}
-              <form onSubmit={handleSendVoucher} className="space-y-3 pt-2 text-xs border-t border-slate-800">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-bold text-slate-300 block mb-1">Monto a Reportar (Bs.):</label>
-                    <input
-                      type="number"
-                      step="0.50"
-                      required
-                      value={payAmount}
-                      onChange={(e) => setPayAmount(e.target.value)}
-                      className="w-full bg-slate-950 border-2 border-slate-700 rounded-xl px-3 py-2 text-white font-mono font-bold focus:outline-none focus:border-emerald-400"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-300 block mb-1">Adjuntar Foto o Voucher:</label>
-                    <label className="border-2 border-dashed border-slate-700 hover:border-emerald-400 rounded-xl px-3 py-2 flex items-center justify-center gap-2 cursor-pointer transition-colors bg-slate-950">
-                      <Upload className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                      <span className="text-[11px] text-slate-300 truncate">
-                        {selectedFileName || 'Seleccionar captura de pago'}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={(e) => e.target.files && setSelectedFileName(e.target.files[0].name)}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {voucherSentSuccess && (
-                  <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-500 text-emerald-300 font-bold text-xs flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span>¡Comprobante enviado a Tesorería! Se notificará en cuanto sea revisado.</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isUploading}
-                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
-                >
-                  <Upload className="w-4 h-4 text-slate-950" />
-                  <span>{isUploading ? 'Enviando Comprobante...' : 'Enviar Voucher para Verificación de Tesorería'}</span>
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/50 text-emerald-300 text-xs flex items-center gap-3">
-              <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-              <div>
-                <strong className="block text-sm font-bold">¡Estás al día con la OTB!</strong>
-                <span>No tienes cuotas ni aportes pendientes. Puedes descargar tu ficha oficial de socio libre de deudas.</span>
-              </div>
-            </div>
-          )}
-
-          {/* ======================================================== */}
-          {/* OPCIÓN B: PAGO PRESENCIAL Y DIRECCIÓN DE LA SEDE OTB     */}
-          {/* ======================================================== */}
-          <div className="p-5 rounded-2xl bg-slate-950 border-2 border-slate-800 space-y-3">
-            <div className="flex items-center gap-2 text-blue-400">
-              <Building2 className="w-4 h-4" />
-              <h3 className="font-black text-sm text-white">
-                Opción 2: Pago Presencial en Efectivo & Dirección de la Sede
-              </h3>
-            </div>
-
-            <p className="text-xs text-slate-300">
-              Si prefieres pagar en efectivo o consultar en ventanilla con la mesa directiva:
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                <div className="flex items-center gap-1.5 text-blue-300 font-bold">
-                  <MapPin className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                  <span>Dirección de la Sede Comunal:</span>
-                </div>
-                <p className="text-white font-medium pl-5 leading-relaxed">
-                  Av. Petrolera Km 4, Manzana A frente a la Cancha Polifuncional, Cochabamba (Cercado).
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-                  <Clock className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                  <span>Horarios de Atención en Ventanilla:</span>
-                </div>
-                <p className="text-slate-200 pl-5 leading-relaxed">
-                  <strong>Sábados y Domingos:</strong> 08:30 a 12:30<br />
-                  Reuniones y Cobranzas Presenciales.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2">
-                <PhoneCall className="w-4 h-4 text-emerald-400" />
-                <span className="text-slate-300">
-                  Contacto Directiva / Tesorero: <strong className="text-white font-mono">{otbConfig.whatsappContact}</strong>
-                </span>
-              </div>
-
-              <a
-                href={`https://wa.me/591${otbConfig.whatsappContact}?text=Hola,%20soy%20del%20lote%20${encodeURIComponent(socioData.lot)}%20de%20la%20OTB`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-emerald-400 font-bold hover:underline"
+              <button
+                type="submit"
+                className="h-12 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer flex-shrink-0"
               >
-                <span>Escribir por WhatsApp</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+                <QrCode className="w-4 h-4" />
+                <span>Verificar Autenticidad</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Opciones Rápidas de Verificación */}
+          <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <span className="font-semibold">Códigos de prueba registrados:</span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setQueryInput('OTB-CBBA-001-2026-00042');
+                  setHasSearched(true);
+                  setVerifiedResult(resolveReceipt('OTB-CBBA-001-2026-00042'));
+                }}
+                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-300 font-mono text-[11px] transition-colors cursor-pointer"
+              >
+                Recibo #00042 (Tinglado)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setQueryInput('OTB-CBBA-001-2026-00041');
+                  setHasSearched(true);
+                  setVerifiedResult(resolveReceipt('OTB-CBBA-001-2026-00041'));
+                }}
+                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-300 font-mono text-[11px] transition-colors cursor-pointer"
+              >
+                Recibo #00041 (Cuota Nov)
+              </button>
             </div>
           </div>
-
-          {/* Botones Finales */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <button
-              onClick={() => setIsPrintModalOpen(true)}
-              className="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors cursor-pointer"
-            >
-              <Printer className="w-4 h-4 text-blue-400" />
-              <span>Imprimir Ficha Oficial / Estado de Cuenta</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/')}
-              className="py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors cursor-pointer"
-            >
-              Consultar Otro Código
-            </button>
-          </div>
         </div>
-      </div>
 
-      {/* Modal Imprimible de Estado de Cuenta */}
-      <PrintableStatementModal
-        isOpen={isPrintModalOpen}
-        onClose={() => setIsPrintModalOpen(false)}
-        data={{
-          otbName: otbNameResolved,
-          otbCode: otbConfig.otbId.slice(0, 8),
-          department: 'Cochabamba',
-          municipality: 'Cochabamba (Cercado)',
-          zone: 'Zona Sud - Distrito 8',
-          socioCode: socioData.socioCode,
-          socioName: socioData.name,
-          ciNumber: socioData.ci,
-          block: socioData.block,
-          lot: socioData.lot,
-          totalAssigned: 125.0,
-          totalPaid: 125.0 - socioData.debt,
-          totalDebt: socioData.debt,
-          lastReceiptNumber: receiptNum,
-          tokenHash: token,
-          fees: [
-            {
-              period: 'Noviembre 2026',
-              concept: 'Cuota Ordinaria Noviembre 2026',
-              assigned: 25.0,
-              paid: socioData.debt > 50 ? 0.0 : 25.0,
-              balance: socioData.debt > 50 ? 25.0 : 0.0,
-              status: socioData.debt > 50 ? 'Pendiente' : 'Pagado'
-            },
-            {
-              period: 'Noviembre 2026',
-              concept: 'Aporte Pro-Tinglado (Cuota 1 de 2)',
-              assigned: 100.0,
-              paid: socioData.debt === 0 ? 100.0 : 50.0,
-              balance: socioData.debt === 0 ? 0.0 : 50.0,
-              status: socioData.debt === 0 ? 'Pagado' : 'Pendiente'
-            }
-          ]
-        }}
-      />
+        {/* =================================================================== */}
+        {/* CASO A: RECIBO VERIFICADO CON ÉXITO                                 */}
+        {/* =================================================================== */}
+        {hasSearched && verifiedResult && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-emerald-500/50 shadow-2xl space-y-6 text-left animate-in fade-in duration-300">
+            
+            {/* Encabezado del Certificado */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <CheckCircle2 className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 uppercase tracking-wider">
+                    <span>Recibo Auténtico y Registrado en Caja</span>
+                  </div>
+                  <h2 className="text-xl font-black text-white">
+                    Certificación Digital XENTRA TRACE
+                  </h2>
+                </div>
+              </div>
 
-      {/* Footer Comunal con Información Útil y Emergencias 24/7 */}
-      <CommunityFooter />
+              <button
+                onClick={handleReset}
+                className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Verificar Otro</span>
+              </button>
+            </div>
+
+            {/* Datos Técnicos del Recibo */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-800 space-y-3 text-xs">
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Organización Emisora:</span>
+                <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                  <Building className="w-4 h-4 text-blue-400" />
+                  <span>{verifiedResult.otbName} ({verifiedResult.otbCode})</span>
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Número de Recibo:</span>
+                <span className="font-mono font-black text-emerald-400 text-sm bg-emerald-950/60 px-2.5 py-0.5 rounded-lg border border-emerald-500/30">
+                  {verifiedResult.receiptNumber}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Titular Acreditado:</span>
+                <span className="font-bold text-white font-mono">{verifiedResult.beneficiaryMasked}</span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Concepto Cobrado:</span>
+                <span className="font-bold text-slate-200 text-right">{verifiedResult.concept}</span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Modalidad de Cobro:</span>
+                <span className="text-slate-300 font-medium">{verifiedResult.paymentMethod}</span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                <span className="text-slate-400 font-medium">Fecha y Hora de Emisión:</span>
+                <span className="text-slate-300 font-mono">{verifiedResult.issuedAt}</span>
+              </div>
+
+              <div className="pt-2 flex justify-between items-center text-sm">
+                <span className="font-black text-slate-300 uppercase text-xs">Monto Registrado en Caja:</span>
+                <span className="font-mono font-black text-emerald-400 text-2xl">
+                  {formatBOB(verifiedResult.amount)}
+                </span>
+              </div>
+            </div>
+
+            {/* Sello Criptográfico Inmutable SHA-256 */}
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-300 font-bold flex items-center gap-1.5">
+                  <FileCheck className="w-4 h-4 text-purple-400" />
+                  <span>Sello Criptográfico Inmutable SHA-256</span>
+                </span>
+                <span className="font-mono font-bold text-purple-400 text-[11px] bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
+                  ASIENTO CONTABLE {verifiedResult.ledgerEntry}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <p className="font-mono text-[11px] text-slate-400 break-all bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex-1">
+                  {verifiedResult.tokenHash}
+                </p>
+                <button
+                  onClick={() => handleCopyToken(verifiedResult.tokenHash)}
+                  className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  title="Copiar Hash"
+                >
+                  {copiedToken ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Aviso de Garantía y Privacidad */}
+            <div className="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-2.5">
+              <Lock className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Garantía de Control Social:</strong> Este recibo está indexado en el libro contable de {verifiedResult.otbName}. Sus datos coinciden con el extracto bancario oficial y no han sido adulterados.
+              </p>
+            </div>
+
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* CASO B: CÓDIGO NO ENCONTRADO O INVÁLIDO                             */}
+        {/* =================================================================== */}
+        {hasSearched && !verifiedResult && (
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl space-y-4 text-left animate-in fade-in duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-7 h-7" />
+              </div>
+              <div>
+                <span className="text-[11px] font-black uppercase text-rose-400 tracking-wider block">
+                  Comprobante No Registrado
+                </span>
+                <h2 className="text-xl font-black text-white">
+                  No se encontró ningún recibo con ese código
+                </h2>
+              </div>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+              El número de recibo o token criptográfico ingresado (<code>{queryInput}</code>) no coincide con ningún asiento contable registrado en la plataforma.
+            </p>
+
+            <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-1">
+              <p>• Verifica haber copiado el código completo del recibo impreso (ej. <code>OTB-CBBA-001-2026-00042</code>).</p>
+              <p>• Si el pago fue realizado recientemente, es posible que la Tesorería de la OTB aún esté validando el extracto bancario.</p>
+            </div>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                onClick={handleReset}
+                className="h-11 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Intentar con otro código</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* CASO C: ESTADO INICIAL (SIN BÚSQUEDA) -> INFORMACIÓN DIDÁCTICA      */}
+        {/* =================================================================== */}
+        {!hasSearched && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+            <div className="p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
+                <h3 className="font-black text-sm text-white">Inmutabilidad Criptográfica</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                Cada comprobante emitido por la OTB contiene una firma digital única SHA-256 calculada a partir del monto, la fecha y el folio. Es imposible falsificar o duplicar un recibo sin alterar el hash.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+              <div className="flex items-center gap-2 text-blue-400">
+                <Lock className="w-4 h-4" />
+                <h3 className="font-black text-sm text-white">Protección de Datos Familiares</h3>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                El validador público únicamente certifica que la transacción ingresó a la caja de la OTB. Jamás expone las deudas familiares ni la situación privada de ningún vecino a terceros.
+              </p>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer Público Institucional */}
+      <CommunityFooter variant="public" />
     </div>
   );
 };

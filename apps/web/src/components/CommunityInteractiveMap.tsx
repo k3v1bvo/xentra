@@ -339,14 +339,14 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     });
     mapInstanceRef.current = map;
 
-    // Capa base CartoDB Voyager con calles, avenidas y manzanas de alta resolución sin bloqueos
-    const primaryTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Capa base Esri World Street Map (100% limpia, sin marcas de agua ni API key)
+    const primaryTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
-      subdomains: 'abcd',
-      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+      attribution: 'Tiles &copy; Esri'
     });
 
     primaryTileLayer.on('tileerror', () => {
+      // Fallback a OpenStreetMap Oficial con balanceador de carga
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         subdomains: ['a', 'b', 'c'],

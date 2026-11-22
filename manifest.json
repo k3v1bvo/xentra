@@ -1,0 +1,17 @@
+{
+  "name": "XENTRA OTB - Plataforma Financiera Comunitaria",
+  "short_name": "XENTRA OTB",
+  "description": "Tu comunidad, en orden. Tu gestión, transparente. Plataforma financiera comunitaria multi-OTB para Bolivia.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/xentra-logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

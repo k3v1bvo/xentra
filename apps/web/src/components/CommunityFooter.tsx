@@ -22,7 +22,6 @@ import {
   Cpu,
   CheckCircle2
 } from 'lucide-react';
-import { BoliviaCoatOfArms } from './BoliviaCoatOfArms';
 import { useTenantStore } from '../stores/tenantStore';
 
 interface CommunityFooterProps {
@@ -58,7 +57,9 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
           
           {/* Identidad Institucional Nacional */}
           <div className="flex items-center gap-3">
-            <BoliviaCoatOfArms size={32} />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black shadow-md flex-shrink-0">
+              <ShieldCheck className="w-5 h-5 text-white" />
+            </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-black text-white uppercase tracking-wider text-sm">

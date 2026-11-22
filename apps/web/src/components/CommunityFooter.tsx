@@ -47,7 +47,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
   const isPublic = variant === 'public';
 
   return (
-    <footer id="marco-legal" className="relative z-10 border-t-2 border-slate-800 bg-[#020617] text-slate-300">
+    <footer id="marco-legal" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 border-t-2 border-slate-800 bg-[#020617] text-slate-300">
       
       {/* =================================================================== */}
       {/* 1. BANDA SUPERIOR DE INGENIERÍA, SEGURIDAD & LICENCIAS              */}

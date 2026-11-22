@@ -38,6 +38,7 @@ import {
   OtbPaymentConfig
 } from '../stores/paymentVerificationStore';
 import { OfficialMonthlyReceiptsPrintModal } from '../components/OfficialMonthlyReceiptsPrintModal';
+import { TiltCard3D } from '../components/TiltCard3D';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { getNeighborsByOtb } from '../data/censusNeighbors';
@@ -1081,94 +1082,95 @@ export const FinanzasPage: React.FC = () => {
               const percentCollected = Math.round((fee.paidLots / fee.assignedLots) * 100);
 
               return (
-                <div
-                  key={fee.id}
-                  className={`p-6 rounded-3xl bg-[#0B132B]/90 border-2 transition-all space-y-4 shadow-xl ${
-                    fee.status === 'Activa'
-                      ? 'border-slate-700/80 hover:border-blue-500/50'
-                      : 'border-slate-800 opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
-                        isOrdinaria
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                          : isSpecial
-                          ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                          : isAgua
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                      }`}
-                    >
-                      {fee.type}
-                    </span>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleToggleFeeStatus(fee.id)}
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-black border cursor-pointer transition-colors ${
-                          fee.status === 'Activa'
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                            : 'bg-slate-700/40 text-slate-400 border-slate-600'
+                <TiltCard3D key={fee.id} intensity={4}>
+                  <div
+                    className={`h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 transition-all space-y-4 shadow-xl ${
+                      fee.status === 'Activa'
+                        ? 'border-slate-700/80 hover:border-blue-500/50'
+                        : 'border-slate-800 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+                          isOrdinaria
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                            : isSpecial
+                            ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                            : isAgua
+                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                         }`}
-                        title="Hacer clic para activar o pausar cobranza de esta cuota"
                       >
-                        {fee.status === 'Activa' ? '✓ Cobranza Activa' : 'Pausada'}
-                      </button>
-                      <span className="text-xs text-slate-400 font-mono">Vence: {fee.dueDate}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-extrabold text-white text-base">{fee.title}</h3>
-                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                      {fee.description}
-                    </p>
-                  </div>
-
-                  {/* Progreso de Recaudación */}
-                  <div className="space-y-1.5 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs">
-                    <div className="flex justify-between text-slate-300 text-[11px]">
-                      <span>Viviendas al día: <strong className="text-white">{fee.paidLots} de {fee.assignedLots} lotes</strong></span>
-                      <strong className="text-emerald-400 font-bold">{percentCollected}% recaudado</strong>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full"
-                        style={{ width: `${percentCollected}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-slate-400 font-medium block">Monto por vivienda:</span>
-                      <span className="text-xl font-black font-mono text-white">
-                        {formatBOB(fee.amount)}
+                        {fee.type}
                       </span>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleToggleFeeStatus(fee.id)}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-black border cursor-pointer transition-colors ${
+                            fee.status === 'Activa'
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                              : 'bg-slate-700/40 text-slate-400 border-slate-600'
+                          }`}
+                          title="Hacer clic para activar o pausar cobranza de esta cuota"
+                        >
+                          {fee.status === 'Activa' ? '✓ Cobranza Activa' : 'Pausada'}
+                        </button>
+                        <span className="text-xs text-slate-400 font-mono">Vence: {fee.dueDate}</span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={() => handleStartEditFee(fee)}
-                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
-                        title="Modificar monto, fecha o glosa"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>Editar</span>
-                      </button>
+                    <div>
+                      <h3 className="font-extrabold text-white text-base">{fee.title}</h3>
+                      <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                        {fee.description}
+                      </p>
+                    </div>
 
-                      <button
-                        onClick={() => setDeletingFee(fee)}
-                        className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer"
-                        title="Eliminar cuota creada por error"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                    {/* Progreso de Recaudación */}
+                    <div className="space-y-1.5 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs">
+                      <div className="flex justify-between text-slate-300 text-[11px]">
+                        <span>Viviendas al día: <strong className="text-white">{fee.paidLots} de {fee.assignedLots} lotes</strong></span>
+                        <strong className="text-emerald-400 font-bold">{percentCollected}% recaudado</strong>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full"
+                          style={{ width: `${percentCollected}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs text-slate-400 font-medium block">Monto por vivienda:</span>
+                        <span className="text-xl font-black font-mono text-white">
+                          {formatBOB(fee.amount)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleStartEditFee(fee)}
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500 hover:text-slate-950 border border-amber-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Modificar monto, fecha o glosa"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Editar</span>
+                        </button>
+
+                        <button
+                          onClick={() => setDeletingFee(fee)}
+                          className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500 hover:text-white border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Eliminar cuota creada por error"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </TiltCard3D>
               );
             })}
           </div>

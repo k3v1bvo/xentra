@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { XentraLogo } from '../components/XentraLogo';
+import { TiltCard3D } from '../components/TiltCard3D';
 import { usePaymentVerificationStore } from '../stores/paymentVerificationStore';
 import { CommunityFooter } from '../components/CommunityFooter';
 
@@ -229,215 +230,203 @@ export const ReceiptVerificationPage: React.FC = () => {
         </div>
 
         {/* Buscador / Scanner de Código de Recibo */}
-        <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl space-y-4">
-          <form onSubmit={handleSearchSubmit} className="space-y-3">
-            <label className="text-xs font-bold text-slate-300 block">
-              Ingresa el Número de Recibo o Token Criptográfico:
-            </label>
+        <TiltCard3D intensity={4}>
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl space-y-4">
+            <form onSubmit={handleSearchSubmit} className="space-y-3">
+              <label className="text-xs font-bold text-slate-300 block">
+                Ingresa el Número de Recibo o Token Criptográfico:
+              </label>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-                <input
-                  type="text"
-                  value={queryInput}
-                  onChange={(e) => setQueryInput(e.target.value)}
-                  placeholder="Ej: OTB-CBBA-001-2026-00042 o hash..."
-                  className="w-full pl-11 pr-4 py-3 bg-[#030712] border-2 border-slate-700 rounded-2xl text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    value={queryInput}
+                    onChange={(e) => setQueryInput(e.target.value)}
+                    placeholder="Ej: OTB-CBBA-001-2026-00042 o hash..."
+                    className="w-full pl-11 pr-4 py-3 bg-[#030712] border-2 border-slate-700 rounded-2xl text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="h-12 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer flex-shrink-0"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Verificar Autenticidad</span>
+                </button>
               </div>
+            </form>
 
-              <button
-                type="submit"
-                className="h-12 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer flex-shrink-0"
-              >
-                <QrCode className="w-4 h-4" />
-                <span>Verificar Autenticidad</span>
-              </button>
-            </div>
-          </form>
-
-          {/* Opciones Rápidas de Verificación */}
-          <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-            <span className="font-semibold">Códigos de prueba registrados:</span>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setQueryInput('OTB-CBBA-001-2026-00042');
-                  setHasSearched(true);
-                  setVerifiedResult(resolveReceipt('OTB-CBBA-001-2026-00042'));
-                }}
-                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-300 font-mono text-[11px] transition-colors cursor-pointer"
-              >
-                Recibo #00042 (Tinglado)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setQueryInput('OTB-CBBA-001-2026-00041');
-                  setHasSearched(true);
-                  setVerifiedResult(resolveReceipt('OTB-CBBA-001-2026-00041'));
-                }}
-                className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-300 font-mono text-[11px] transition-colors cursor-pointer"
-              >
-                Recibo #00041 (Cuota Nov)
-              </button>
+            {/* Información Técnica de Consulta */}
+            <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400">
+              <span className="font-medium text-slate-400 flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-blue-400" />
+                <span>Formatos admitidos: Código de recibo impreso (ej. <code className="text-slate-300">OTB-CBBA-001-2026-XXXXX</code>) o hash SHA-256 de 64 caracteres.</span>
+              </span>
+              <span className="text-[11px] text-slate-500 font-mono">
+                Aislamiento y Privacidad de Datos Activo
+              </span>
             </div>
           </div>
-        </div>
+        </TiltCard3D>
 
         {/* =================================================================== */}
         {/* CASO A: RECIBO VERIFICADO CON ÉXITO                                 */}
         {/* =================================================================== */}
         {hasSearched && verifiedResult && (
-          <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-emerald-500/50 shadow-2xl space-y-6 text-left animate-in fade-in duration-300">
-            
-            {/* Encabezado del Certificado */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <CheckCircle2 className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 uppercase tracking-wider">
-                    <span>Recibo Auténtico y Registrado en Caja</span>
+          <TiltCard3D intensity={5}>
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-emerald-500/50 shadow-2xl space-y-6 text-left animate-in fade-in duration-300">
+              
+              {/* Encabezado del Certificado */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <CheckCircle2 className="w-7 h-7" />
                   </div>
-                  <h2 className="text-xl font-black text-white">
-                    Certificación Digital XENTRA TRACE
-                  </h2>
+                  <div>
+                    <div className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 uppercase tracking-wider">
+                      <span>Recibo Auténtico y Registrado en Caja</span>
+                    </div>
+                    <h2 className="text-xl font-black text-white">
+                      Certificación Digital XENTRA TRACE
+                    </h2>
+                  </div>
                 </div>
-              </div>
 
-              <button
-                onClick={handleReset}
-                className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Verificar Otro</span>
-              </button>
-            </div>
-
-            {/* Datos Técnicos del Recibo */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-800 space-y-3 text-xs">
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Organización Emisora:</span>
-                <span className="font-bold text-white text-sm flex items-center gap-1.5">
-                  <Building className="w-4 h-4 text-blue-400" />
-                  <span>{verifiedResult.otbName} ({verifiedResult.otbCode})</span>
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Número de Recibo:</span>
-                <span className="font-mono font-black text-emerald-400 text-sm bg-emerald-950/60 px-2.5 py-0.5 rounded-lg border border-emerald-500/30">
-                  {verifiedResult.receiptNumber}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Titular Acreditado:</span>
-                <span className="font-bold text-white font-mono">{verifiedResult.beneficiaryMasked}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Concepto Cobrado:</span>
-                <span className="font-bold text-slate-200 text-right">{verifiedResult.concept}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Modalidad de Cobro:</span>
-                <span className="text-slate-300 font-medium">{verifiedResult.paymentMethod}</span>
-              </div>
-
-              <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                <span className="text-slate-400 font-medium">Fecha y Hora de Emisión:</span>
-                <span className="text-slate-300 font-mono">{verifiedResult.issuedAt}</span>
-              </div>
-
-              <div className="pt-2 flex justify-between items-center text-sm">
-                <span className="font-black text-slate-300 uppercase text-xs">Monto Registrado en Caja:</span>
-                <span className="font-mono font-black text-emerald-400 text-2xl">
-                  {formatBOB(verifiedResult.amount)}
-                </span>
-              </div>
-            </div>
-
-            {/* Sello Criptográfico Inmutable SHA-256 */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-bold flex items-center gap-1.5">
-                  <FileCheck className="w-4 h-4 text-purple-400" />
-                  <span>Sello Criptográfico Inmutable SHA-256</span>
-                </span>
-                <span className="font-mono font-bold text-purple-400 text-[11px] bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
-                  ASIENTO CONTABLE {verifiedResult.ledgerEntry}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <p className="font-mono text-[11px] text-slate-400 break-all bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex-1">
-                  {verifiedResult.tokenHash}
-                </p>
                 <button
-                  onClick={() => handleCopyToken(verifiedResult.tokenHash)}
-                  className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                  title="Copiar Hash"
+                  onClick={handleReset}
+                  className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 transition-colors cursor-pointer"
                 >
-                  {copiedToken ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Verificar Otro</span>
                 </button>
               </div>
-            </div>
 
-            {/* Aviso de Garantía y Privacidad */}
-            <div className="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-2.5">
-              <Lock className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-              <p className="leading-relaxed">
-                <strong>Garantía de Control Social:</strong> Este recibo está indexado en el libro contable de {verifiedResult.otbName}. Sus datos coinciden con el extracto bancario oficial y no han sido adulterados.
-              </p>
-            </div>
+              {/* Datos Técnicos del Recibo */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-800 space-y-3 text-xs">
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Organización Emisora:</span>
+                  <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                    <Building className="w-4 h-4 text-blue-400" />
+                    <span>{verifiedResult.otbName} ({verifiedResult.otbCode})</span>
+                  </span>
+                </div>
 
-          </div>
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Número de Recibo:</span>
+                  <span className="font-mono font-black text-emerald-400 text-sm bg-emerald-950/60 px-2.5 py-0.5 rounded-lg border border-emerald-500/30">
+                    {verifiedResult.receiptNumber}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Titular Acreditado:</span>
+                  <span className="font-bold text-white font-mono">{verifiedResult.beneficiaryMasked}</span>
+                </div>
+
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Concepto Cobrado:</span>
+                  <span className="font-bold text-slate-200 text-right">{verifiedResult.concept}</span>
+                </div>
+
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Modalidad de Cobro:</span>
+                  <span className="text-slate-300 font-medium">{verifiedResult.paymentMethod}</span>
+                </div>
+
+                <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                  <span className="text-slate-400 font-medium">Fecha y Hora de Emisión:</span>
+                  <span className="text-slate-300 font-mono">{verifiedResult.issuedAt}</span>
+                </div>
+
+                <div className="pt-2 flex justify-between items-center text-sm">
+                  <span className="font-black text-slate-300 uppercase text-xs">Monto Registrado en Caja:</span>
+                  <span className="font-mono font-black text-emerald-400 text-2xl">
+                    {formatBOB(verifiedResult.amount)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Sello Criptográfico Inmutable SHA-256 */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-300 font-bold flex items-center gap-1.5">
+                    <FileCheck className="w-4 h-4 text-purple-400" />
+                    <span>Sello Criptográfico Inmutable SHA-256</span>
+                  </span>
+                  <span className="font-mono font-bold text-purple-400 text-[11px] bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
+                    ASIENTO CONTABLE {verifiedResult.ledgerEntry}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-[11px] text-slate-400 break-all bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex-1">
+                    {verifiedResult.tokenHash}
+                  </p>
+                  <button
+                    onClick={() => handleCopyToken(verifiedResult.tokenHash)}
+                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    title="Copiar Hash"
+                  >
+                    {copiedToken ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Aviso de Garantía y Privacidad */}
+              <div className="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-2.5">
+                <Lock className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  <strong>Garantía de Control Social:</strong> Este recibo está indexado en el libro contable de {verifiedResult.otbName}. Sus datos coinciden con el extracto bancario oficial y no han sido adulterados.
+                </p>
+              </div>
+
+            </div>
+          </TiltCard3D>
         )}
 
         {/* =================================================================== */}
         {/* CASO B: CÓDIGO NO ENCONTRADO O INVÁLIDO                             */}
         {/* =================================================================== */}
         {hasSearched && !verifiedResult && (
-          <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl space-y-4 text-left animate-in fade-in duration-300">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-7 h-7" />
+          <TiltCard3D intensity={4}>
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-rose-500/50 shadow-2xl space-y-4 text-left animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-7 h-7" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-black uppercase text-rose-400 tracking-wider block">
+                    Comprobante No Registrado
+                  </span>
+                  <h2 className="text-xl font-black text-white">
+                    No se encontró ningún recibo con ese código
+                  </h2>
+                </div>
               </div>
-              <div>
-                <span className="text-[11px] font-black uppercase text-rose-400 tracking-wider block">
-                  Comprobante No Registrado
-                </span>
-                <h2 className="text-xl font-black text-white">
-                  No se encontró ningún recibo con ese código
-                </h2>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                El número de recibo o token criptográfico ingresado (<code>{queryInput}</code>) no coincide con ningún asiento contable registrado en la plataforma.
+              </p>
+
+              <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-1">
+                <p>• Verifica haber copiado el código completo del recibo impreso (ej. <code>OTB-CBBA-001-2026-00042</code>).</p>
+                <p>• Si el pago fue realizado recientemente, es posible que la Tesorería de la OTB aún esté validando el extracto bancario.</p>
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  onClick={handleReset}
+                  className="h-11 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>Intentar con otro código</span>
+                </button>
               </div>
             </div>
-
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              El número de recibo o token criptográfico ingresado (<code>{queryInput}</code>) no coincide con ningún asiento contable registrado en la plataforma.
-            </p>
-
-            <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-1">
-              <p>• Verifica haber copiado el código completo del recibo impreso (ej. <code>OTB-CBBA-001-2026-00042</code>).</p>
-              <p>• Si el pago fue realizado recientemente, es posible que la Tesorería de la OTB aún esté validando el extracto bancario.</p>
-            </div>
-
-            <div className="pt-2 flex gap-3">
-              <button
-                onClick={handleReset}
-                className="h-11 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Intentar con otro código</span>
-              </button>
-            </div>
-          </div>
+          </TiltCard3D>
         )}
 
         {/* =================================================================== */}
@@ -445,25 +434,29 @@ export const ReceiptVerificationPage: React.FC = () => {
         {/* =================================================================== */}
         {!hasSearched && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-            <div className="p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <CheckCircle2 className="w-4 h-4" />
-                <h3 className="font-black text-sm text-white">Inmutabilidad Criptográfica</h3>
+            <TiltCard3D intensity={5}>
+              <div className="h-full p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <h3 className="font-black text-sm text-white">Inmutabilidad Criptográfica</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                  Cada comprobante emitido por la OTB contiene una firma digital única SHA-256 calculada a partir del monto, la fecha y el folio. Es imposible falsificar o duplicar un recibo sin alterar el hash.
+                </p>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                Cada comprobante emitido por la OTB contiene una firma digital única SHA-256 calculada a partir del monto, la fecha y el folio. Es imposible falsificar o duplicar un recibo sin alterar el hash.
-              </p>
-            </div>
+            </TiltCard3D>
 
-            <div className="p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
-              <div className="flex items-center gap-2 text-blue-400">
-                <Lock className="w-4 h-4" />
-                <h3 className="font-black text-sm text-white">Protección de Datos Familiares</h3>
+            <TiltCard3D intensity={5}>
+              <div className="h-full p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2 text-blue-400">
+                  <Lock className="w-4 h-4" />
+                  <h3 className="font-black text-sm text-white">Protección de Datos Familiares</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                  El validador público únicamente certifica que la transacción ingresó a la caja de la OTB. Jamás expone las deudas familiares ni la situación privada de ningún vecino a terceros.
+                </p>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                El validador público únicamente certifica que la transacción ingresó a la caja de la OTB. Jamás expone las deudas familiares ni la situación privada de ningún vecino a terceros.
-              </p>
-            </div>
+            </TiltCard3D>
           </div>
         )}
 

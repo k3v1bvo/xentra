@@ -9,12 +9,66 @@ import { Lock, Mail, ArrowRight, ShieldCheck, User } from 'lucide-react';
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { setUser, setProfile, setCurrentRole } = useAuthStore();
-  const [email, setEmail] = useState('marina.tesoreria@xentra.app');
-  const [password, setPassword] = useState('xentra2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setUser({ id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email });
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (cleanEmail.includes('vecino')) {
+      setUser({ id: 'demo-vecino', email: cleanEmail });
+      setProfile({
+        id: 'demo-vecino',
+        first_name: 'Juan José',
+        last_name: 'Flores Morales',
+        ci_number: '7412589',
+        ci_extension: 'CBBA',
+        phone: '70000000',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      setCurrentRole('vecino');
+      navigate('/vecino');
+      return;
+    }
+
+    if (cleanEmail.includes('superadmin')) {
+      setUser({ id: 'demo-superadmin', email: cleanEmail });
+      setProfile({
+        id: 'demo-superadmin',
+        first_name: 'Administrador',
+        last_name: 'Departamental',
+        ci_number: '1234567',
+        ci_extension: 'CBBA',
+        phone: '70000000',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      setCurrentRole('superadmin');
+      navigate('/superadmin');
+      return;
+    }
+
+    if (cleanEmail.includes('presidente')) {
+      setUser({ id: 'demo-presidente', email: cleanEmail });
+      setProfile({
+        id: 'demo-presidente',
+        first_name: 'Roberto',
+        last_name: 'Gutiérrez Vargas',
+        ci_number: '5289341',
+        ci_extension: 'CBBA',
+        phone: '70000000',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      setCurrentRole('presidente');
+      navigate('/admin');
+      return;
+    }
+
+    // Por defecto (Tesorería)
+    setUser({ id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: cleanEmail || 'marina.tesoreria@xentra.app' });
     setProfile({
       id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       first_name: 'Marina',
@@ -27,28 +81,6 @@ export const LoginPage: React.FC = () => {
     });
     setCurrentRole('tesorero');
     navigate('/admin');
-  };
-
-  const handleQuickDemo = (role: AppRole, name: string, ci: string) => {
-    setUser({ id: `demo-${role}`, email: `${role}@xentra.app` });
-    setProfile({
-      id: `demo-${role}`,
-      first_name: name.split(' ')[0],
-      last_name: name.split(' ').slice(1).join(' '),
-      ci_number: ci,
-      ci_extension: 'CBBA',
-      phone: '70000000',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    });
-    setCurrentRole(role);
-    if (role === 'vecino') {
-      navigate('/vecino');
-    } else if (role === 'superadmin') {
-      navigate('/superadmin');
-    } else {
-      navigate('/admin');
-    }
   };
 
   return (
@@ -106,46 +138,27 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Acceso Rápido Demo para Evaluación Inmediata */}
-          <div className="pt-4 border-t border-slate-800">
-            <p className="text-xs font-black text-slate-300 mb-2.5 text-center uppercase tracking-wider">
-              Acceso Rápido por Rol (Entorno Demo)
-            </p>
-            <div className="grid grid-cols-2 gap-2.5 text-xs sm:text-sm">
-              <button
-                onClick={() => handleQuickDemo('tesorero', 'Marina Condori', '6398412')}
-                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
-              >
-                <strong className="block text-white font-black text-sm sm:text-base">Tesorero</strong>
-                <span className="text-xs text-slate-300">Cobranzas y Cajas</span>
-              </button>
-              <button
-                onClick={() => handleQuickDemo('presidente', 'Roberto Fernández', '5289341')}
-                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
-              >
-                <strong className="block text-white font-black text-sm sm:text-base">Presidente</strong>
-                <span className="text-xs text-slate-300">Proyectos y VOTA</span>
-              </button>
-              <button
-                onClick={() => handleQuickDemo('fiscalizador', 'Carlos Mamani', '4589210')}
-                className="p-3.5 rounded-xl bg-[#030712] hover:bg-blue-950/60 border border-slate-700 hover:border-blue-500/50 text-left transition-colors cursor-pointer"
-              >
-                <strong className="block text-white font-black text-sm sm:text-base">Fiscalizador</strong>
-                <span className="text-xs text-slate-300">AI Auditor & TRACE</span>
-              </button>
-              <button
-                onClick={() => handleQuickDemo('vecino', 'Juan José Flores', '7412589')}
-                className="p-3.5 rounded-xl bg-[#030712] hover:bg-emerald-950/60 border border-slate-700 hover:border-emerald-500/50 text-left transition-colors cursor-pointer"
-              >
-                <strong className="block text-emerald-400 font-black text-sm sm:text-base">Vecino</strong>
-                <span className="text-xs text-slate-300">Portal & Recibos QR</span>
-              </button>
+          {/* Nota Informativa sobre Credenciales de Acceso */}
+          <div className="pt-4 border-t border-slate-800 space-y-3">
+            <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800 text-left text-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-slate-300 font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Acceso Seguro y Aislamiento Multi-Tenant</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
+                Cada cuenta accede estrictamente a la información de su OTB. Si eres socio, solicita tus credenciales a la Directiva de tu barrio.
+              </p>
+              <div className="pt-1 border-t border-slate-800/80 text-[10px] text-slate-400 font-mono space-y-0.5">
+                <p>• Tesorería: <span className="text-blue-300">tesorero@xentra.app</span> (Clave: <span className="text-slate-300">xentra2026</span>)</p>
+                <p>• Vecino: <span className="text-emerald-300">vecino@xentra.app</span> (Clave: <span className="text-slate-300">xentra2026</span>)</p>
+              </div>
             </div>
 
-            <div className="pt-4 text-center">
+            <div className="text-center pt-1">
               <button
+                type="button"
                 onClick={() => navigate('/')}
-                className="text-xs font-bold text-slate-400 hover:text-white hover:underline cursor-pointer"
+                className="text-xs font-bold text-slate-400 hover:text-white hover:underline cursor-pointer transition-colors"
               >
                 ← Volver a la Portada Principal
               </button>

@@ -247,127 +247,136 @@ export const NeighborDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 text-white">
-      {/* Encabezado Vecino con Máxima Comodidad y Totalmente Responsivo */}
-      <div className="p-5 sm:p-8 rounded-3xl bg-[#0B132B] border-2 border-blue-500/50 text-white shadow-2xl backdrop-blur-xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          
-          {/* Lado Izquierdo: Saludo y Datos de Vivienda (7 cols) */}
-          <div className="lg:col-span-7 space-y-3.5 text-left">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-500/20 text-blue-200 text-xs sm:text-sm font-bold border border-blue-400/40 shadow-sm">
-                <Home className="w-4 h-4 text-blue-300 flex-shrink-0" />
-                <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
-              </div>
-              <span className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                ✓ Socio Registrado
-              </span>
-            </div>
-
-            <div className="space-y-1.5">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
-                Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
-              </h1>
-              <p className="text-xs sm:text-sm md:text-base text-slate-300 font-normal leading-relaxed">
-                Portal oficial y directo de tu OTB: consulta tus aportes comunales, realiza pagos con QR Simple y descarga tus comprobantes certificados.
-              </p>
-            </div>
-          </div>
-
-          {/* Lado Derecho: Estado de Deuda y Acciones Directas (5 cols) */}
-          <div className="lg:col-span-5 bg-[#030712] p-5 rounded-2xl border-2 border-slate-700/80 shadow-xl space-y-3.5">
-            <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
-              <div>
-                <span className="text-[11px] text-slate-400 uppercase font-mono font-bold tracking-wider block">
-                  Deuda Pendiente
-                </span>
-                <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 block mt-0.5">
-                  {formatBOB(totalDebt)}
+      {/* Encabezado Vecino con Máxima Comodidad y Totalmente Responsivo con Tilt 3D */}
+      <TiltCard3D intensity={4}>
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 text-white shadow-2xl backdrop-blur-xl transition-all duration-300">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
+            
+            {/* Lado Izquierdo: Saludo y Datos de Vivienda */}
+            <div className="space-y-4 text-left flex-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-500/15 text-blue-200 text-xs sm:text-sm font-bold border border-blue-400/30 shadow-sm">
+                  <Home className="w-4 h-4 text-blue-300 flex-shrink-0" />
+                  <span>Manzana A, Lote 12 • {currentOtb?.name || 'OTB Villa Esperanza'}</span>
+                </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>Socio Registrado</span>
                 </span>
               </div>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border ${
-                totalDebt > 0
-                  ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                  : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-              }`}>
-                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
-                <span>{totalDebt > 0 ? '1 cuota pendiente' : 'Al Día ✓'}</span>
-              </span>
+
+              <div className="space-y-2">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+                  Hola, {profile?.first_name || 'Juan José'} {profile?.last_name || 'Flores Morales'}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed max-w-xl">
+                  Portal oficial y directo de tu OTB: consulta tus aportes comunales, realiza pagos con QR Simple y descarga tus comprobantes certificados.
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <button
-                onClick={() => setIsQrModalOpen(true)}
-                className="w-full h-11 sm:h-12 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
-              >
-                <QrCode className="w-4 h-4 text-slate-950" />
-                <span>Pagar con QR</span>
-              </button>
+            {/* Lado Derecho: Estado de Deuda y Acciones Directas */}
+            <div className="w-full lg:w-auto lg:min-w-[340px] flex-shrink-0 bg-[#030712] p-5 sm:p-6 rounded-2xl border-2 border-slate-800 shadow-xl space-y-4">
+              <div className="flex items-center justify-between gap-4 border-b border-slate-800 pb-3">
+                <div>
+                  <span className="text-[11px] text-slate-400 uppercase font-mono font-bold tracking-wider block">
+                    Deuda Pendiente
+                  </span>
+                  <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 block mt-0.5">
+                    {formatBOB(totalDebt)}
+                  </span>
+                </div>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border ${
+                  totalDebt > 0
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                    : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                }`}>
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                  <span>{totalDebt > 0 ? '1 cuota pendiente' : 'Al Día ✓'}</span>
+                </span>
+              </div>
 
-              <button
-                onClick={() => setIsPrintModalOpen(true)}
-                className="w-full h-11 sm:h-12 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-600 transition-all cursor-pointer"
-              >
-                <Printer className="w-4 h-4 text-blue-300" />
-                <span>Imprimir Ficha</span>
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button
+                  onClick={() => setIsQrModalOpen(true)}
+                  className="w-full h-11 sm:h-12 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                >
+                  <QrCode className="w-4 h-4 text-slate-950" />
+                  <span>Pagar con QR</span>
+                </button>
+
+                <button
+                  onClick={() => setIsPrintModalOpen(true)}
+                  className="w-full h-11 sm:h-12 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-600 transition-all cursor-pointer"
+                >
+                  <Printer className="w-4 h-4 text-blue-300" />
+                  <span>Imprimir Ficha</span>
+                </button>
+              </div>
             </div>
+
           </div>
-
         </div>
-      </div>
+      </TiltCard3D>
 
-      {/* Barra Rápida de Auxilio, Transparencia y App Móvil */}
+      {/* Barra Rápida de Auxilio, Transparencia y App Móvil en 3D */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-        <button
-          onClick={() => {
-            setAlertModalTab('emergencias');
-            setIsAlertModalOpen(true);
-          }}
-          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/20"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-rose-600/20 border border-rose-500/50 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
+        <TiltCard3D intensity={5}>
+          <button
+            onClick={() => {
+              setAlertModalTab('emergencias');
+              setIsAlertModalOpen(true);
+            }}
+            className="w-full h-full p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-rose-500/20"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-rose-600/20 border border-rose-500/50 text-rose-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
+              </div>
+              <div>
+                <strong className="text-white font-bold text-sm sm:text-base block">🚨 Central de Auxilio 24/7</strong>
+                <span className="text-rose-200 text-xs font-medium block mt-0.5">Policía 110, SAMU 168 y Alerta Barrial</span>
+              </div>
             </div>
-            <div>
-              <strong className="text-white font-bold text-sm sm:text-base block">🚨 Central de Auxilio 24/7</strong>
-              <span className="text-rose-200 text-xs font-medium block mt-0.5">Policía 110, SAMU 168 y Alerta Barrial</span>
-            </div>
-          </div>
-          <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Llamar →</span>
-        </button>
+            <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Llamar →</span>
+          </button>
+        </TiltCard3D>
 
-        <button
-          onClick={() => setIsTransparencyModalOpen(true)}
-          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/20"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-purple-600/20 border border-purple-500/50 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <ShieldCheck className="w-5 h-5 text-purple-400" />
+        <TiltCard3D intensity={5}>
+          <button
+            onClick={() => setIsTransparencyModalOpen(true)}
+            className="w-full h-full p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-purple-500/20"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-purple-600/20 border border-purple-500/50 text-purple-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <ShieldCheck className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <strong className="text-white font-bold text-sm sm:text-base block">🔍 Transparencia & Asamblea</strong>
+                <span className="text-purple-200 text-xs font-medium block mt-0.5">Rendición de cuentas y próximas fechas</span>
+              </div>
             </div>
-            <div>
-              <strong className="text-white font-bold text-sm sm:text-base block">🔍 Transparencia & Asamblea</strong>
-              <span className="text-purple-200 text-xs font-medium block mt-0.5">Rendición de cuentas y próximas fechas</span>
-            </div>
-          </div>
-          <span className="text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Ver →</span>
-        </button>
+            <span className="text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Ver →</span>
+          </button>
+        </TiltCard3D>
 
-        <button
-          onClick={() => setIsInstallModalOpen(true)}
-          className="p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/20"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-emerald-600/20 border border-emerald-500/50 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Smartphone className="w-5 h-5 text-emerald-400" />
+        <TiltCard3D intensity={5}>
+          <button
+            onClick={() => setIsInstallModalOpen(true)}
+            className="w-full h-full p-4 sm:p-5 rounded-2xl bg-[#0B132B] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-left group cursor-pointer shadow-lg hover:shadow-emerald-500/20"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-emerald-600/20 border border-emerald-500/50 text-emerald-300 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Smartphone className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <strong className="text-white font-bold text-sm sm:text-base block">📲 App Móvil Oficial (APK)</strong>
+                <span className="text-emerald-200 text-xs font-medium block mt-0.5">Versión 3.0.0 para Xiaomi, Samsung y más</span>
+              </div>
             </div>
-            <div>
-              <strong className="text-white font-bold text-sm sm:text-base block">📲 App Móvil Oficial (APK)</strong>
-              <span className="text-emerald-200 text-xs font-medium block mt-0.5">Versión 3.0.0 para Xiaomi, Samsung y más</span>
-            </div>
-          </div>
-          <span className="text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Descargar →</span>
-        </button>
+            <span className="text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform whitespace-nowrap pl-2">Descargar →</span>
+          </button>
+        </TiltCard3D>
       </div>
 
       {/* Mis Cuotas Asignadas */}
@@ -389,7 +398,7 @@ export const NeighborDashboardPage: React.FC = () => {
               intensity={4}
               className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 hover:border-slate-700 shadow-xl backdrop-blur-xl flex flex-col justify-between h-full space-y-4"
             >
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-slate-800 text-blue-300 border border-slate-700 uppercase tracking-wider">
                     {fee.type === 'AporteEspecial' ? 'Aporte Especial' : 'Cuota Ordinaria'}

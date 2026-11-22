@@ -425,7 +425,7 @@ export const LandingPage: React.FC = () => {
       {/* =================================================================== */}
       {/* 3. SECCIÓN TRANSPARENCIA EN RECAUDACIÓN (SOLICITUD CLAVE DEL USUARIO) */}
       {/* =================================================================== */}
-      <section id="transparencia" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
+      <section id="transparencia" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
         <div className="max-w-3xl space-y-3 mb-10">
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
             Control Social y Honestidad Comunal
@@ -439,48 +439,54 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-blue-500/50 transition-all space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black">
-              <Wallet className="w-6 h-6" />
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-blue-500/50 transition-all space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black">
+                <Wallet className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-black text-white">1. Recaudación sin Intermediarios</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  Las cuotas no se guardan en sobres ni en bolsillos de dirigentes. Cada pago por QR Simple va directo a la cuenta bancaria comunal de la OTB, dejando registro bancario auditable.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black text-white">1. Recaudación sin Intermediarios</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Las cuotas no se guardan en sobres ni en bolsillos de dirigentes. Cada pago por QR Simple va directo a la cuenta bancaria comunal de la OTB, dejando registro bancario auditable.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
 
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-emerald-500/50 transition-all space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black">
-              <Receipt className="w-6 h-6" />
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-emerald-500/50 transition-all space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black">
+                <Receipt className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-black text-white">2. Recibo Oficial al Instante</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  En el mismo segundo que se aprueba el pago, el vecino recibe en su pantalla o celular su recibo digital oficial sellado con firma digital SHA-256 y código QR escaneable.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black text-white">2. Recibo Oficial al Instante</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                En el mismo segundo que se aprueba el pago, el vecino recibe en su pantalla o celular su recibo digital oficial sellado con firma digital SHA-256 y código QR escaneable.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
 
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-purple-500/50 transition-all space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 font-black">
-              <FileSpreadsheet className="w-6 h-6" />
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-purple-500/50 transition-all space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 font-black">
+                <FileSpreadsheet className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-black text-white">3. Rendición Abierta en Asambleas</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  La directiva no necesita pasar noches cuadrando números. Con 1 clic proyecta en la asamblea general el balance con fotos de facturas, notas de entrega y saldo exacto en caja.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black text-white">3. Rendición Abierta en Asambleas</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                La directiva no necesita pasar noches cuadrando números. Con 1 clic proyecta en la asamblea general el balance con fotos de facturas, notas de entrega y saldo exacto en caja.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
         </div>
       </section>
 
       {/* =================================================================== */}
       {/* 4. COMPARATIVA: ANTES (CUADERNOS) VS. CON XENTRA OTB (MARCO PAS)     */}
       {/* =================================================================== */}
-      <section id="comparativa" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
+      <section id="comparativa" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
         <div className="max-w-3xl space-y-3 mb-10">
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
             Comparativa Real
@@ -496,72 +502,76 @@ export const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* EL MÉTODO ANTIGUO */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-rose-950/20 border-2 border-rose-500/40 space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 border-b border-rose-500/30 pb-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black">
-                <AlertTriangle className="w-5 h-5" />
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 sm:p-8 rounded-3xl bg-rose-950/20 border-2 border-rose-500/40 space-y-4 shadow-xl">
+              <div className="flex items-center gap-3 border-b border-rose-500/30 pb-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 block font-bold">
+                    Método Tradicional
+                  </span>
+                  <h3 className="text-lg font-black text-white">Cuadernos de Papel y Efectivo</h3>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 block font-bold">
-                  Método Tradicional
-                </span>
-                <h3 className="text-lg font-black text-white">Cuadernos de Papel y Efectivo</h3>
-              </div>
-            </div>
 
-            <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
-              <li className="flex items-start gap-2.5">
-                <span className="text-rose-400 font-black mt-0.5">✕</span>
-                <span><strong>Cuadernos que se extravían:</strong> Cuando cambia la directiva, los registros anteriores desaparecen y nadie sabe quién pagó qué.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-rose-400 font-black mt-0.5">✕</span>
-                <span><strong>Desconfianza y morosidad:</strong> Los vecinos sospechan que su dinero no se usa para las obras y dejan de pagar sus cuotas.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-rose-400 font-black mt-0.5">✕</span>
-                <span><strong>Asambleas conflictivas:</strong> Horas de discusión dominical sin comprobantes claros, notas de entrega borroneadas o recibos falsificados.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-rose-400 font-black mt-0.5">✕</span>
-                <span><strong>Obras paralizadas:</strong> Proyectos prioritarios como canchas, tinglados y alumbrado quedan frenados por falta de recaudación.</span>
-              </li>
-            </ul>
-          </div>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-400 font-black mt-0.5">✕</span>
+                  <span><strong>Cuadernos que se extravían:</strong> Cuando cambia la directiva, los registros anteriores desaparecen y nadie sabe quién pagó qué.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-400 font-black mt-0.5">✕</span>
+                  <span><strong>Desconfianza y morosidad:</strong> Los vecinos sospechan que su dinero no se usa para las obras y dejan de pagar sus cuotas.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-400 font-black mt-0.5">✕</span>
+                  <span><strong>Asambleas conflictivas:</strong> Horas de discusión dominical sin comprobantes claros, notas de entrega borroneadas o recibos falsificados.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-400 font-black mt-0.5">✕</span>
+                  <span><strong>Obras paralizadas:</strong> Proyectos prioritarios como canchas, tinglados y alumbrado quedan frenados por falta de recaudación.</span>
+                </li>
+              </ul>
+            </div>
+          </TiltCard3D>
 
           {/* CON XENTRA OTB */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-emerald-950/20 border-2 border-emerald-500/40 space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 border-b border-emerald-500/30 pb-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black">
-                <CheckCircle2 className="w-5 h-5" />
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 sm:p-8 rounded-3xl bg-emerald-950/20 border-2 border-emerald-500/40 space-y-4 shadow-xl">
+              <div className="flex items-center gap-3 border-b border-emerald-500/30 pb-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 block font-bold">
+                    Plataforma Soberana
+                  </span>
+                  <h3 className="text-lg font-black text-white">Gestión XENTRA OTB Transparente</h3>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 block font-bold">
-                  Plataforma Soberana
-                </span>
-                <h3 className="text-lg font-black text-white">Gestión XENTRA OTB Transparente</h3>
-              </div>
-            </div>
 
-            <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
-              <li className="flex items-start gap-2.5">
-                <span className="text-emerald-400 font-black mt-0.5">✓</span>
-                <span><strong>Cobro por QR Simple en 10s:</strong> El vecino paga desde Banco Unión, BCP, BNB o BancoSol sin salir de casa ni hacer filas.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-emerald-400 font-black mt-0.5">✓</span>
-                <span><strong>Recibo oficial infalsificable:</strong> Código QR y token digital inmutable SHA-256 en el teléfono de cada vecino.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-emerald-400 font-black mt-0.5">✓</span>
-                <span><strong>Rendición inmediata en 1 clic:</strong> La directiva proyecta el informe de caja y facturas de compras en pantalla gigante en la asamblea.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="text-emerald-400 font-black mt-0.5">✓</span>
-                <span><strong>Confianza y obras concluidas:</strong> Al ver el destino de cada centavo, la recaudación sube al 90%+ y las obras se terminan.</span>
-              </li>
-            </ul>
-          </div>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 font-black mt-0.5">✓</span>
+                  <span><strong>Cobro por QR Simple en 10s:</strong> El vecino paga desde Banco Unión, BCP, BNB o BancoSol sin salir de casa ni hacer filas.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 font-black mt-0.5">✓</span>
+                  <span><strong>Recibo oficial infalsificable:</strong> Código QR y token digital inmutable SHA-256 en el teléfono de cada vecino.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 font-black mt-0.5">✓</span>
+                  <span><strong>Rendición inmediata en 1 clic:</strong> La directiva proyecta el informe de caja y facturas de compras en pantalla gigante en la asamblea.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-emerald-400 font-black mt-0.5">✓</span>
+                  <span><strong>Confianza y obras concluidas:</strong> Al ver el destino de cada centavo, la recaudación sube al 90%+ y las obras se terminan.</span>
+                </li>
+              </ul>
+            </div>
+          </TiltCard3D>
 
         </div>
       </section>
@@ -569,7 +579,7 @@ export const LandingPage: React.FC = () => {
       {/* =================================================================== */}
       {/* 5. CÓMO FUNCIONA EN 3 PASOS                                         */}
       {/* =================================================================== */}
-      <section id="como-funciona" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
+      <section id="como-funciona" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
         <div className="space-y-2 mb-10">
           <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">
             Paso a Paso
@@ -580,51 +590,57 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-lg">
-              1
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 font-black text-lg">
+                1
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">Paso 1</span>
+                <h3 className="text-lg font-black text-white">Pago con QR Simple</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  El vecino abre su aplicación bancaria (Banco Unión, BCP, BNB, BancoSol, Fie), escanea el código QR de la OTB y transfiere la cuota sin comisiones.
+                </p>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">Paso 1</span>
-              <h3 className="text-lg font-black text-white">Pago con QR Simple</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                El vecino abre su aplicación bancaria (Banco Unión, BCP, BNB, BancoSol, Fie), escanea el código QR de la OTB y transfiere la cuota sin comisiones.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
 
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black text-lg">
-              2
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black text-lg">
+                2
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">Paso 2</span>
+                <h3 className="text-lg font-black text-white">Recibo Digital Oficial</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  Tesorería verifica la transferencia y el sistema emite el recibo oficial numerado con código QR y token digital inmutable SHA-256.
+                </p>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">Paso 2</span>
-              <h3 className="text-lg font-black text-white">Recibo Digital Oficial</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Tesorería verifica la transferencia y el sistema emite el recibo oficial numerado con código QR y token digital inmutable SHA-256.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
 
-          <div className="p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 font-black text-lg">
-              3
+          <TiltCard3D intensity={5}>
+            <div className="h-full p-6 sm:p-7 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 space-y-4 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 font-black text-lg">
+                3
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-xs font-black text-purple-400 uppercase tracking-wider block">Paso 3</span>
+                <h3 className="text-lg font-black text-white">Asamblea Transparente</h3>
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                  En la asamblea general, la directiva presenta el balance público con 1 clic. Cada centavo recaudado tiene respaldo y destino demostrado.
+                </p>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <span className="text-xs font-black text-purple-400 uppercase tracking-wider block">Paso 3</span>
-              <h3 className="text-lg font-black text-white">Asamblea Transparente</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                En la asamblea general, la directiva presenta el balance público con 1 clic. Cada centavo recaudado tiene respaldo y destino demostrado.
-              </p>
-            </div>
-          </div>
+          </TiltCard3D>
         </div>
       </section>
 
       {/* =================================================================== */}
       {/* 6. MAPA TERRITORIAL Y GEORREFERENCIACIÓN COMUNAL                    */}
       {/* =================================================================== */}
-      <section id="mapa-comunal" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
+      <section id="mapa-comunal" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">
@@ -647,45 +663,49 @@ export const LandingPage: React.FC = () => {
           </button>
         </div>
 
-        <CommunityInteractiveMap
-          centerLat={-17.41325}
-          centerLng={-66.16543}
-          zoom={16}
-          heightClass="h-80 sm:h-96"
-          otbName="Territorio Comunal Bolivia"
-        />
+        <TiltCard3D intensity={3}>
+          <CommunityInteractiveMap
+            centerLat={-17.41325}
+            centerLng={-66.16543}
+            zoom={16}
+            heightClass="h-80 sm:h-96"
+            otbName="Territorio Comunal Bolivia"
+          />
+        </TiltCard3D>
       </section>
 
       {/* =================================================================== */}
       {/* 7. LLAMADO A LA ACCIÓN FINAL (HIGH CONVERSION CTA)                  */}
       {/* =================================================================== */}
       <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-blue-950/70 via-[#0B132B] to-[#0B132B] border-2 border-blue-500/40 shadow-2xl max-w-4xl mx-auto space-y-6">
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-            Lleva la Transparencia y el Orden a tu OTB Hoy Mismo.
-          </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-            Sin costos de instalación, sin comisiones bancarias y compatible con cualquier teléfono móvil. Erradica la desconfianza en tu próxima asamblea vecinal.
-          </p>
+        <TiltCard3D intensity={4}>
+          <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-blue-950/70 via-[#0B132B] to-[#0B132B] border-2 border-blue-500/40 shadow-2xl max-w-4xl mx-auto space-y-6">
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Lleva la Transparencia y el Orden a tu OTB Hoy Mismo.
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+              Sin costos de instalación, sin comisiones bancarias y compatible con cualquier teléfono móvil. Erradica la desconfianza en tu próxima asamblea vecinal.
+            </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => navigate('/login')}
-              className="w-full sm:w-auto h-13 px-8 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all cursor-pointer"
-            >
-              <span>Acceder al Portal Vecinal</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full sm:w-auto h-13 px-8 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all cursor-pointer"
+              >
+                <span>Acceder al Portal Vecinal</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
 
-            <button
-              onClick={() => setIsInstallModalOpen(true)}
-              className="w-full sm:w-auto h-13 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Smartphone className="w-5 h-5 text-emerald-400" />
-              <span>Instalar APK Android v3.0</span>
-            </button>
+              <button
+                onClick={() => setIsInstallModalOpen(true)}
+                className="w-full sm:w-auto h-13 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Smartphone className="w-5 h-5 text-emerald-400" />
+                <span>Instalar APK Android v3.0</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </TiltCard3D>
       </section>
 
       {/* =================================================================== */}

@@ -334,7 +334,7 @@ export const LandingPage: React.FC = () => {
               className="w-full text-left px-4 py-3 rounded-xl text-sm font-bold text-purple-300 hover:bg-slate-800 transition-colors flex items-center gap-2"
             >
               <QrCode className="w-4 h-4 text-purple-400" />
-              <span>Verificar Recibo QR TRACE</span>
+              <span>Verificar Recibo con QR</span>
             </button>
 
             <button
@@ -417,23 +417,23 @@ export const LandingPage: React.FC = () => {
             </form>
           </div>
 
-          {/* 4 Pilares Visuales (Grandes y Legibles) */}
+          {/* 4 Beneficios Directos para el Vecino y la Directiva */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
               <span className="text-xs sm:text-sm font-bold text-slate-200">0% Comisión Bancaria</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 flex items-center gap-2.5">
-              <Lock className="w-5 h-5 text-blue-400 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-bold text-slate-200">Cifrado SHA-256</span>
+              <QrCode className="w-5 h-5 text-blue-400 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-bold text-slate-200">Recibo en tu Celular</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 flex items-center gap-2.5">
-              <Cpu className="w-5 h-5 text-purple-400 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-bold text-slate-200">Local-First SQLite</span>
+              <Smartphone className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-bold text-slate-200">Funciona sin Internet</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 flex items-center gap-2.5">
               <Scale className="w-5 h-5 text-amber-400 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-bold text-slate-200">Ley N° 1551 Bolivia</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-200">Cuentas Claras en Asamblea</span>
             </div>
           </div>
         </div>
@@ -553,11 +553,11 @@ export const LandingPage: React.FC = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span>Validación de sello criptográfico SHA-256</span>
+                    <span>Comprueba si el recibo es auténtico</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span>Protección estricta de datos familiares</span>
+                    <span>Solo muestra número de lote y estado</span>
                   </li>
                 </ul>
               </div>
@@ -616,9 +616,9 @@ export const LandingPage: React.FC = () => {
                 </span>
                 <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">Paso 2</span>
               </div>
-              <h3 className="text-xl font-black text-white">Recibo Oficial Certificado</h3>
+              <h3 className="text-xl font-black text-white">Recibo Oficial en tu Mano</h3>
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-                El sistema emite un recibo formal con código QR y token digital inmutable SHA-256 para imprimir o guardar en el celular.
+                El sistema genera tu recibo con código QR para que lo guardes en tu celular o lo imprimas para tus trámites vecinales.
               </p>
             </div>
           </div>
@@ -651,13 +651,13 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-2xl space-y-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
               <Compass className="w-4 h-4 text-emerald-400" />
-              <span>Georreferenciación Comunal en Vivo</span>
+              <span>Mapa Oficial del Barrio</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Territorio y Equipamiento de la OTB
+              Manzanos, Calles y Áreas Verdes
             </h2>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-              Sede social, canchas polifuncionales y avisos vecinales geolocalizados en el mapa.
+              Ubica la sede social, las canchas, los parques y los límites oficiales de tu comunidad.
             </p>
           </div>
 
@@ -677,9 +677,9 @@ export const LandingPage: React.FC = () => {
           <div className="px-5 py-3.5 bg-[#030712] border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-400" />
-              <span className="font-black text-white">Mapa Vecinal Oficial ({currentOtb?.name || 'OTB Villa Esperanza'})</span>
+              <span className="font-black text-white">Plano Oficial de la OTB ({currentOtb?.name || 'OTB Villa Graciela'})</span>
               <span className="text-slate-500">•</span>
-              <span className="text-slate-400 font-medium">OpenStreetMap • 100% Libre</span>
+              <span className="text-slate-400 font-medium">Catastro Municipal • Libre Consulta</span>
             </div>
 
             <a

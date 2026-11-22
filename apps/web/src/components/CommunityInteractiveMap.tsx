@@ -242,6 +242,9 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const canEditTerritory = Boolean(enableAdminEditor && isAuthorizedLeader);
 
   const territory = getTerritory(otbId);
+  const isCochabambaShowcase = otbId === '11111111-1111-1111-1111-111111111111';
+  const effectiveCenterLat = centerLat !== -17.41325 ? centerLat : territory.centerLat;
+  const effectiveCenterLng = centerLng !== -66.16543 ? centerLng : territory.centerLng;
 
   // Filtros de visualización
   const [layerFilters, setLayerFilters] = useState({
@@ -347,8 +350,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     }
 
     const map = L.map(mapContainerRef.current, {
-      center: [centerLat, centerLng],
-      zoom: zoom,
+      center: [effectiveCenterLat, effectiveCenterLng],
+      zoom: territory.zoom || zoom,
       scrollWheelZoom: false,
       zoomControl: true
     });
@@ -617,7 +620,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     }
 
     // B.2 DIBUJAR OTBs COLINDANTES DEL DISTRITO 1 (GAMC)
-    if (layerFilters.colindantes) {
+    if (layerFilters.colindantes && isCochabambaShowcase) {
       COCHABAMBA_DISTRICT_1_NEIGHBORS.forEach((otb) => {
         const poly = L.polygon(otb.polygon, {
           color: otb.borderColor,
@@ -659,7 +662,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     }
 
     // B.3 DIBUJAR ROTULACIÓN DE CALLES Y AVENIDAS
-    if (layerFilters.calles) {
+    if (layerFilters.calles && isCochabambaShowcase) {
       COCHABAMBA_STREET_LABELS.forEach((st) => {
         const isAvenue = st.type === 'avenida';
         const streetIcon = L.divIcon({
@@ -1709,38 +1712,40 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               })}
             </div>
 
-            {/* OTBs Colindantes del Distrito 1 */}
-            <div className="space-y-1 pt-1 border-t border-slate-800/80">
-              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
-                OTBs Colindantes (Distrito 1 GAMC):
-              </span>
-              {COCHABAMBA_DISTRICT_1_NEIGHBORS.map((otb) => (
-                <div
-                  key={otb.code}
-                  className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-950/80 border border-slate-800/60"
-                >
-                  <span
-                    className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0"
-                    style={{ backgroundColor: otb.color }}
+            {/* OTBs Colindantes del Distrito 1 (Solo si es la OTB Showcase de Cochabamba) */}
+            {isCochabambaShowcase && (
+              <div className="space-y-1 pt-1 border-t border-slate-800/80">
+                <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
+                  OTBs Colindantes (Distrito 1 GAMC):
+                </span>
+                {COCHABAMBA_DISTRICT_1_NEIGHBORS.map((otb) => (
+                  <div
+                    key={otb.code}
+                    className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-950/80 border border-slate-800/60"
                   >
-                    {otb.code}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-200 text-xs truncate">
-                      {otb.name}
-                    </p>
-                    <span className="text-[9.5px] text-slate-500 block truncate">
-                      {otb.direction}
+                    <span
+                      className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0"
+                      style={{ backgroundColor: otb.color }}
+                    >
+                      {otb.code}
                     </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-slate-200 text-xs truncate">
+                        {otb.name}
+                      </p>
+                      <span className="text-[9.5px] text-slate-500 block truncate">
+                        {otb.direction}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between items-center">
-            <span>GAMC • Distrito 1</span>
-            <span className="text-emerald-400 font-bold">DOT Cochabamba</span>
+            <span>{isCochabambaShowcase ? 'GAMC • Distrito 1' : otbName}</span>
+            <span className="text-emerald-400 font-bold">{isCochabambaShowcase ? 'DOT Cochabamba' : 'Catastro Comunal'}</span>
           </div>
         </div>
       )}

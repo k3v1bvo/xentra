@@ -232,6 +232,190 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
       }
     ],
     updatedAt: new Date().toISOString()
+  },
+
+  // OTB Los Pinos (OTB No. 002 - La Paz, Murillo - Zona Sur Calacoto)
+  '22222222-2222-2222-2222-222222222222': {
+    otbId: '22222222-2222-2222-2222-222222222222',
+    otbName: 'OTB Los Pinos (La Paz)',
+    centerLat: -16.5385,
+    centerLng: -68.0820,
+    zoom: 16,
+    perimeter: [
+      [-16.5365, -68.0845],
+      [-16.5365, -68.0795],
+      [-16.5405, -68.0795],
+      [-16.5405, -68.0845]
+    ],
+    manzanos: [
+      {
+        id: 'mza-lpz-1',
+        code: '1',
+        name: 'Manzano 1 (Bloques Centrales)',
+        color: '#93C5FD', // Azul Cielo
+        polygon: [
+          [-16.5370, -68.0840],
+          [-16.5370, -68.0818],
+          [-16.5385, -68.0818],
+          [-16.5385, -68.0840]
+        ],
+        lotsCount: 32,
+        description: 'Av. Ballivián esq. Calle 25 • 32 Familias Empadronadas'
+      },
+      {
+        id: 'mza-lpz-2',
+        code: '2',
+        name: 'Manzano 2 (Paseo Los Sauces)',
+        color: '#D8B4FE', // Lavanda
+        polygon: [
+          [-16.5370, -68.0814],
+          [-16.5370, -68.0798],
+          [-16.5385, -68.0798],
+          [-16.5385, -68.0814]
+        ],
+        lotsCount: 24,
+        description: 'Sector Este y Pasaje Los Sauces • 24 Lotes Registrados'
+      },
+      {
+        id: 'mza-lpz-av',
+        code: 'AV',
+        name: 'Área Verde & Cancha Los Pinos',
+        color: '#16A34A', // Verde Bosque
+        polygon: [
+          [-16.5388, -68.0840],
+          [-16.5388, -68.0818],
+          [-16.5400, -68.0818],
+          [-16.5400, -68.0840]
+        ],
+        lotsCount: 0,
+        description: '🌳 Complejo Deportivo Los Pinos: Cancha de Futsal y Tinglado Comunal'
+      },
+      {
+        id: 'mza-lpz-3',
+        code: '3',
+        name: 'Manzano 3 (Residencial Sur)',
+        color: '#FDE047', // Amarillo
+        polygon: [
+          [-16.5388, -68.0814],
+          [-16.5388, -68.0798],
+          [-16.5400, -68.0798],
+          [-16.5400, -68.0814]
+        ],
+        lotsCount: 28,
+        description: 'Sector Residencial Sur • 28 Lotes Registrados'
+      }
+    ],
+    facilities: [
+      {
+        id: 'fac-lpz-1',
+        name: '🏛️ Sede Social OTB Los Pinos',
+        category: 'sede',
+        lat: -16.5378,
+        lng: -68.0825,
+        description: 'Oficina Vecinal y Salón de Actos Zona Sur.'
+      },
+      {
+        id: 'fac-lpz-2',
+        name: '⚽ Cancha Polifuncional & Tinglado',
+        category: 'cancha',
+        lat: -16.5394,
+        lng: -68.0828,
+        description: 'Complejo deportivo barrial Los Pinos.'
+      }
+    ],
+    updatedAt: new Date().toISOString()
+  },
+
+  // OTB Barrio Lindo Plan 4000 (OTB No. 003 - Santa Cruz, Villa 1ro de Mayo)
+  '33333333-3333-3333-3333-333333333333': {
+    otbId: '33333333-3333-3333-3333-333333333333',
+    otbName: 'Barrio Lindo Plan 4000 (Santa Cruz)',
+    centerLat: -17.7845,
+    centerLng: -63.1420,
+    zoom: 16,
+    perimeter: [
+      [-17.7825, -63.1445],
+      [-17.7825, -63.1395],
+      [-17.7865, -63.1395],
+      [-17.7865, -63.1445]
+    ],
+    manzanos: [
+      {
+        id: 'mza-scz-1',
+        code: '12',
+        name: 'Manzano 12 (Av. Che Guevara)',
+        color: '#FCA5A5', // Rosa
+        polygon: [
+          [-17.7830, -63.1440],
+          [-17.7830, -63.1418],
+          [-17.7845, -63.1418],
+          [-17.7845, -63.1440]
+        ],
+        lotsCount: 30,
+        description: 'Av. Che Guevara • 30 Lotes Empadronados'
+      },
+      {
+        id: 'mza-scz-2',
+        code: '13',
+        name: 'Manzano 13 (Calle 4)',
+        color: '#FDBA74', // Durazno
+        polygon: [
+          [-17.7830, -63.1414],
+          [-17.7830, -63.1398],
+          [-17.7845, -63.1398],
+          [-17.7845, -63.1414]
+        ],
+        lotsCount: 25,
+        description: 'Sector Calle 4 Este • 25 Lotes Registrados'
+      },
+      {
+        id: 'mza-scz-av',
+        code: 'AV',
+        name: 'Plaza & Cancha Comunal Barrio Lindo',
+        color: '#16A34A', // Verde
+        polygon: [
+          [-17.7848, -63.1440],
+          [-17.7848, -63.1418],
+          [-17.7860, -63.1418],
+          [-17.7860, -63.1440]
+        ],
+        lotsCount: 0,
+        description: '🌳 Plaza de Recreación y Cancha Polifuncional Municipal'
+      },
+      {
+        id: 'mza-scz-3',
+        code: '14',
+        name: 'Manzano 14 (Pasaje Los Ceibos)',
+        color: '#93C5FD', // Azul
+        polygon: [
+          [-17.7848, -63.1414],
+          [-17.7848, -63.1398],
+          [-17.7860, -63.1398],
+          [-17.7860, -63.1414]
+        ],
+        lotsCount: 22,
+        description: 'Sector Residencial Sur • 22 Lotes Registrados'
+      }
+    ],
+    facilities: [
+      {
+        id: 'fac-scz-1',
+        name: '🏛️ Sede Social Barrio Lindo Plan 4000',
+        category: 'sede',
+        lat: -17.7838,
+        lng: -63.1425,
+        description: 'Salón de Asambleas Vecinales y Administración Comunal.'
+      },
+      {
+        id: 'fac-scz-2',
+        name: '⚽ Cancha Polifuncional Comunal',
+        category: 'cancha',
+        lat: -17.7854,
+        lng: -63.1430,
+        description: 'Complejo deportivo vecinal Plan 4000.'
+      }
+    ],
+    updatedAt: new Date().toISOString()
   }
 };
 
@@ -260,16 +444,21 @@ export const useCommunityMapStore = create<CommunityMapState>()(
         const current = get().territories[id];
         if (current) return current;
 
-        // Si no existe, crear una configuración basada en default
+        // Si existe en el catálogo inicial oficial por defecto
+        if (DEFAULT_TERRITORIES[id]) {
+          return DEFAULT_TERRITORIES[id];
+        }
+
+        // Si es una OTB nueva registrada por la directiva o superadmin, territorio limpio independiente
         const fallback: OtbTerritoryConfig = {
           otbId: id,
-          otbName: 'Comunidad OTB',
-          centerLat: -17.41325,
-          centerLng: -66.16543,
+          otbName: 'Nueva OTB',
+          centerLat: -17.41315,
+          centerLng: -66.16495,
           zoom: 16,
-          perimeter: DEFAULT_TERRITORIES['11111111-1111-1111-1111-111111111111'].perimeter,
-          manzanos: DEFAULT_TERRITORIES['11111111-1111-1111-1111-111111111111'].manzanos,
-          facilities: DEFAULT_TERRITORIES['11111111-1111-1111-1111-111111111111'].facilities,
+          perimeter: [],
+          manzanos: [],
+          facilities: [],
           updatedAt: new Date().toISOString()
         };
         return fallback;
@@ -434,7 +623,17 @@ export const useCommunityMapStore = create<CommunityMapState>()(
         set((state) => ({
           territories: {
             ...state.territories,
-            [otbId]: DEFAULT_TERRITORIES['11111111-1111-1111-1111-111111111111']
+            [otbId]: DEFAULT_TERRITORIES[otbId] || {
+              otbId,
+              otbName: 'Comunidad OTB',
+              centerLat: -17.41315,
+              centerLng: -66.16495,
+              zoom: 16,
+              perimeter: [],
+              manzanos: [],
+              facilities: [],
+              updatedAt: new Date().toISOString()
+            }
           }
         }));
       }

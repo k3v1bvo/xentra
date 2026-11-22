@@ -7,6 +7,7 @@ import {
   CommunityManzano,
   CommunityFacility
 } from '../stores/communityMapStore';
+import { useAuthStore } from '../stores/authStore';
 import {
   MapPin,
   ExternalLink,
@@ -137,11 +138,23 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     removeLastPerimeterVertex,
     clearPerimeter,
     addManzano,
+    updateManzano,
     deleteManzano,
     addFacility,
     deleteFacility,
     resetToDefault
   } = useCommunityMapStore();
+
+  // Control Estricto de Roles: Solo Superadmin Nacional y Directiva de OTB pueden editar el catastro
+  const { currentRole } = useAuthStore();
+  const isSuperadmin = currentRole === 'superadmin';
+  const isOtbAdmin =
+    currentRole === 'presidente' ||
+    currentRole === 'tesorero' ||
+    currentRole === 'secretario' ||
+    currentRole === 'fiscalizador';
+  const isAuthorizedLeader = isSuperadmin || isOtbAdmin;
+  const canEditTerritory = Boolean(enableAdminEditor && isAuthorizedLeader);
 
   const territory = getTerritory(otbId);
 
@@ -165,6 +178,56 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   // Manzano seleccionado para inspección
   const [inspectedManzano, setInspectedManzano] = useState<CommunityManzano | null>(null);
   const [showCadastralReferences, setShowCadastralReferences] = useState(false);
+
+  // Edición in-place de manzano existente (Directiva y Superadmin)
+  const [isEditingInspectedManzano, setIsEditingInspectedManzano] = useState(false);
+  const [editManzanoName, setEditManzanoName] = useState('');
+  const [editManzanoCode, setEditManzanoCode] = useState('');
+  const [editManzanoLots, setEditManzanoLots] = useState(20);
+  const [editManzanoColor, setEditManzanoColor] = useState('#FCA5A5');
+  const [editManzanoDesc, setEditManzanoDesc] = useState('');
+
+  // Sincronizar campos de edición cuando se selecciona un manzano
+  useEffect(() => {
+    if (inspectedManzano) {
+      setEditManzanoName(inspectedManzano.name);
+      setEditManzanoCode(inspectedManzano.code);
+      setEditManzanoLots(inspectedManzano.lotsCount);
+      setEditManzanoColor(inspectedManzano.color);
+      setEditManzanoDesc(inspectedManzano.description);
+      setIsEditingInspectedManzano(false);
+    }
+  }, [inspectedManzano]);
+
+  const handleSaveInspectedManzano = () => {
+    if (!inspectedManzano) return;
+    const updated = {
+      name: editManzanoName.trim() || inspectedManzano.name,
+      code: editManzanoCode.trim() || inspectedManzano.code,
+      lotsCount: Number(editManzanoLots) >= 0 ? Number(editManzanoLots) : 0,
+      color: editManzanoColor,
+      description: editManzanoDesc.trim() || inspectedManzano.description
+    };
+    updateManzano(otbId, inspectedManzano.id, updated);
+    setInspectedManzano({
+      ...inspectedManzano,
+      ...updated
+    });
+    setIsEditingInspectedManzano(false);
+    setSaveSuccessMsg(`¡${updated.name} actualizado en el catastro comunal!`);
+    setTimeout(() => setSaveSuccessMsg(null), 3500);
+  };
+
+  const handleDeleteInspectedManzano = () => {
+    if (!inspectedManzano) return;
+    if (window.confirm(`¿Eliminar definitivamente el ${inspectedManzano.name} (${inspectedManzano.code}) del catastro comunal?`)) {
+      deleteManzano(otbId, inspectedManzano.id);
+      setInspectedManzano(null);
+      setIsEditingInspectedManzano(false);
+      setSaveSuccessMsg('Manzano eliminado del catastro comunal.');
+      setTimeout(() => setSaveSuccessMsg(null), 3000);
+    }
+  };
 
   // Formulario nuevo manzano
   const [newManzanoName, setNewManzanoName] = useState('Manzano E');
@@ -859,8 +922,27 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </div>
           )}
 
+          {/* Badge Indicador de Rol Catastral y Permisos */}
+          {canEditTerritory ? (
+            <span
+              className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-black border shadow-sm ${
+                isSuperadmin
+                  ? 'bg-purple-950/70 border-purple-500/50 text-purple-300'
+                  : 'bg-blue-950/70 border-blue-500/50 text-blue-300'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+              <span>{isSuperadmin ? 'Superadmin Nacional' : 'Directiva OTB'}</span>
+            </span>
+          ) : (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-bold text-slate-400">
+              <Eye className="w-3 h-3 text-slate-400" />
+              <span>Catastro Oficial (Solo Consulta)</span>
+            </span>
+          )}
+
           {/* Exportar GeoJSON Oficial */}
-          {enableAdminEditor && (
+          {canEditTerritory && (
             <button
               onClick={handleExportGeoJson}
               title="Descargar Catastro Comunal en GeoJSON Oficial para Alcaldía"
@@ -871,8 +953,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </button>
           )}
 
-          {/* Botón Maestro: Modo Dibujo / Editor para la Directiva */}
-          {enableAdminEditor && (
+          {/* Botón Maestro: Modo Dibujo / Editor para la Directiva y Superadmin */}
+          {canEditTerritory && (
             <button
               onClick={() => setIsEditorOpen(!isEditorOpen)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
@@ -930,7 +1012,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       {/* =================================================================== */}
       {/* 2. PANEL DEL EDITOR TERRITORIAL CON LÁPIZ Y VÉRTICES                */}
       {/* =================================================================== */}
-      {isEditorOpen && enableAdminEditor && (
+      {isEditorOpen && canEditTerritory && (
         <div className="bg-[#0B132B]/98 border-b-2 border-amber-500/50 p-3 sm:p-4 z-30 shadow-2xl space-y-3 text-left">
           
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
@@ -1191,20 +1273,30 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </div>
           )}
 
-          {/* Manzanos Existentes con Borrado Rápido */}
+          {/* Manzanos Existentes con Edición y Borrado Rápido */}
           <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2 text-[11px]">
             <span className="font-bold text-slate-400">Manzanos Registrados:</span>
             {territory.manzanos.map((m) => (
               <span
                 key={m.id}
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border font-mono font-bold"
-                style={{ backgroundColor: `${m.color}20`, borderColor: m.color, color: m.color }}
+                onClick={() => {
+                  setInspectedManzano(m);
+                  setIsEditingInspectedManzano(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono font-bold cursor-pointer hover:scale-105 transition-all shadow-sm"
+                style={{ backgroundColor: `${m.color}25`, borderColor: m.color, color: m.color }}
+                title="Hacer clic para editar nombre, código, lotes o color"
               >
-                <span>{m.name} ({m.lotsCount})</span>
+                <span>✏️ {m.name} ({m.lotsCount > 0 ? `${m.lotsCount}L` : 'Comunal'})</span>
                 <button
-                  onClick={() => deleteManzano(otbId, m.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm(`¿Eliminar definitivamente el ${m.name}?`)) {
+                      deleteManzano(otbId, m.id);
+                    }
+                  }}
                   title="Eliminar este manzano"
-                  className="hover:text-rose-400 cursor-pointer ml-1"
+                  className="hover:text-rose-400 cursor-pointer ml-1 text-sm font-black"
                 >
                   ×
                 </button>
@@ -1216,7 +1308,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       )}
 
       {/* =================================================================== */}
-      {/* 3. MODAL / CARD DE INSPECCIÓN DE MANZANO SELECCIONADO               */}
+      {/* 3. MODAL / CARD DE INSPECCIÓN Y EDICIÓN DE MANZANO                  */}
       {/* =================================================================== */}
       {inspectedManzano && (
         <div className="absolute bottom-12 right-4 z-40 max-w-sm w-full bg-[#0B132B]/98 border-2 border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur-xl space-y-3 animate-in fade-in slide-in-from-bottom-2 text-left">
@@ -1225,46 +1317,166 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: inspectedManzano.color }} />
               <strong className="text-sm font-black text-white">{inspectedManzano.name} ({inspectedManzano.code})</strong>
             </div>
-            <button
-              onClick={() => setInspectedManzano(null)}
-              className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              {canEditTerritory && (
+                <>
+                  <button
+                    onClick={() => setIsEditingInspectedManzano(!isEditingInspectedManzano)}
+                    className="p-1.5 text-xs text-amber-400 hover:text-white bg-amber-500/15 hover:bg-amber-500/30 rounded-lg transition-colors cursor-pointer"
+                    title={isEditingInspectedManzano ? 'Cancelar edición' : 'Editar datos de este manzano'}
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={handleDeleteInspectedManzano}
+                    className="p-1.5 text-xs text-rose-400 hover:text-white bg-rose-500/15 hover:bg-rose-500/30 rounded-lg transition-colors cursor-pointer"
+                    title="Eliminar este manzano"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => {
+                  setInspectedManzano(null);
+                  setIsEditingInspectedManzano(false);
+                }}
+                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-1.5 text-xs text-slate-300">
-            <p className="text-slate-400">{inspectedManzano.description}</p>
-            <div className="grid grid-cols-2 gap-2 py-1">
-              <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block font-bold uppercase">Capacidad</span>
-                <strong className="text-white text-sm font-mono font-black">{inspectedManzano.lotsCount} Lotes</strong>
+          {/* Formulario de Edición In-Place para Directiva y Superadmin */}
+          {isEditingInspectedManzano && canEditTerritory ? (
+            <div className="space-y-2.5 text-xs animate-in fade-in">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-2">
+                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Nombre Oficial:</label>
+                  <input
+                    type="text"
+                    value={editManzanoName}
+                    onChange={(e) => setEditManzanoName(e.target.value)}
+                    className="w-full px-2.5 py-1.5 bg-[#030712] border border-slate-700 rounded-lg text-white font-bold text-xs"
+                    placeholder="Ej. Manzano 1"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Código:</label>
+                  <input
+                    type="text"
+                    value={editManzanoCode}
+                    onChange={(e) => setEditManzanoCode(e.target.value)}
+                    className="w-full px-2 py-1.5 bg-[#030712] border border-slate-700 rounded-lg text-white font-bold text-xs text-center"
+                    placeholder="1"
+                  />
+                </div>
               </div>
-              <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-[10px] text-slate-400 block font-bold uppercase">Empadronados</span>
-                <strong className="text-emerald-400 text-sm font-mono font-black">
-                  {neighbors.filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase())).length} Socios
-                </strong>
-              </div>
-            </div>
 
-            {/* Lista de Vecinos en este manzano */}
-            <div className="space-y-1 pt-1">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vecinos en esta cuadra:</span>
-              <div className="max-h-28 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
-                {neighbors
-                  .filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase()))
-                  .map((n) => (
-                    <div key={n.id} className="flex justify-between items-center p-1.5 rounded-lg bg-[#030712] border border-slate-800">
-                      <span className="text-white font-bold truncate max-w-[170px]">{n.name}</span>
-                      <span className={n.status === 'Al Día' ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
-                        {n.house}
-                      </span>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Lotes Censados:</label>
+                  <input
+                    type="number"
+                    value={editManzanoLots}
+                    onChange={(e) => setEditManzanoLots(Number(e.target.value))}
+                    className="w-full px-2.5 py-1.5 bg-[#030712] border border-slate-700 rounded-lg text-white font-bold text-xs"
+                    min={0}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Color GAMC:</label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="color"
+                      value={editManzanoColor}
+                      onChange={(e) => setEditManzanoColor(e.target.value)}
+                      className="w-7 h-7 bg-transparent cursor-pointer rounded-lg flex-shrink-0"
+                    />
+                    <div className="flex flex-wrap gap-1">
+                      {COCHABAMBA_CADASTRE_PALETTE.slice(0, 5).map((pal) => (
+                        <button
+                          key={pal.color}
+                          type="button"
+                          onClick={() => {
+                            setEditManzanoColor(pal.color);
+                            if (pal.color === '#16A34A' || pal.color === '#15803D') {
+                              setEditManzanoLots(0);
+                            }
+                          }}
+                          style={{ backgroundColor: pal.color }}
+                          title={pal.name}
+                          className="w-3.5 h-3.5 rounded border border-slate-600 hover:scale-125 transition-transform cursor-pointer shadow-sm"
+                        />
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Descripción / Sector:</label>
+                <input
+                  type="text"
+                  value={editManzanoDesc}
+                  onChange={(e) => setEditManzanoDesc(e.target.value)}
+                  className="w-full px-2.5 py-1.5 bg-[#030712] border border-slate-700 rounded-lg text-white text-xs"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleSaveInspectedManzano}
+                  className="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1 shadow-md cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Guardar Cambios</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingInspectedManzano(false)}
+                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs cursor-pointer"
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-1.5 text-xs text-slate-300">
+              <p className="text-slate-400">{inspectedManzano.description}</p>
+              <div className="grid grid-cols-2 gap-2 py-1">
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] text-slate-400 block font-bold uppercase">Capacidad</span>
+                  <strong className="text-white text-sm font-mono font-black">{inspectedManzano.lotsCount} Lotes</strong>
+                </div>
+                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-[10px] text-slate-400 block font-bold uppercase">Empadronados</span>
+                  <strong className="text-emerald-400 text-sm font-mono font-black">
+                    {neighbors.filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase())).length} Socios
+                  </strong>
+                </div>
+              </div>
+
+              {/* Lista de Vecinos en este manzano */}
+              <div className="space-y-1 pt-1">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vecinos en esta cuadra:</span>
+                <div className="max-h-28 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
+                  {neighbors
+                    .filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase()))
+                    .map((n) => (
+                      <div key={n.id} className="flex justify-between items-center p-1.5 rounded-lg bg-[#030712] border border-slate-800">
+                        <span className="text-white font-bold truncate max-w-[170px]">{n.name}</span>
+                        <span className={n.status === 'Al Día' ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
+                          {n.house}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

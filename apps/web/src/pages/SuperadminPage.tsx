@@ -492,13 +492,27 @@ export const SuperadminPage: React.FC = () => {
                       </button>
                     </div>
 
-                    <button
-                      onClick={() => handleEnterOtbAsAdmin(otb)}
-                      className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-black text-white flex items-center justify-center gap-1.5 transition-all shadow-lg shadow-purple-600/30 cursor-pointer"
-                    >
-                      <span>Ingresar a Administrar</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button
+                        onClick={() => handleEnterOtbAsAdmin(otb)}
+                        className="py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-black text-white flex items-center justify-center gap-1.5 transition-all shadow-lg shadow-purple-600/30 cursor-pointer"
+                        title="Ingresar al panel administrativo de esta OTB"
+                      >
+                        <span>Panel OTB</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCurrentOtb(otb);
+                          navigate('/admin/vecinos');
+                        }}
+                        className="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-black text-white flex items-center justify-center gap-1.5 transition-all shadow-lg shadow-indigo-600/30 cursor-pointer"
+                        title="Abrir mapa satelital para trazar límites y manzanos de esta OTB"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>Delimitar Mapa</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </TiltCard3D>

@@ -722,7 +722,7 @@ export const LandingPage: React.FC = () => {
             centerLat={-17.4128}
             centerLng={-66.1654}
             zoom={16}
-            heightClass="h-[540px] sm:h-[650px] lg:h-[780px]"
+            heightClass="h-[620px] sm:h-[720px] lg:h-[840px]"
             otbName="OTB Villa Graciela (Distrito 1 Cochabamba)"
             otbId="11111111-1111-1111-1111-111111111111"
             showControls={true}

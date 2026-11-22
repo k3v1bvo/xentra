@@ -339,15 +339,17 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     });
     mapInstanceRef.current = map;
 
-    // Capa base OpenStreetMap 100% Libre
-    const primaryTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base CartoDB Voyager con calles, avenidas y manzanas de alta resolución sin bloqueos
+    const primaryTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      subdomains: 'abcd',
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     });
 
     primaryTileLayer.on('tileerror', () => {
-      L.tileLayer('https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
+        subdomains: ['a', 'b', 'c'],
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
     });
@@ -493,6 +495,33 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       }
     };
   }, [effectiveCenterLat, effectiveCenterLng, otbId]);
+
+  // Observador de Redimensionamiento para evitar mapa en negro al abrir/cerrar editor o cambiar tamaño
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    const ro = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize({ debounceMoveend: true });
+      }
+    });
+    ro.observe(mapContainerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  // Forzar redimensionamiento de Leaflet en cada cambio de apertura de editor o pantalla completa
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    const t1 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
+    const t2 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 150);
+    const t3 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 300);
+    const t4 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [isEditorOpen, isFullscreen]);
 
   // =========================================================================
   // 2. RENDERIZADO DE CAPAS (PERÍMETRO, MANZANOS, VECINOS, EQUIPAMIENTO)
@@ -1135,6 +1164,9 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 if (next) {
                   setNewManzanoPoints([]);
                 }
+                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
+                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 150);
+                setTimeout(() => mapInstanceRef.current?.invalidateSize(), 350);
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
                 isEditorOpen
@@ -1681,7 +1713,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       {/* =================================================================== */}
       <div
         ref={mapContainerRef}
-        className={`w-full flex-1 min-h-[260px] ${isEditorOpen && drawingMethod === 'pencil' ? 'cursor-crosshair' : ''}`}
+        className={`w-full flex-1 min-h-[380px] sm:min-h-[460px] relative z-0 ${isEditorOpen && drawingMethod === 'pencil' ? 'cursor-crosshair' : ''}`}
+        style={{ minHeight: '380px' }}
       />
 
       {/* =================================================================== */}

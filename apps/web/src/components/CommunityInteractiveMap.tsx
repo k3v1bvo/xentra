@@ -92,6 +92,18 @@ function getPolygonCentroid(pts: [number, number][]): [number, number] {
   return [latSum / pts.length, lngSum / pts.length];
 }
 
+// Paleta oficial de colores catastrales inspirada en el Gobierno Autónomo Municipal de Cochabamba (GAMC - DOT)
+const COCHABAMBA_CADASTRE_PALETTE = [
+  { name: 'Rosa Distrito (GAMC)', color: '#FCA5A5' },
+  { name: 'Lavanda Queru Queru', color: '#D8B4FE' },
+  { name: 'Amarillo Comunal', color: '#FDE047' },
+  { name: 'Azul Cielo Catastral', color: '#93C5FD' },
+  { name: 'Durazno Melocotón', color: '#FDBA74' },
+  { name: 'Área Verde DOT', color: '#16A34A' },
+  { name: 'Verde Preservación', color: '#15803D' },
+  { name: 'Verde Lima', color: '#86EFAC' }
+];
+
 export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = ({
   reports = [],
   neighbors = [],
@@ -152,6 +164,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
   // Manzano seleccionado para inspección
   const [inspectedManzano, setInspectedManzano] = useState<CommunityManzano | null>(null);
+  const [showCadastralReferences, setShowCadastralReferences] = useState(false);
 
   // Formulario nuevo manzano
   const [newManzanoName, setNewManzanoName] = useState('Manzano E');
@@ -384,11 +397,18 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             (n) => n.block.toLowerCase().includes(mza.name.toLowerCase()) || n.block.toLowerCase().includes(mza.code.toLowerCase())
           );
 
+          const isGreenArea =
+            mza.color.toLowerCase() === '#16a34a' ||
+            mza.color.toLowerCase() === '#15803d' ||
+            mza.name.toLowerCase().includes('verde') ||
+            mza.name.toLowerCase().includes('parque') ||
+            mza.name.toLowerCase().includes('ecol');
+
           const mzaPolygon = L.polygon(mza.polygon, {
-            color: mza.color,
-            weight: 2.5,
+            color: isGreenArea ? '#14532D' : '#1E293B',
+            weight: isGreenArea ? 2.5 : 2,
             fillColor: mza.color,
-            fillOpacity: 0.25
+            fillOpacity: isGreenArea ? 0.72 : 0.45
           }).addTo(group);
 
           mzaPolygon.on('click', () => {
@@ -398,40 +418,46 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
           mzaPolygon.bindPopup(`
             <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 230px;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #E2E8F0; padding-bottom: 4px;">
-                <strong style="color: ${mza.color}; font-size: 14px;">🏘️ ${mza.name} (${mza.code})</strong>
-                <span style="background: ${mza.color}20; color: ${mza.color}; font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 6px;">
-                  ${mza.lotsCount} Lotes
+                <strong style="color: ${isGreenArea ? '#15803D' : '#0F172A'}; font-size: 14px;">
+                  ${isGreenArea ? '🌳 ' : '🏘️ '}${mza.name}
+                </strong>
+                <span style="background: ${mza.color}35; color: ${isGreenArea ? '#14532D' : '#0F172A'}; font-weight: 900; font-size: 11px; padding: 2px 7px; border-radius: 6px; border: 1px solid ${mza.color};">
+                  ${mza.lotsCount > 0 ? `${mza.lotsCount} Lotes` : 'Área Comunal'}
                 </span>
               </div>
               <p style="color: #475569; font-size: 12px; margin: 4px 0;">${mza.description}</p>
               
               <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px; margin: 6px 0;">
                 <span style="font-size: 11px; font-weight: bold; color: #0F172A; display: block;">
-                  Vecinos Registrados en Padrón: ${neighborsInBlock.length}
+                  ${isGreenArea ? '🌲 Equipamiento / Espacio Público OTB' : `Vecinos Registrados en Padrón: ${neighborsInBlock.length}`}
                 </span>
-                <span style="font-size: 10px; color: #64748B;">
-                  ${neighborsInBlock.length > 0 ? neighborsInBlock.map(n => `${n.name.split(' ')[0]} (${n.house})`).join(', ') : 'Lotes disponibles para empadronar'}
-                </span>
+                ${
+                  !isGreenArea
+                    ? `<span style="font-size: 10px; color: #64748B;">
+                        ${neighborsInBlock.length > 0 ? neighborsInBlock.map(n => `${n.name.split(' ')[0]} (${n.house})`).join(', ') : 'Lotes disponibles para empadronar'}
+                       </span>`
+                    : '<span style="font-size: 10px; color: #16A34A; font-weight: bold;">Uso comunal, deportivo y recreativo de los vecinos</span>'
+                }
               </div>
 
               <div style="font-size: 11px; color: #059669; font-weight: bold;">
-                ✓ Cuadra integrada al Catastro Comunal
+                ✓ Cuadra integrada al Catastro Comunal (GAMC)
               </div>
             </div>
           `);
 
-          // Insignia en el centro del manzano
+          // Insignia en el centro del manzano estilo Catastro Cochabamba
           const centroid = getPolygonCentroid(mza.polygon);
           const labelIcon = L.divIcon({
             html: `
-              <div style="background-color: ${mza.color}; color: white; padding: 2.5px 8px; border-radius: 12px; font-weight: 900; font-size: 10px; font-family: monospace; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.45); border: 1.5px solid white; display: flex; align-items: center; gap: 3px; cursor: pointer;">
-                <span>${mza.code}</span>
-                <span style="opacity: 0.9; font-size: 9px;">(${mza.lotsCount} lotes)</span>
+              <div style="background-color: ${isGreenArea ? '#15803D' : '#FFFFFF'}; color: ${isGreenArea ? '#FFFFFF' : '#0F172A'}; padding: 3px 9px; border-radius: 14px; font-weight: 900; font-size: 12px; font-family: ui-monospace, monospace; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.45); border: 2px solid ${isGreenArea ? '#86EFAC' : mza.color}; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                <span>${isGreenArea ? '🌳 ' : ''}${mza.code}</span>
+                ${mza.lotsCount > 0 ? `<span style="opacity: 0.8; font-size: 9.5px; font-weight: 700;">(${mza.lotsCount}L)</span>` : ''}
               </div>
             `,
             className: 'mza-label-icon',
-            iconSize: [64, 22],
-            iconAnchor: [32, 11]
+            iconSize: [54, 26],
+            iconAnchor: [27, 13]
           });
 
           const labelMarker = L.marker(centroid, { icon: labelIcon }).addTo(group);
@@ -860,6 +886,19 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </button>
           )}
 
+          {/* Botón Referencias Catastrales (Estilo GAMC Cochabamba) */}
+          <button
+            onClick={() => setShowCadastralReferences(!showCadastralReferences)}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer border ${
+              showCadastralReferences
+                ? 'bg-emerald-600 text-white border-emerald-400 shadow-md'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700'
+            }`}
+            title="Ver Cajetín de Referencias de Manzanos y Áreas Verdes (DOT GAMC)"
+          >
+            <span>📋 Referencias GAMC</span>
+          </button>
+
           <a
             href={googleMapsUrl}
             target="_blank"
@@ -1036,14 +1075,35 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                     min={1}
                   />
                 </div>
-                <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color Identificador:</label>
-                  <input
-                    type="color"
-                    value={newManzanoColor}
-                    onChange={(e) => setNewManzanoColor(e.target.value)}
-                    className="w-full h-8 bg-transparent cursor-pointer rounded-xl"
-                  />
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color Catastral GAMC:</label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="color"
+                      value={newManzanoColor}
+                      onChange={(e) => setNewManzanoColor(e.target.value)}
+                      className="w-8 h-8 bg-transparent cursor-pointer rounded-lg flex-shrink-0"
+                    />
+                    <div className="flex flex-wrap gap-1">
+                      {COCHABAMBA_CADASTRE_PALETTE.slice(0, 6).map((pal) => (
+                        <button
+                          key={pal.color}
+                          type="button"
+                          onClick={() => {
+                            setNewManzanoColor(pal.color);
+                            if (pal.color === '#16A34A' || pal.color === '#15803D') {
+                              setNewManzanoName('Área Verde Comunal');
+                              setNewManzanoCode('AV');
+                              setNewManzanoLots(0);
+                            }
+                          }}
+                          style={{ backgroundColor: pal.color }}
+                          title={pal.name}
+                          className="w-4 h-4 rounded border border-slate-600 hover:scale-125 transition-transform cursor-pointer shadow-sm"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <div className="col-span-2 sm:col-span-1 flex items-end">
                   <button
@@ -1209,7 +1269,71 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       )}
 
       {/* =================================================================== */}
-      {/* 4. CONTENEDOR DEL MAPA LEAFLET                                      */}
+      {/* 4. CAJETÍN OFICIAL DE REFERENCIAS URBANAS GAMC - DOT COCHABAMBA     */}
+      {/* =================================================================== */}
+      {showCadastralReferences && (
+        <div className="absolute top-16 right-4 z-30 max-w-xs w-full bg-[#030712]/95 backdrop-blur-md border-2 border-emerald-500/60 rounded-2xl p-3 shadow-2xl space-y-2 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div>
+              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400 block">
+                Cajetín Catastral Oficial
+              </span>
+              <h4 className="text-xs font-black text-white">REFERENCIAS • GAMC - DOT</h4>
+            </div>
+            <button
+              onClick={() => setShowCadastralReferences(false)}
+              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="text-[11px] text-slate-400">
+            Plano de OTB y Manzanos • Cochabamba
+          </div>
+
+          <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px]">
+            {territory.manzanos.map((m) => {
+              const isGreen =
+                m.color.toLowerCase() === '#16a34a' ||
+                m.color.toLowerCase() === '#15803d' ||
+                m.name.toLowerCase().includes('verde') ||
+                m.name.toLowerCase().includes('parque');
+
+              return (
+                <div
+                  key={m.id}
+                  onClick={() => setInspectedManzano(m)}
+                  className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800/80 hover:border-emerald-500/50 cursor-pointer transition-colors"
+                >
+                  <span
+                    className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: m.color }}
+                  >
+                    {m.code}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-white text-xs truncate">
+                      {isGreen ? '🌳 ' : ''}{m.name}
+                    </p>
+                    <span className="text-[10px] text-slate-400 block truncate">
+                      {m.lotsCount > 0 ? `${m.lotsCount} Lotes Censados` : 'Área Verde Comunal'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between items-center">
+            <span>GAMC • Distrito Municipal</span>
+            <span className="text-emerald-400 font-bold">DOT</span>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 5. CONTENEDOR DEL MAPA LEAFLET                                      */}
       {/* =================================================================== */}
       <div
         ref={mapContainerRef}

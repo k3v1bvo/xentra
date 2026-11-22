@@ -51,9 +51,9 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
     manzanos: [
       {
         id: 'mza-a',
-        code: 'MZA',
-        name: 'Manzano A',
-        color: '#3B82F6', // Azul institucional
+        code: '1',
+        name: 'Manzano 1 (Urb. Central)',
+        color: '#FCA5A5', // Rosa Distrito (GAMC)
         polygon: [
           [-17.4117, -66.1666],
           [-17.4114, -66.1650],
@@ -65,9 +65,9 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
       },
       {
         id: 'mza-b',
-        code: 'MZB',
-        name: 'Manzano B',
-        color: '#10B981', // Verde esmeralda
+        code: '2',
+        name: 'Manzano 2 (Paseo Las Retamas)',
+        color: '#D8B4FE', // Lavanda Queru Queru
         polygon: [
           [-17.4114, -66.1648],
           [-17.4111, -66.1636],
@@ -79,9 +79,9 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
       },
       {
         id: 'mza-c',
-        code: 'MZC',
-        name: 'Manzano C',
-        color: '#F59E0B', // Ámbar deportivo
+        code: '3',
+        name: 'Manzano 3 (Sector Polifuncional)',
+        color: '#FDE047', // Amarillo Comunal
         polygon: [
           [-17.4132, -66.1664],
           [-17.4130, -66.1648],
@@ -89,13 +89,13 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
           [-17.4146, -66.1662]
         ],
         lotsCount: 26,
-        description: 'Sector Polifuncional y Tinglado Comunal • 26 Lotes Censados'
+        description: 'Sector Deportivo y Tinglado Comunal • 26 Lotes Censados'
       },
       {
         id: 'mza-d',
-        code: 'MZD',
-        name: 'Manzano D',
-        color: '#8B5CF6', // Púrpura comunitario
+        code: '4',
+        name: 'Manzano 4 (Sector Los Pinos)',
+        color: '#93C5FD', // Azul Cielo Catastral
         polygon: [
           [-17.4130, -66.1646],
           [-17.4127, -66.1634],
@@ -103,7 +103,48 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
           [-17.4144, -66.1644]
         ],
         lotsCount: 22,
-        description: 'Sector Sur, Parque Infantil y Tanque de Agua • 22 Lotes Censados'
+        description: 'Sector Sur, Residencial Los Pinos • 22 Lotes Censados'
+      },
+      {
+        id: 'mza-av1',
+        code: '5',
+        name: 'Área Verde 5 (Parque & Cancha Comunal)',
+        color: '#16A34A', // Verde Bosque Oficial DOT
+        polygon: [
+          [-17.4134, -66.1656],
+          [-17.4134, -66.1650],
+          [-17.4140, -66.1650],
+          [-17.4140, -66.1656]
+        ],
+        lotsCount: 0,
+        description: '🌳 Área Verde de Equipamiento Comunal: Complejo Deportivo, Tinglado y Parque Infantil'
+      },
+      {
+        id: 'mza-e',
+        code: '6',
+        name: 'Manzano 6 (Colina Mirador)',
+        color: '#FDBA74', // Durazno Melocotón
+        polygon: [
+          [-17.4146, -66.1662],
+          [-17.4144, -66.1646],
+          [-17.4153, -66.1648],
+          [-17.4150, -66.1668]
+        ],
+        lotsCount: 18,
+        description: 'Sector Sudoeste Mirador • 18 Lotes Censados'
+      },
+      {
+        id: 'mza-av2',
+        code: '7',
+        name: 'Área Verde 7 (Franja Ecológica)',
+        color: '#15803D', // Verde Oscuro de Preservación
+        polygon: [
+          [-17.4148, -66.1672],
+          [-17.4146, -66.1662],
+          [-17.4150, -66.1668]
+        ],
+        lotsCount: 0,
+        description: '🌲 Franja de Amortiguamiento y Preservación Forestal Vecinal'
       }
     ],
     facilities: [

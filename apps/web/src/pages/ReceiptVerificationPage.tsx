@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -15,8 +15,13 @@ import {
   Check,
   Upload,
   Receipt,
-  RotateCcw
+  RotateCcw,
+  Camera,
+  X,
+  Sparkles,
+  Smartphone
 } from 'lucide-react';
+import jsQR from 'jsqr';
 import { formatBOB } from '@xentra/shared';
 import { XentraLogo } from '../components/XentraLogo';
 import { TiltCard3D } from '../components/TiltCard3D';
@@ -41,8 +46,8 @@ const REGISTERED_RECEIPTS: Record<string, VerifiedReceipt> = {
   'OTB-CBBA-001-2026-00042': {
     receiptNumber: 'OTB-CBBA-001-2026-00042',
     tokenHash: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     beneficiaryMasked: 'J*** J*** Flores M.',
     concept: 'Aporte Pro-Tinglado Cancha (Abono Parcial)',
@@ -54,21 +59,21 @@ const REGISTERED_RECEIPTS: Record<string, VerifiedReceipt> = {
   'OTB-CBBA-001-2026-00041': {
     receiptNumber: 'OTB-CBBA-001-2026-00041',
     tokenHash: 'b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef012345678',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     beneficiaryMasked: 'S*** Rojas T.',
     concept: 'Cuota Ordinaria Noviembre 2026',
     amount: 25.00,
-    paymentMethod: 'Efectivo en Sede',
+    paymentMethod: 'Efectivo en Sede Social',
     issuedAt: '20/11/2026 16:45',
     ledgerEntry: '#8411'
   },
   'OTB-CBBA-001-2026-00040': {
     receiptNumber: 'OTB-CBBA-001-2026-00040',
     tokenHash: 'c9283b4a5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     beneficiaryMasked: 'R*** Gutiérrez V.',
     concept: 'Aporte Pro-Tinglado Cancha (Pago Total)',
@@ -80,8 +85,8 @@ const REGISTERED_RECEIPTS: Record<string, VerifiedReceipt> = {
   'OTB-CBBA-001-2026-00039': {
     receiptNumber: 'OTB-CBBA-001-2026-00039',
     tokenHash: 'd0394c5b6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f901234567890a',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     beneficiaryMasked: 'M*** Condori R.',
     concept: 'Cuota Ordinaria Noviembre 2026',
@@ -97,7 +102,6 @@ export const ReceiptVerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const { submissions } = usePaymentVerificationStore();
 
-  // Parámetros opcionales si el usuario escanea un QR físico
   const paramReceipt = searchParams.get('receipt');
   const paramToken = searchParams.get('token');
 
@@ -107,10 +111,28 @@ export const ReceiptVerificationPage: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
 
-  // Función de resolución de recibos contra catálogo estático y tienda dinámica
+  // Escáner de Cámara QR
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const animationFrameId = useRef<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Función de resolución de recibos
   const resolveReceipt = (query: string): VerifiedReceipt | null => {
-    const clean = query.trim().toUpperCase();
+    let clean = query.trim().toUpperCase();
     if (!clean) return null;
+
+    // Si viene una URL completa escaneada por QR (ej: https://.../verificar-recibo?receipt=OTB-CBBA-001...)
+    if (clean.includes('RECEIPT=')) {
+      const match = clean.match(/RECEIPT=([^&]+)/);
+      if (match && match[1]) clean = decodeURIComponent(match[1]).trim().toUpperCase();
+    } else if (clean.includes('TOKEN=')) {
+      const match = clean.match(/TOKEN=([^&]+)/);
+      if (match && match[1]) clean = decodeURIComponent(match[1]).trim().toUpperCase();
+    }
 
     // 1. Buscar en catálogo predeterminado
     for (const key of Object.keys(REGISTERED_RECEIPTS)) {
@@ -137,8 +159,8 @@ export const ReceiptVerificationPage: React.FC = () => {
       return {
         receiptNumber: storeFound.officialReceiptNumber || 'OTB-REC-2026-00043',
         tokenHash: storeFound.traceToken || 'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0',
-        otbName: 'OTB Villa Esperanza',
-        otbCode: 'OTB-CBBA-001',
+        otbName: 'OTB Villa Graciela (Distrito 1)',
+        otbCode: 'OTB-CBBA-024',
         department: 'Cochabamba',
         beneficiaryMasked: `${storeFound.neighborName.charAt(0)}*** ${storeFound.neighborName.split(' ').slice(-1)[0]}`,
         concept: storeFound.concept,
@@ -152,7 +174,7 @@ export const ReceiptVerificationPage: React.FC = () => {
     return null;
   };
 
-  // Si el usuario entra mediante un enlace escaneado con query params
+  // Parámetros URL al cargar la página
   useEffect(() => {
     if (paramReceipt || paramToken) {
       const target = paramReceipt || paramToken || '';
@@ -161,11 +183,17 @@ export const ReceiptVerificationPage: React.FC = () => {
       setVerifiedResult(res);
       setHasSearched(true);
     } else {
-      // SI NO HAY PARÁMETROS, NO MOSTRAR NINGÚN RECIBO POR DEFECTO
       setVerifiedResult(null);
       setHasSearched(false);
     }
   }, [paramReceipt, paramToken]);
+
+  // Detener la cámara al desmontar
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,7 +204,16 @@ export const ReceiptVerificationPage: React.FC = () => {
     setVerifiedResult(result);
   };
 
+  const handleSelectDemoReceipt = (code: string) => {
+    stopCamera();
+    setQueryInput(code);
+    setHasSearched(true);
+    const result = resolveReceipt(code);
+    setVerifiedResult(result);
+  };
+
   const handleReset = () => {
+    stopCamera();
     setQueryInput('');
     setVerifiedResult(null);
     setHasSearched(false);
@@ -189,10 +226,111 @@ export const ReceiptVerificationPage: React.FC = () => {
     setTimeout(() => setCopiedToken(false), 2000);
   };
 
+  // Activar escáner de cámara
+  const startCamera = async () => {
+    setCameraError(null);
+    setIsCameraActive(true);
+
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.play();
+        scanVideoFrame();
+      }
+    } catch (err: any) {
+      console.error('Error al acceder a la cámara:', err);
+      setCameraError('No se pudo acceder a la cámara. Revisa los permisos del navegador o sube una foto del recibo.');
+      setIsCameraActive(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const scanVideoFrame = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA && ctx) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert'
+      });
+
+      if (code && code.data) {
+        stopCamera();
+        setQueryInput(code.data);
+        setHasSearched(true);
+        const result = resolveReceipt(code.data);
+        setVerifiedResult(result);
+        return;
+      }
+    }
+
+    animationFrameId.current = requestAnimationFrame(scanVideoFrame);
+  };
+
+  // Subir imagen / foto del recibo
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        if (code && code.data) {
+          setQueryInput(code.data);
+          setHasSearched(true);
+          const result = resolveReceipt(code.data);
+          setVerifiedResult(result);
+        } else {
+          setCameraError('No se detectó un código QR nítido en la imagen. Intenta con una foto más cercana o escribe el número de recibo.');
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-between selection:bg-blue-600 selection:text-white">
       {/* =================================================================== */}
-      {/* 1. TOP HEADER: LIMPIO, SOBRIO Y SIN ESCUDO                           */}
+      {/* 1. TOP HEADER: LIMPIO, SOBRIO Y CON VOLVER A PORTADA                */}
       {/* =================================================================== */}
       <header className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between shadow-md">
         <button
@@ -208,33 +346,105 @@ export const ReceiptVerificationPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Canvas oculto para procesar frames del video */}
+      <canvas ref={canvasRef} className="hidden" />
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
       {/* =================================================================== */}
-      {/* 2. CONTENIDO PRINCIPAL: VALIDADOR PÚBLICO TRACE                      */}
+      {/* 2. CONTENIDO PRINCIPAL: COMPROBADOR DE RECIBOS CON QR               */}
       {/* =================================================================== */}
       <main className="flex-1 max-w-3xl w-full mx-auto p-4 sm:p-6 md:p-8 space-y-6">
         
         {/* Cabecera del Validador */}
         <div className="text-center space-y-2 max-w-xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-bold">
-            <ShieldCheck className="w-4 h-4 text-blue-400" />
-            <span>Validador Criptográfico Comunal TRACE</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>Comprobador Oficial de Recibos</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Verificación Oficial de Recibos OTB
+            Verificación de Recibos OTB
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-normal">
-            Comprueba la autenticidad de cualquier recibo comunal emitido en Bolivia. El sistema verifica el sello criptográfico SHA-256 contra el libro mayor inmutable.
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+            Escanea con la cámara de tu celular el código QR de tu recibo en papel o ingresa el número impreso para comprobar que tu aporte ingresó legalmente a la caja de la OTB.
           </p>
         </div>
 
-        {/* Buscador / Scanner de Código de Recibo */}
+        {/* Buscador / Scanner Inteligente */}
         <TiltCard3D intensity={4}>
           <div className="p-5 sm:p-6 rounded-3xl bg-[#0B132B] border-2 border-slate-800 shadow-2xl space-y-4">
-            <form onSubmit={handleSearchSubmit} className="space-y-3">
+            
+            {/* BOTONES PRINCIPALES DE ESCANEO RÁPIDO */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+              <button
+                type="button"
+                onClick={isCameraActive ? stopCamera : startCamera}
+                className={`py-3.5 px-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg ${
+                  isCameraActive
+                    ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30'
+                }`}
+              >
+                <Camera className="w-5 h-5" />
+                <span>{isCameraActive ? 'Cerrar Cámara' : 'Escanear QR con la Cámara'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="py-3.5 px-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2.5 bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 text-slate-200 transition-all cursor-pointer shadow-md"
+              >
+                <Upload className="w-5 h-5 text-blue-400" />
+                <span>Subir Foto del Recibo</span>
+              </button>
+            </div>
+
+            {/* VISOR DE CÁMARA EN VIVO */}
+            {isCameraActive && (
+              <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 bg-black aspect-video flex items-center justify-center shadow-2xl animate-in fade-in">
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Cuadro Guía de Escaneo */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-52 h-52 border-2 border-dashed border-emerald-400 rounded-2xl animate-pulse bg-emerald-500/10 flex items-center justify-center">
+                    <span className="text-[11px] font-black text-emerald-300 bg-black/70 px-2 py-1 rounded-md">
+                      Apunta al código QR
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={stopCamera}
+                  className="absolute top-3 right-3 p-2 rounded-xl bg-black/70 text-white hover:bg-black transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            {/* Mensaje de error de cámara si falla */}
+            {cameraError && (
+              <div className="p-3 bg-amber-950/60 border border-amber-500/50 rounded-xl text-amber-300 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <span>{cameraError}</span>
+              </div>
+            )}
+
+            {/* Formulario Manual Alternativo */}
+            <form onSubmit={handleSearchSubmit} className="space-y-3 pt-2 border-t border-slate-800">
               <label className="text-xs font-bold text-slate-300 block">
-                Ingresa el Número de Recibo o Token Criptográfico:
+                O escribe el Número de Recibo impreso:
               </label>
 
               <div className="flex flex-col sm:flex-row gap-2">
@@ -244,7 +454,7 @@ export const ReceiptVerificationPage: React.FC = () => {
                     type="text"
                     value={queryInput}
                     onChange={(e) => setQueryInput(e.target.value)}
-                    placeholder="Ej: OTB-CBBA-001-2026-00042 o hash..."
+                    placeholder="Ej: OTB-CBBA-001-2026-00042 o el número 42..."
                     className="w-full pl-11 pr-4 py-3 bg-[#030712] border-2 border-slate-700 rounded-2xl text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
@@ -253,21 +463,41 @@ export const ReceiptVerificationPage: React.FC = () => {
                   type="submit"
                   className="h-12 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer flex-shrink-0"
                 >
-                  <QrCode className="w-4 h-4" />
-                  <span>Verificar Autenticidad</span>
+                  <Search className="w-4 h-4" />
+                  <span>Comprobar</span>
                 </button>
               </div>
             </form>
 
-            {/* Información Técnica de Consulta */}
-            <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400">
-              <span className="font-medium text-slate-400 flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-blue-400" />
-                <span>Formatos admitidos: Código de recibo impreso (ej. <code className="text-slate-300">OTB-CBBA-001-2026-XXXXX</code>) o hash SHA-256 de 64 caracteres.</span>
+            {/* Botones de Prueba Rápida con 1 Clic */}
+            <div className="pt-2 border-t border-slate-800/80 space-y-2">
+              <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>Probar con recibos de ejemplo con 1 clic:</span>
               </span>
-              <span className="text-[11px] text-slate-500 font-mono">
-                Aislamiento y Privacidad de Datos Activo
-              </span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelectDemoReceipt('OTB-CBBA-001-2026-00042')}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-200 transition-colors cursor-pointer"
+                >
+                  🧾 Recibo #042 (Juan José Flores • 50 Bs)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectDemoReceipt('OTB-CBBA-001-2026-00041')}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-200 transition-colors cursor-pointer"
+                >
+                  🧾 Recibo #041 (Silvia Rojas • 25 Bs)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectDemoReceipt('OTB-CBBA-001-2026-00040')}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-200 transition-colors cursor-pointer"
+                >
+                  🧾 Recibo #040 (Roberto Gutiérrez • 100 Bs)
+                </button>
+              </div>
             </div>
           </div>
         </TiltCard3D>
@@ -287,10 +517,10 @@ export const ReceiptVerificationPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-400 uppercase tracking-wider">
-                      <span>Recibo Auténtico y Registrado en Caja</span>
+                      <span>✓ Recibo Válido y Registrado en Caja</span>
                     </div>
                     <h2 className="text-xl font-black text-white">
-                      Certificación Digital XENTRA TRACE
+                      Comprobante Auténtico Oficial
                     </h2>
                   </div>
                 </div>
@@ -304,13 +534,13 @@ export const ReceiptVerificationPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Datos Técnicos del Recibo */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-800 space-y-3 text-xs">
+              {/* Datos del Recibo */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#030712] border-2 border-slate-800 space-y-3 text-xs sm:text-sm">
                 <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400 font-medium">Organización Emisora:</span>
+                  <span className="text-slate-400 font-medium">Comunidad OTB:</span>
                   <span className="font-bold text-white text-sm flex items-center gap-1.5">
                     <Building className="w-4 h-4 text-blue-400" />
-                    <span>{verifiedResult.otbName} ({verifiedResult.otbCode})</span>
+                    <span>{verifiedResult.otbName}</span>
                   </span>
                 </div>
 
@@ -322,7 +552,7 @@ export const ReceiptVerificationPage: React.FC = () => {
                 </div>
 
                 <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400 font-medium">Titular Acreditado:</span>
+                  <span className="text-slate-400 font-medium">Vecino Acreditado:</span>
                   <span className="font-bold text-white font-mono">{verifiedResult.beneficiaryMasked}</span>
                 </div>
 
@@ -332,7 +562,7 @@ export const ReceiptVerificationPage: React.FC = () => {
                 </div>
 
                 <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400 font-medium">Modalidad de Cobro:</span>
+                  <span className="text-slate-400 font-medium">Método de Pago:</span>
                   <span className="text-slate-300 font-medium">{verifiedResult.paymentMethod}</span>
                 </div>
 
@@ -341,45 +571,19 @@ export const ReceiptVerificationPage: React.FC = () => {
                   <span className="text-slate-300 font-mono">{verifiedResult.issuedAt}</span>
                 </div>
 
-                <div className="pt-2 flex justify-between items-center text-sm">
-                  <span className="font-black text-slate-300 uppercase text-xs">Monto Registrado en Caja:</span>
+                <div className="pt-2 flex justify-between items-center text-sm sm:text-base">
+                  <span className="font-black text-slate-300 uppercase text-xs">Monto en Caja Comunal:</span>
                   <span className="font-mono font-black text-emerald-400 text-2xl">
                     {formatBOB(verifiedResult.amount)}
                   </span>
                 </div>
               </div>
 
-              {/* Sello Criptográfico Inmutable SHA-256 */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-300 font-bold flex items-center gap-1.5">
-                    <FileCheck className="w-4 h-4 text-purple-400" />
-                    <span>Sello Criptográfico Inmutable SHA-256</span>
-                  </span>
-                  <span className="font-mono font-bold text-purple-400 text-[11px] bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30">
-                    ASIENTO CONTABLE {verifiedResult.ledgerEntry}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <p className="font-mono text-[11px] text-slate-400 break-all bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex-1">
-                    {verifiedResult.tokenHash}
-                  </p>
-                  <button
-                    onClick={() => handleCopyToken(verifiedResult.tokenHash)}
-                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                    title="Copiar Hash"
-                  >
-                    {copiedToken ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Aviso de Garantía y Privacidad */}
-              <div className="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-xs text-blue-200 flex items-start gap-2.5">
-                <Lock className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+              {/* Registro Oficial de Caja */}
+              <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 text-xs text-emerald-200 flex items-start gap-2.5">
+                <ShieldCheck className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  <strong>Garantía de Control Social:</strong> Este recibo está indexado en el libro contable de {verifiedResult.otbName}. Sus datos coinciden con el extracto bancario oficial y no han sido adulterados.
+                  <strong>Control Social Garantizado:</strong> Este recibo está legalmente asentado en el Libro de Caja de {verifiedResult.otbName}. El dinero fue recibido por la directiva y rendirá cuentas claras en asamblea.
                 </p>
               </div>
 
@@ -408,12 +612,13 @@ export const ReceiptVerificationPage: React.FC = () => {
               </div>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                El número de recibo o token criptográfico ingresado (<code>{queryInput}</code>) no coincide con ningún asiento contable registrado en la plataforma.
+                El código ingresado o escaneado no coincide con ningún recibo oficial emitido por la OTB.
               </p>
 
               <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-1">
-                <p>• Verifica haber copiado el código completo del recibo impreso (ej. <code>OTB-CBBA-001-2026-00042</code>).</p>
-                <p>• Si el pago fue realizado recientemente, es posible que la Tesorería de la OTB aún esté validando el extracto bancario.</p>
+                <p>• Asegúrate de apuntar la cámara directamente al código QR del recibo en papel.</p>
+                <p>• Verifica haber ingresado el número completo del recibo (ejemplo: <code>OTB-CBBA-001-2026-00042</code>).</p>
+                <p>• Si acabas de pagar por QR, espera a que el tesorero apruebe la transacción en el sistema.</p>
               </div>
 
               <div className="pt-2 flex gap-3">
@@ -422,7 +627,7 @@ export const ReceiptVerificationPage: React.FC = () => {
                   className="h-11 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  <span>Intentar con otro código</span>
+                  <span>Intentar con otro recibo</span>
                 </button>
               </div>
             </div>
@@ -430,7 +635,7 @@ export const ReceiptVerificationPage: React.FC = () => {
         )}
 
         {/* =================================================================== */}
-        {/* CASO C: ESTADO INICIAL (SIN BÚSQUEDA) -> INFORMACIÓN DIDÁCTICA      */}
+        {/* CASO C: ESTADO INICIAL -> BENEFICIOS CLAROS PARA EL VECINO          */}
         {/* =================================================================== */}
         {!hasSearched && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
@@ -438,10 +643,10 @@ export const ReceiptVerificationPage: React.FC = () => {
               <div className="h-full p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
                 <div className="flex items-center gap-2 text-emerald-400">
                   <CheckCircle2 className="w-4 h-4" />
-                  <h3 className="font-black text-sm text-white">Inmutabilidad Criptográfica</h3>
+                  <h3 className="font-black text-sm text-white">Seguridad Vecinal</h3>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                  Cada comprobante emitido por la OTB contiene una firma digital única SHA-256 calculada a partir del monto, la fecha y el folio. Es imposible falsificar o duplicar un recibo sin alterar el hash.
+                  Cada recibo oficial cuenta con un código QR único impreso. Al escanearlo, compruebas que tu cuota fue ingresada legalmente a los fondos de la comunidad y no se perderá.
                 </p>
               </div>
             </TiltCard3D>
@@ -450,10 +655,10 @@ export const ReceiptVerificationPage: React.FC = () => {
               <div className="h-full p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
                 <div className="flex items-center gap-2 text-blue-400">
                   <Lock className="w-4 h-4" />
-                  <h3 className="font-black text-sm text-white">Protección de Datos Familiares</h3>
+                  <h3 className="font-black text-sm text-white">Protección de Datos del Hogar</h3>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                  El validador público únicamente certifica que la transacción ingresó a la caja de la OTB. Jamás expone las deudas familiares ni la situación privada de ningún vecino a terceros.
+                  El comprobador únicamente confirma que el recibo es auténtico y el monto aportado. Nunca muestra deudas familiares ni datos personales a personas ajenas al lote.
                 </p>
               </div>
             </TiltCard3D>

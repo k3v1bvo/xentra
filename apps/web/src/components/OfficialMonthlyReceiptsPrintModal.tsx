@@ -42,7 +42,7 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     socioCode: 'SOC-012',
     socioName: 'Juan José Flores Morales',
     ciNumber: '7412589 CBBA',
-    block: 'Manzana A',
+    block: 'Manzano 261',
     lot: 'Lote 12',
     concept: 'Aporte Pro-Tinglado Cancha (Abono Parcial)',
     period: 'Noviembre 2026',
@@ -52,8 +52,28 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     date: '21/11/2026',
     time: '10:30',
     token: '7a9f2b84c13e5d02e847192a3b4c5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
+    department: 'Cochabamba',
+    municipality: 'Cochabamba (Cercado)'
+  },
+  {
+    receiptNumber: 'OTB-CBBA-001-2026-00043',
+    socioCode: 'SOC-014',
+    socioName: 'Carlos Mendizábal Rojas',
+    ciNumber: '6123450 CBBA',
+    block: 'Manzano 261',
+    lot: 'Lote 14',
+    concept: 'Cuota Ordinaria Noviembre 2026',
+    period: 'Noviembre 2026',
+    amount: 25.00,
+    amountLiteral: 'Veinticinco 00/100 Bolivianos',
+    paymentMethod: 'QR Simple Bancario (BNB)',
+    date: '21/11/2026',
+    time: '11:00',
+    token: 'e1234a5b6c7d8e9f0123456789abcdef0123456789abcdef0123456789abcdef',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)'
   },
@@ -62,7 +82,7 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     socioCode: 'SOC-003',
     socioName: 'Silvia Rojas Torrico',
     ciNumber: '5289140 CBBA',
-    block: 'Manzana B',
+    block: 'Manzano 262',
     lot: 'Lote 08',
     concept: 'Cuota Ordinaria Noviembre 2026',
     period: 'Noviembre 2026',
@@ -72,8 +92,8 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     date: '20/11/2026',
     time: '16:45',
     token: 'b8192a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789abcdef012345678',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)'
   },
@@ -82,7 +102,7 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     socioCode: 'SOC-001',
     socioName: 'Roberto Gutiérrez Vargas',
     ciNumber: '3145678 CBBA',
-    block: 'Manzana A',
+    block: 'Manzano 262',
     lot: 'Lote 01',
     concept: 'Aporte Pro-Tinglado Cancha (Pago Total)',
     period: 'Noviembre 2026',
@@ -92,8 +112,8 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     date: '19/11/2026',
     time: '11:15',
     token: 'c9283b4a5d6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123456789',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)'
   },
@@ -102,7 +122,7 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     socioCode: 'SOC-005',
     socioName: 'Marina Condori Rocha',
     ciNumber: '4892103 CBBA',
-    block: 'Manzana A',
+    block: 'Manzano 263',
     lot: 'Lote 05',
     concept: 'Cuota Ordinaria Noviembre 2026',
     period: 'Noviembre 2026',
@@ -112,8 +132,28 @@ const MOCK_MONTHLY_RECEIPTS: OfficialReceipt[] = [
     date: '18/11/2026',
     time: '09:20',
     token: 'd0394c5b6e7f8091a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f901234567890a',
-    otbName: 'OTB Villa Esperanza',
-    otbCode: 'OTB-CBBA-001',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
+    department: 'Cochabamba',
+    municipality: 'Cochabamba (Cercado)'
+  },
+  {
+    receiptNumber: 'OTB-CBBA-001-2026-00038',
+    socioCode: 'SOC-009',
+    socioName: 'Gonzalo Claros Arispe',
+    ciNumber: '3987123 CBBA',
+    block: 'Manzano 266',
+    lot: 'Lote 03',
+    concept: 'Aporte Alumbrado y Mantenimiento',
+    period: 'Noviembre 2026',
+    amount: 35.00,
+    amountLiteral: 'Treinta y cinco 00/100 Bolivianos',
+    paymentMethod: 'Efectivo en Sede Social',
+    date: '17/11/2026',
+    time: '18:10',
+    token: 'f9876a5b4c3d2e1f0123456789abcdef0123456789abcdef0123456789abcdef',
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    otbCode: 'OTB-CBBA-024',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)'
   }
@@ -131,9 +171,12 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
   customReceipts
 }) => {
   const receipts = customReceipts || MOCK_MONTHLY_RECEIPTS;
-  const [selectedReceiptIndex, setSelectedReceiptIndex] = useState<number | 'all'>(0);
+  const [selectedReceiptIndex, setSelectedReceiptIndex] = useState<number | 'all'>('all');
+  const [selectedBlock, setSelectedBlock] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [qrCodeUrls, setQrCodeUrls] = useState<Record<string, string>>({});
+
+  const availableBlocks = Array.from(new Set(receipts.map((r) => r.block))).filter(Boolean);
 
   useEffect(() => {
     const generateAllQRs = async () => {
@@ -188,6 +231,8 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
   };
 
   const filteredReceipts = receipts.filter((r) => {
+    const matchesBlock = selectedBlock === 'ALL' || r.block === selectedBlock;
+    if (!matchesBlock) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -275,45 +320,92 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
         <div className="no-print-action pb-3 mb-4 border-b border-slate-200 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  Talonario Oficial de Recibos de Caja
+                  Talonario Oficial de Recibos
                 </span>
-                <span className="text-xs font-bold text-slate-600">
-                  {displayReceipts.length} recibo(s) en cola
+                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-300">
+                  {displayReceipts.length} recibo(s) listos
                 </span>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Ajuste Garantizado: 1 Hoja por Recibo
+                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  Formato: 1 Hoja por Recibo con Talón Desglosable
                 </span>
               </div>
               <h2 className="text-lg font-black text-slate-900 mt-1">
-                Emisión de Recibos con Talón Desglosable
+                Impresión y Reparto de Recibos por Manzano
               </h2>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrint}
-                className="py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-2 shadow-md shadow-emerald-500/25 transition-all cursor-pointer"
+                className="py-2.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
-                <span>Imprimir / Guardar en PDF (1 Hoja)</span>
+                <span>
+                  {selectedReceiptIndex !== 'all'
+                    ? 'Imprimir Recibo Seleccionado (1 Hoja)'
+                    : selectedBlock !== 'ALL'
+                    ? `Imprimir Manzano ${selectedBlock} (${displayReceipts.length} Hojas)`
+                    : `Imprimir Todo el Talonario (${displayReceipts.length} Hojas)`}
+                </span>
               </button>
               <button
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                className="p-2 text-slate-400 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Filtros para previsualizar socio individual o todos */}
+          {/* FILTRO RÁPIDO POR MANZANOS PARA REPARTO CASA POR CASA */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
+            <span className="text-xs font-black text-slate-700 flex items-center gap-1 mr-1">
+              <span>🏢 Manzano:</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedBlock('ALL');
+                setSelectedReceiptIndex('all');
+              }}
+              className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                selectedBlock === 'ALL'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+            >
+              Todos los Manzanos ({receipts.length})
+            </button>
+            {availableBlocks.map((blk) => {
+              const count = receipts.filter((r) => r.block === blk).length;
+              return (
+                <button
+                  key={blk}
+                  type="button"
+                  onClick={() => {
+                    setSelectedBlock(blk);
+                    setSelectedReceiptIndex('all');
+                  }}
+                  className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    selectedBlock === blk
+                      ? 'bg-emerald-600 text-white shadow-md'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {blk} ({count})
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Filtros para previsualizar socio individual o buscar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-100">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-xs font-bold text-slate-600 flex items-center gap-1">
                 <Filter className="w-3.5 h-3.5 text-slate-500" />
-                <span>Seleccionar:</span>
+                <span>Previsualizar:</span>
               </span>
               <select
                 value={selectedReceiptIndex === 'all' ? 'all' : selectedReceiptIndex}
@@ -321,12 +413,14 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                   const val = e.target.value;
                   setSelectedReceiptIndex(val === 'all' ? 'all' : parseInt(val, 10));
                 }}
-                className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-xs"
               >
-                <option value="all">Ver todos los socios (imprime 1 página c/u)</option>
+                <option value="all">
+                  Imprimir todos ({filteredReceipts.length} recibos en {selectedBlock === 'ALL' ? 'todos los manzanos' : selectedBlock})
+                </option>
                 {filteredReceipts.map((r, idx) => (
                   <option key={r.receiptNumber} value={idx}>
-                    {r.socioCode} - {r.socioName} ({r.lot})
+                    {r.block} • {r.lot} - {r.socioName} ({formatBOB(r.amount)})
                   </option>
                 ))}
               </select>

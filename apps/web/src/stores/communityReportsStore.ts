@@ -70,7 +70,7 @@ interface CommunityReportsState {
   getReportsByOtb: (otbId: string) => CommunityReport[];
 }
 
-const STORAGE_KEY = 'xentra_community_reports_v3_gamc';
+const STORAGE_KEY = 'xentra_community_reports_v4_clean';
 
 export const CATEGORY_METADATA: Record<
   ReportCategory,

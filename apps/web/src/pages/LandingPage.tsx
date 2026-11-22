@@ -683,7 +683,7 @@ export const LandingPage: React.FC = () => {
           <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
             <span className="text-[11px] font-bold text-emerald-400 block uppercase tracking-wider">Manzanos</span>
             <p className="font-black text-white text-sm mt-0.5">Manzanas 261 al 270</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">Códigos oficiales según plano municipal GAMC</span>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Códigos de manzanos y lotes delimitados</span>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
@@ -704,11 +704,7 @@ export const LandingPage: React.FC = () => {
           <div className="px-5 py-3.5 bg-[#030712] border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             <div className="flex flex-wrap items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-400" />
-              <span className="font-black text-white">Plano Oficial de Demostración: OTB Villa Graciela (Distrito 1 • Cochabamba)</span>
-              <span className="text-slate-500">•</span>
-              <span className="text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800/60">
-                Catastro GAMC
-              </span>
+              <span className="font-black text-white">Plano Oficial de la OTB: Villa Graciela (Cochabamba)</span>
             </div>
 
             <a

@@ -15,7 +15,7 @@ interface TenantState {
   updateOtb: (otbId: string, updatedFields: Partial<ExtendedOtb>) => void;
 }
 
-const STORAGE_KEY = 'xentra_tenant_otbs_v3_gamc';
+const STORAGE_KEY = 'xentra_tenant_otbs_v4_clean';
 
 const DEFAULT_OTBS: ExtendedOtb[] = [
   {
@@ -24,8 +24,8 @@ const DEFAULT_OTBS: ExtendedOtb[] = [
     name: 'Villa Graciela (Distrito 1)',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)',
-    zone: 'Distrito 1 - GAMC',
-    address: 'Av. Circunvalación Norte esq. Av. Litoral',
+    zone: 'Distrito 1',
+    address: 'Av. 6 de Agosto esq. Calle Sipe Sipe',
     logo_url: 'bolivia',
     currency: 'BOB',
     is_active: true,

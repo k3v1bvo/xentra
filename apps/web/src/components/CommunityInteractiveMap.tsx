@@ -93,14 +93,14 @@ function getPolygonCentroid(pts: [number, number][]): [number, number] {
   return [latSum / pts.length, lngSum / pts.length];
 }
 
-// Paleta oficial de colores catastrales inspirada en el Gobierno Autónomo Municipal de Cochabamba (GAMC - DOT)
-const COCHABAMBA_CADASTRE_PALETTE = [
-  { name: 'Rosa Distrito (GAMC)', color: '#FCA5A5' },
-  { name: 'Lavanda Queru Queru', color: '#D8B4FE' },
-  { name: 'Amarillo Comunal', color: '#FDE047' },
-  { name: 'Azul Cielo Catastral', color: '#93C5FD' },
+// Paleta de colores para manzanos
+const MANZANO_PALETTE = [
   { name: 'Durazno Melocotón', color: '#FDBA74' },
-  { name: 'Área Verde DOT', color: '#16A34A' },
+  { name: 'Rosa Distrito', color: '#FCA5A5' },
+  { name: 'Lavanda', color: '#D8B4FE' },
+  { name: 'Amarillo Comunal', color: '#FDE047' },
+  { name: 'Azul Cielo', color: '#93C5FD' },
+  { name: 'Área Verde Comunal', color: '#16A34A' },
   { name: 'Verde Preservación', color: '#15803D' },
   { name: 'Verde Lima', color: '#86EFAC' }
 ];
@@ -429,24 +429,30 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         weight: 3.5,
         dashArray: '8, 6',
         fillColor: '#3B82F6',
-        fillOpacity: 0.12
+        fillOpacity: 0.08
       }).addTo(group);
+
+      // Auto-centrar y enfocar automáticamente el mapa sobre la OTB
+      if (!isEditorOpen && mapInstanceRef.current) {
+        const bounds = perimeterPolygon.getBounds();
+        mapInstanceRef.current.fitBounds(bounds, {
+          padding: [20, 20],
+          maxZoom: 17
+        });
+      }
 
       perimeterPolygon.bindPopup(`
         <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 210px;">
           <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
             <span style="font-size: 16px;">🏛️</span>
-            <strong style="color: #1E3A8A; font-size: 14px;">Jurisdicción Oficial ${otbName}</strong>
+            <strong style="color: #1E3A8A; font-size: 14px;">Jurisdicción ${otbName}</strong>
           </div>
           <p style="color: #475569; font-size: 12px; margin: 4px 0;">
-            Límites territoriales delimitados según Ley N° 1551 de Participación Popular.
+            Límites territoriales oficiales de la OTB.
           </p>
           <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 6px; margin-top: 6px;">
             <span style="font-size: 11px; color: #1D4ED8; font-weight: bold; display: block;">
               Superficie: ~${areaHa.toFixed(2)} Hectáreas (~${(areaHa * 10000).toLocaleString('es-BO')} m²)
-            </span>
-            <span style="font-size: 10.5px; color: #64748B;">
-              Delimitación geométrica de ${perimeterToRender.length} vértices
             </span>
           </div>
         </div>
@@ -506,7 +512,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               </div>
 
               <div style="font-size: 11px; color: #059669; font-weight: bold;">
-                ✓ Cuadra integrada al Catastro Comunal (GAMC)
+                ✓ Manzano delimitado en la OTB
               </div>
             </div>
           `);
@@ -530,7 +536,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         }
       });
 
-      // Emblema Oficial OTB 24 Villa Graciela (Distrito 1 GAMC) en Manzano 270
+      // Emblema Oficial OTB 24 Villa Graciela en Manzano 270
       if (isCochabambaShowcase) {
         const otb24Icon = L.divIcon({
           html: `
@@ -1162,7 +1168,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color Catastral GAMC:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color del Manzano:</label>
                   <div className="flex items-center gap-1.5">
                     <input
                       type="color"
@@ -1171,7 +1177,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                       className="w-8 h-8 bg-transparent cursor-pointer rounded-lg flex-shrink-0"
                     />
                     <div className="flex flex-wrap gap-1">
-                      {COCHABAMBA_CADASTRE_PALETTE.slice(0, 6).map((pal) => (
+                      {MANZANO_PALETTE.slice(0, 6).map((pal) => (
                         <button
                           key={pal.color}
                           type="button"
@@ -1390,7 +1396,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Color GAMC:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-0.5">Color:</label>
                   <div className="flex items-center gap-1.5">
                     <input
                       type="color"
@@ -1399,7 +1405,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                       className="w-7 h-7 bg-transparent cursor-pointer rounded-lg flex-shrink-0"
                     />
                     <div className="flex flex-wrap gap-1">
-                      {COCHABAMBA_CADASTRE_PALETTE.slice(0, 5).map((pal) => (
+                      {MANZANO_PALETTE.slice(0, 5).map((pal) => (
                         <button
                           key={pal.color}
                           type="button"

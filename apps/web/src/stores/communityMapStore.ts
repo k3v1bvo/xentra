@@ -648,7 +648,7 @@ export const useCommunityMapStore = create<CommunityMapState>()(
       }
     }),
     {
-      name: 'xentra_community_territory_v6_single_otb_streets_real'
+      name: 'xentra_community_territory_v7_clean_cadastre'
     }
   )
 );

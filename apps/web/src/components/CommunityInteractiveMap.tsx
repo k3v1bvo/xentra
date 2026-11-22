@@ -508,20 +508,37 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     return () => ro.disconnect();
   }, []);
 
-  // Forzar redimensionamiento de Leaflet en cada cambio de apertura de editor o pantalla completa
+  // Forzar redimensionamiento y centrado automático sobre la OTB cada vez que se abre/cierra el editor o pantalla completa
   useEffect(() => {
     if (!mapInstanceRef.current) return;
-    const t1 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
-    const t2 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 150);
-    const t3 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 300);
-    const t4 = setTimeout(() => mapInstanceRef.current?.invalidateSize(), 600);
+    const perimeterToRender = territory.perimeter;
+    
+    const recomputeMapViewport = () => {
+      if (!mapInstanceRef.current) return;
+      mapInstanceRef.current.invalidateSize({ debounceMoveend: true });
+      if (perimeterToRender.length >= 3) {
+        const bounds = L.latLngBounds(perimeterToRender);
+        mapInstanceRef.current.fitBounds(bounds, {
+          padding: [30, 30],
+          maxZoom: 17,
+          animate: false
+        });
+      } else {
+        mapInstanceRef.current.setView([effectiveCenterLat, effectiveCenterLng], territory.zoom || 16);
+      }
+    };
+
+    const t1 = setTimeout(recomputeMapViewport, 50);
+    const t2 = setTimeout(recomputeMapViewport, 150);
+    const t3 = setTimeout(recomputeMapViewport, 300);
+    const t4 = setTimeout(recomputeMapViewport, 600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
     };
-  }, [isEditorOpen, isFullscreen]);
+  }, [isEditorOpen, isFullscreen, territory.perimeter, effectiveCenterLat, effectiveCenterLng]);
 
   // =========================================================================
   // 2. RENDERIZADO DE CAPAS (PERÍMETRO, MANZANOS, VECINOS, EQUIPAMIENTO)
@@ -1501,9 +1518,11 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </div>
           )}
 
-          {/* Manzanos Existentes con Edición y Borrado Rápido */}
-          <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2 text-[11px]">
-            <span className="font-bold text-slate-400">Manzanos Registrados:</span>
+          {/* Manzanos Existentes con Edición y Borrado Rápido (scroll horizontal compacto) */}
+          <div className="pt-2 border-t border-slate-800 flex items-center gap-2 text-[11px] overflow-x-auto pb-1">
+            <span className="font-bold text-slate-400 whitespace-nowrap flex-shrink-0">
+              Manzanos Registrados ({territory.manzanos.length}):
+            </span>
             {territory.manzanos.map((m) => (
               <span
                 key={m.id}
@@ -1511,7 +1530,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   setInspectedManzano(m);
                   setIsEditingInspectedManzano(true);
                 }}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono font-bold cursor-pointer hover:scale-105 transition-all shadow-sm"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono font-bold cursor-pointer hover:scale-105 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
                 style={{ backgroundColor: `${m.color}25`, borderColor: m.color, color: m.color }}
                 title="Hacer clic para editar nombre, código, lotes o color"
               >

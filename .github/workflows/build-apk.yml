@@ -60,9 +60,11 @@ jobs:
         run: |
           mkdir -p apps/mobile/android/app/src/main/assets
           cd apps/mobile
-          ENTRY_PATH=$(node -e "console.log(require.resolve('expo-router/entry'))")
-          echo "Resolving entry at: $ENTRY_PATH"
-          npx expo export:embed --entry-file "$ENTRY_PATH" --platform android --dev false --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          npx expo export --platform android --output-dir dist_bundle
+          cp dist_bundle/_expo/static/js/android/*.hbc android/app/src/main/assets/index.android.bundle
+          if [ -d "dist_bundle/assets" ]; then
+            cp -r dist_bundle/assets/* android/app/src/main/res/ 2>/dev/null || true
+          fi
           ls -lh android/app/src/main/assets/index.android.bundle
           cd ../..
 

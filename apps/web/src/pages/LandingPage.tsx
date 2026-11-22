@@ -38,12 +38,14 @@ import { CommunityTransparencyModal } from '../components/CommunityTransparencyM
 import { InstallAppModal } from '../components/InstallAppModal';
 import { CommunityInteractiveMap } from '../components/CommunityInteractiveMap';
 import { CommunityFooter } from '../components/CommunityFooter';
+import { useAuthStore } from '../stores/authStore';
 import { useTenantStore } from '../stores/tenantStore';
 import { formatBOB } from '@xentra/shared';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { currentOtb } = useTenantStore();
+  const { isAuthenticated, currentRole, logout } = useAuthStore();
 
   // Estados de interfaz y modales
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -134,23 +136,59 @@ export const LandingPage: React.FC = () => {
             <span>App APK</span>
           </button>
 
-          <button
-            onClick={() => navigate('/login')}
-            className="h-10 px-4 rounded-xl text-xs font-black text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/25"
-          >
-            <span>Iniciar Sesión</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (currentRole === 'vecino') navigate('/vecino');
+                  else if (currentRole === 'superadmin') navigate('/superadmin');
+                  else navigate('/admin');
+                }}
+                className="h-10 px-4 rounded-xl text-xs font-black text-white bg-blue-600 hover:bg-blue-500 transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/25"
+              >
+                <span>{currentRole === 'vecino' ? 'Ir a Mis Cuotas' : currentRole === 'superadmin' ? 'Consola Superadmin' : 'Panel Directiva'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={logout}
+                title="Cerrar Sesión"
+                className="h-10 px-3 rounded-xl text-xs font-bold text-slate-400 hover:text-rose-400 bg-slate-900 hover:bg-slate-800 border border-slate-700 transition-colors cursor-pointer"
+              >
+                Salir
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="h-10 px-4 rounded-xl text-xs font-black text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/25"
+            >
+              <span>Iniciar Sesión</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Botón Menú Móvil */}
         <div className="flex sm:hidden items-center gap-2">
-          <button
-            onClick={() => navigate('/login')}
-            className="h-9 px-3 rounded-lg text-xs font-black text-white bg-blue-600 flex items-center gap-1 shadow-sm"
-          >
-            <span>Ingresar</span>
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                if (currentRole === 'vecino') navigate('/vecino');
+                else if (currentRole === 'superadmin') navigate('/superadmin');
+                else navigate('/admin');
+              }}
+              className="h-9 px-3 rounded-lg text-xs font-black text-white bg-blue-600 flex items-center gap-1 shadow-sm"
+            >
+              <span>{currentRole === 'vecino' ? 'Mi Portal' : 'Panel'}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="h-9 px-3 rounded-lg text-xs font-black text-white bg-blue-600 flex items-center gap-1 shadow-sm"
+            >
+              <span>Ingresar</span>
+            </button>
+          )}
 
           <button
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -216,16 +254,42 @@ export const LandingPage: React.FC = () => {
                 <Smartphone className="w-4 h-4 text-emerald-400" />
                 <span>Descargar App Móvil APK</span>
               </button>
-              <button
-                onClick={() => {
-                  setMobileNavOpen(false);
-                  navigate('/login');
-                }}
-                className="w-full text-center py-3 rounded-xl text-sm font-black text-white bg-blue-600 hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg"
-              >
-                <span>Acceder a mi OTB</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {isAuthenticated ? (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setMobileNavOpen(false);
+                      if (currentRole === 'vecino') navigate('/vecino');
+                      else if (currentRole === 'superadmin') navigate('/superadmin');
+                      else navigate('/admin');
+                    }}
+                    className="flex-1 text-center py-3 rounded-xl text-sm font-black text-white bg-blue-600 hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg"
+                  >
+                    <span>{currentRole === 'vecino' ? 'Ir a Mis Cuotas' : 'Ir a Panel Directiva'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileNavOpen(false);
+                    }}
+                    className="px-4 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-rose-400 bg-slate-900 border border-slate-700"
+                  >
+                    Salir
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    navigate('/login');
+                  }}
+                  className="w-full text-center py-3 rounded-xl text-sm font-black text-white bg-blue-600 hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <span>Acceder a mi OTB</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -4,17 +4,29 @@ import { XentraLogo } from '../components/XentraLogo';
 import { TiltCard3D } from '../components/TiltCard3D';
 import { useAuthStore } from '../stores/authStore';
 import { AppRole } from '@xentra/shared';
-import { Lock, Mail, ArrowRight, ShieldCheck, User } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, User, AlertCircle } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { setUser, setProfile, setCurrentRole } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password.trim()) {
+      setErrorMessage('Por favor ingresa tu correo y contraseña asignada.');
+      return;
+    }
+
+    if (password !== 'xentra2026') {
+      setErrorMessage('Contraseña incorrecta. Contacta a la Mesa Directiva de tu OTB para restablecer tu clave de acceso.');
+      return;
+    }
 
     if (cleanEmail.includes('vecino')) {
       setUser({ id: 'demo-vecino', email: cleanEmail });
@@ -67,20 +79,24 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    // Por defecto (Tesorería)
-    setUser({ id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: cleanEmail || 'marina.tesoreria@xentra.app' });
-    setProfile({
-      id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
-      first_name: 'Marina',
-      last_name: 'Condori Rocha',
-      ci_number: '6398412',
-      ci_extension: 'CBBA',
-      phone: '73456789',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    });
-    setCurrentRole('tesorero');
-    navigate('/admin');
+    if (cleanEmail.includes('tesorero') || cleanEmail.includes('condori')) {
+      setUser({ id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: cleanEmail });
+      setProfile({
+        id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
+        first_name: 'Marina',
+        last_name: 'Condori Rocha',
+        ci_number: '6398412',
+        ci_extension: 'CBBA',
+        phone: '73456789',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      setCurrentRole('tesorero');
+      navigate('/admin');
+      return;
+    }
+
+    setErrorMessage('Correo no registrado en el padrón de la OTB. Verifica el correo institucional provisto por tu directiva.');
   };
 
   return (
@@ -101,6 +117,13 @@ export const LoginPage: React.FC = () => {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400 mt-0.5" />
+                <span className="leading-snug">{errorMessage}</span>
+              </div>
+            )}
+
             <div>
               <label className="font-bold text-slate-200 block mb-1">Correo Electrónico</label>
               <div className="relative">

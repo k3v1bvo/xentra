@@ -78,25 +78,28 @@ export const NeighborLayout: React.FC = () => {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => navigate('/admin')}
-            className="flex items-center gap-2 min-h-[44px] px-4 py-2 rounded-2xl text-sm font-black text-blue-200 bg-blue-950/70 hover:bg-blue-900 border-2 border-blue-500/40 transition-colors cursor-pointer shadow-sm"
-          >
-            <span>Panel Directiva</span>
-          </button>
-
           <NotificationBell />
 
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
+            <div className="hidden sm:flex flex-col text-right">
+              <span className="text-xs font-black text-white">
+                {profile?.first_name || 'Vecino'} {profile?.last_name || 'Registrado'}
+              </span>
+              <span className="text-[10px] text-emerald-400 font-bold font-mono">
+                Socio Activo • Lote 12
+              </span>
+            </div>
+
             <div className="w-9 h-9 rounded-full bg-blue-600/30 border-2 border-blue-400/60 text-blue-200 font-black text-sm flex items-center justify-center shadow-sm">
               {profile?.first_name?.[0] || 'V'}
             </div>
+
             <button
               onClick={() => {
                 logout();
-                navigate('/');
+                navigate('/login');
               }}
-              title="Salir"
+              title="Cerrar Sesión"
               className="p-2 text-slate-400 hover:text-rose-400 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <LogOut className="w-5 h-5" />
@@ -140,20 +143,23 @@ export const NeighborLayout: React.FC = () => {
           <span>Verificar QR</span>
         </NavLink>
 
-        <NavLink
-          to="/admin"
-          className="flex flex-col items-center justify-center gap-1 min-h-[52px] py-1 px-3.5 rounded-2xl text-xs font-black text-slate-300 hover:text-blue-300 transition-all"
+        <button
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          className="flex flex-col items-center justify-center gap-1 min-h-[52px] py-1 px-3.5 rounded-2xl text-xs font-black text-slate-400 hover:text-rose-400 transition-all cursor-pointer"
         >
-          <Building2 className="w-5 h-5" />
-          <span>Directiva</span>
-        </NavLink>
+          <LogOut className="w-5 h-5" />
+          <span>Cerrar Sesión</span>
+        </button>
 
         <NavLink
           to="/"
-          className="flex flex-col items-center justify-center gap-1 min-h-[52px] py-1 px-3.5 rounded-2xl text-xs font-black text-slate-300 hover:text-rose-400 transition-all"
+          className="flex flex-col items-center justify-center gap-1 min-h-[52px] py-1 px-3.5 rounded-2xl text-xs font-black text-slate-300 hover:text-white transition-all"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Inicio</span>
+          <span>Portada</span>
         </NavLink>
       </nav>
     </div>

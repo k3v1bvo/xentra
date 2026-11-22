@@ -16,32 +16,11 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
-    email: 'marina.tesoreria@xentra.app'
-  },
-  profile: {
-    id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
-    first_name: 'Marina',
-    last_name: 'Condori Rocha',
-    ci_number: '6398412',
-    ci_extension: 'CBBA',
-    phone: '73456789',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  currentRole: 'tesorero',
-  memberships: [
-    {
-      id: 'mem-001',
-      otb_id: '11111111-1111-1111-1111-111111111111',
-      user_id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
-      role: 'tesorero',
-      is_active: true,
-      joined_at: new Date().toISOString()
-    }
-  ],
-  isAuthenticated: true,
+  user: null,
+  profile: null,
+  currentRole: 'vecino',
+  memberships: [],
+  isAuthenticated: false,
   isLoading: false,
 
   setUser: (user) => set({ user, isAuthenticated: !!user }),

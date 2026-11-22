@@ -41,7 +41,7 @@ const NAV_ITEMS = [
 export const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { profile, currentRole, setCurrentRole, logout } = useAuthStore();
+  const { profile, currentRole, logout } = useAuthStore();
   const { currentOtb, availableOtbs, setCurrentOtb } = useTenantStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -57,15 +57,6 @@ export const AdminLayout: React.FC = () => {
       return location.pathname === '/admin';
     }
     return location.pathname === to && !location.search;
-  };
-
-  const handleRoleChange = (role: AppRole) => {
-    setCurrentRole(role);
-    if (role === 'vecino') {
-      navigate('/vecino');
-    } else if (role === 'superadmin') {
-      navigate('/superadmin');
-    }
   };
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -297,36 +288,15 @@ export const AdminLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Selector Rápido de Rol (Demo) */}
-            <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
-              <button
-                onClick={() => handleRoleChange('presidente')}
-                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
-                  currentRole === 'presidente' || currentRole === 'tesorero'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Directiva
-              </button>
-              <button
-                onClick={() => handleRoleChange('vecino')}
-                className={`px-2.5 py-1 rounded-lg font-black transition-all ${
-                  currentRole === 'vecino'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Vecino
-              </button>
-              {isSuperadmin && (
-                <button
-                  onClick={() => handleRoleChange('superadmin')}
-                  className="px-2.5 py-1 rounded-lg font-black bg-purple-600 text-white shadow-sm"
-                >
-                  Superadmin
-                </button>
-              )}
+            {/* Indicador de Rol Autenticado */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-slate-300">
+                {currentRole === 'superadmin' ? 'Superadmin Nacional' : currentRole === 'presidente' ? 'Presidencia OTB' : 'Tesorería OTB'}
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                {profile?.first_name || 'Directiva'}
+              </span>
             </div>
 
             {/* Notificaciones */}

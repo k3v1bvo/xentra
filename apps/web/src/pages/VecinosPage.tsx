@@ -191,7 +191,7 @@ export const VecinosPage: React.FC = () => {
   // Filtrado Estricto por OTB (solo superadmin ve todas las OTBs de Bolivia)
   const visibleNeighbors = isSuperadmin
     ? neighbors
-    : neighbors.filter((n) => !n.otbId || n.otbId === currentOtbId);
+    : neighbors.filter((n) => n.otbId === currentOtbId);
 
   // Vecino seleccionado para enfocar su casa en el mapa
   const [focusedNeighbor, setFocusedNeighbor] = useState<NeighborMock | null>(
@@ -477,7 +477,7 @@ export const VecinosPage: React.FC = () => {
                 centerLng={focusedNeighbor ? focusedNeighbor.longitude : -66.16543}
                 zoom={17}
                 heightClass="h-80 sm:h-96"
-                otbName="OTB Villa Esperanza"
+                otbName={currentOtb?.name || 'OTB'}
                 selectedLotName={focusedNeighbor ? `${focusedNeighbor.name} — ${focusedNeighbor.block}, ${focusedNeighbor.house}` : undefined}
               />
 
@@ -494,7 +494,7 @@ export const VecinosPage: React.FC = () => {
                   </span>
                 </div>
                 <span className="font-mono text-[11px] text-slate-500">
-                  Coordenadas GPS Villa Esperanza: -17.41325, -66.16543
+                  Jurisdicción: {currentOtb?.name || 'Comunidad'} ({currentOtb?.department || 'Bolivia'})
                 </span>
               </div>
             </div>
@@ -753,7 +753,7 @@ export const VecinosPage: React.FC = () => {
               <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
                 <span className="font-bold text-blue-400 block mb-1">📍 Coordenadas de Localización GPS:</span>
                 <span className="font-mono text-[11px] text-slate-400">
-                  Latitud: {newLat} • Longitud: {newLng} (Sede OTB Villa Esperanza)
+                  Latitud: {newLat} • Longitud: {newLng} (Sede {currentOtb?.name || 'Comunal'})
                 </span>
               </div>
 

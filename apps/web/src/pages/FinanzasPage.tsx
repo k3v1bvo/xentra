@@ -198,11 +198,11 @@ export const FinanzasPage: React.FC = () => {
 
   const visiblePayments = isSuperadmin
     ? payments
-    : payments.filter((p) => !p.otbId || p.otbId === currentOtbId);
+    : payments.filter((p) => p.otbId === currentOtbId);
 
   const visibleFees = isSuperadmin
     ? fees
-    : fees.filter((f) => !f.otbId || f.otbId === currentOtbId);
+    : fees.filter((f) => f.otbId === currentOtbId);
 
   const pendingCount = visibleSubmissions.filter((s) => s.status === 'PendingVerification').length;
 
@@ -212,7 +212,7 @@ export const FinanzasPage: React.FC = () => {
   // Modal Cobro Manual
   const [showPayModal, setShowPayModal] = useState(false);
   const [neighborName, setNeighborName] = useState(
-    otbCensusNeighbors[0]?.name || 'Juan José Flores Morales'
+    otbCensusNeighbors[0]?.name || 'Vecino OTB'
   );
   const [payAmount, setPayAmount] = useState('50.00');
   const [payMethod, setPayMethod] = useState<PaymentMethod>('Efectivo');

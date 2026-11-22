@@ -219,7 +219,7 @@ export const LandingPage: React.FC = () => {
       setProfile({
         id: 'user-dir-1',
         first_name: 'Roberto',
-        last_name: 'Gutiérrez (Presidente)',
+        last_name: 'Gutiérrez Vargas',
         ci_number: '7654321',
         phone: '76543210',
         created_at: new Date().toISOString(),
@@ -231,7 +231,7 @@ export const LandingPage: React.FC = () => {
       setProfile({
         id: 'user-vec-1',
         first_name: 'Juan José',
-        last_name: 'Flores (Socio)',
+        last_name: 'Flores Morales',
         ci_number: '7412589',
         phone: '74567890',
         created_at: new Date().toISOString(),

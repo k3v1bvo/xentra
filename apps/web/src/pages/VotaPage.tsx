@@ -171,11 +171,11 @@ export const VotaPage: React.FC = () => {
   // Filtrado Estricto por OTB (solo superadmin ve a nivel nacional)
   const visiblePolls = isSuperadmin
     ? polls
-    : polls.filter((p) => !p.otbId || p.otbId === currentOtbId);
+    : polls.filter((p) => p.otbId === currentOtbId);
 
   const visibleNews = isSuperadmin
     ? news
-    : news.filter((n) => !n.otbId || n.otbId === currentOtbId);
+    : news.filter((n) => n.otbId === currentOtbId);
 
   // Modales de creación (Solo para Directiva / Admin)
   const [showCreatePollModal, setShowCreatePollModal] = useState(false);

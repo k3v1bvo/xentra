@@ -388,6 +388,36 @@ export const VecinosPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
+      {/* Estilos para impresión limpia del Padrón */}
+      <style>{`
+        @media print {
+          body, html {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+          }
+          nav, aside, header, .no-print-action, button, #mapa-catastral-vecinal {
+            display: none !important;
+          }
+          table {
+            color: #000000 !important;
+            background: #FFFFFF !important;
+            width: 100% !important;
+          }
+          thead {
+            background: #F1F5F9 !important;
+          }
+          th, td {
+            color: #000000 !important;
+            border-bottom: 1px solid #CBD5E1 !important;
+            padding: 6px 8px !important;
+          }
+          @page {
+            size: portrait letter;
+            margin: 8mm 10mm;
+          }
+        }
+      `}</style>
+
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

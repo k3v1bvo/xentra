@@ -72,21 +72,6 @@ p, span, label, li {
 }
 
 /* =========================================================================
-   LEAFLET MAP & TILE RENDERING FIX (PREVENT TILE CRUSHING & BLACK VOID)
-   ========================================================================= */
-.leaflet-container {
-  background-color: #E2E8F0 !important;
-  outline: none;
-}
-.leaflet-container img {
-  max-width: none !important;
-  max-height: none !important;
-}
-.leaflet-tile {
-  visibility: inherit !important;
-}
-
-/* =========================================================================
    ESTÁNDAR GLOBAL DE IMPRESIÓN (PDF & IMPRESORAS FÍSICAS - HOJA ÚNICA)
    ========================================================================= */
 @media print {

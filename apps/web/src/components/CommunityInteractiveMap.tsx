@@ -340,10 +340,10 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     });
     mapInstanceRef.current = map;
 
-    // Capa base Esri World Street Map (100% limpia, sin marcas de agua ni API key)
-    const primaryTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    // Capa base OpenStreetMap Oficial y Estable (Cochabamba)
+    const primaryTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: 'Tiles &copy; Esri'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     });
     primaryTileLayerRef.current = primaryTileLayer;
     primaryTileLayer.addTo(map);
@@ -1052,151 +1052,160 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const totalLots = territory.manzanos.reduce((acc, m) => acc + m.lotsCount, 0);
 
   return (
-    <div className={`w-full ${isFullscreen ? 'fixed inset-0 z-50 rounded-none w-screen h-screen' : heightClass} rounded-3xl overflow-hidden border-2 border-slate-700 shadow-2xl relative z-10 flex flex-col bg-[#0B132B]`}>
+    <div className={`w-full ${isFullscreen ? 'fixed inset-0 z-[9999] rounded-none w-screen h-screen' : heightClass} rounded-3xl overflow-hidden border-2 border-slate-700 shadow-2xl relative z-10 flex flex-col bg-[#0B132B]`}>
       
       {/* =================================================================== */}
-      {/* 1. BARRA SUPERIOR DE CONTROL, CAPAS Y HERRAMIENTA LÁPIZ             */}
+      {/* 1. BARRA SUPERIOR ESTRUCTURADA EN 2 FILAS: CERO DESBORDES NI CORTES */}
       {/* =================================================================== */}
-      <div className="px-3 sm:px-5 py-2.5 bg-[#030712]/95 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs z-30">
+      <div className="px-3 sm:px-5 py-2.5 bg-[#030712]/98 border-b border-slate-800 flex flex-col gap-2 z-30">
         
-        {/* Identidad de la OTB y Métricas Territoriales */}
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <span className="font-black text-white text-xs sm:text-sm">
-              {otbName}
-            </span>
-            <span className="text-[10px] text-blue-300 font-mono font-bold">
-              ({territory.manzanos.length} Manzanos • {totalLots} Lotes • {neighbors.length} Familias)
-            </span>
-          </div>
-        </div>
-
-        {/* Acciones de la barra */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-          
-          {/* Conmutador de Capas Interactivas */}
-          {showControls && (
-            <div className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-[11px] font-bold">
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, perimetro: !p.perimetro }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.perimetro ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar/Ocultar Límites de la OTB"
-              >
-                <span>🏛️ Perímetro</span>
-              </button>
-
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, manzanos: !p.manzanos }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.manzanos ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar/Ocultar Manzanos y Calles"
-              >
-                <span>🏘️ Manzanos</span>
-              </button>
-
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, vecinos: !p.vecinos }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.vecinos ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar Casas de los Vecinos"
-              >
-                <span>🏠 Vecinos ({neighbors.length})</span>
-              </button>
-
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, equipamiento: !p.equipamiento }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.equipamiento ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar Sede, Tinglado, Agua y Seguridad"
-              >
-                <span>📍 Espacios Clave</span>
-              </button>
+        {/* FILA 1: Identidad OTB + Acciones Principales (SIEMPRE VISIBLES Y CLICKEABLES) */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 truncate">
+              <span className="font-black text-white text-xs sm:text-sm truncate">
+                {otbName}
+              </span>
+              <span className="text-[10px] text-blue-300 font-mono font-bold whitespace-nowrap">
+                ({territory.manzanos.length} Manzanos • {totalLots} Lotes • {neighbors.length} Familias)
+              </span>
             </div>
-          )}
+          </div>
 
-          {/* Botón OTBs Vecinas / Colindancias */}
-          <button
-            onClick={() => setShowAdjacentOtbs(!showAdjacentOtbs)}
-            className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 border ${
-              showAdjacentOtbs
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
-                : 'bg-slate-900 text-slate-300 hover:text-white border-slate-700'
-            }`}
-            title="Mostrar u ocultar los límites de las OTBs colindantes de alrededor"
-          >
-            <span>🗺️ OTBs Vecinas</span>
-          </button>
+          {/* Botones de Acción Primaria */}
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            {/* Recentrar */}
+            <button
+              onClick={handleRecenter}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1"
+              title="Centrar mapa en la OTB"
+            >
+              <span>🎯 Centrar</span>
+            </button>
 
-          {/* Botón Recentrar en la OTB */}
-          <button
-            onClick={handleRecenter}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1"
-            title="Centrar y enfocar la vista en la OTB"
-          >
-            <span>🎯 Centrar</span>
-          </button>
+            {/* Modo Dibujo / Editor */}
+            {canEditTerritory && (
+              <button
+                onClick={() => {
+                  const next = !isEditorOpen;
+                  setIsEditorOpen(next);
+                  if (next) {
+                    setNewManzanoPoints([]);
+                  }
+                  setTimeout(() => {
+                    mapInstanceRef.current?.invalidateSize();
+                    primaryTileLayerRef.current?.redraw();
+                  }, 60);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
+                  isEditorOpen
+                    ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-300'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/25'
+                }`}
+              >
+                <PenTool className="w-3.5 h-3.5" />
+                <span>{isEditorOpen ? '✕ Cerrar' : '✏️ Dibujar'}</span>
+              </button>
+            )}
 
-          {/* Botón Maestro: Modo Dibujo / Editor */}
-          {canEditTerritory && (
+            {/* Pantalla Completa */}
             <button
               onClick={() => {
-                const next = !isEditorOpen;
-                setIsEditorOpen(next);
-                if (next) {
-                  setNewManzanoPoints([]);
-                }
+                const next = !isFullscreen;
+                setIsFullscreen(next);
                 setTimeout(() => {
                   mapInstanceRef.current?.invalidateSize();
                   primaryTileLayerRef.current?.redraw();
-                }, 60);
+                }, 100);
+                setTimeout(() => {
+                  mapInstanceRef.current?.invalidateSize();
+                }, 300);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
-                isEditorOpen
-                  ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-300'
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/25'
+              className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 border ${
+                isFullscreen
+                  ? 'bg-rose-600 text-white border-rose-400 shadow-md'
+                  : 'bg-slate-900 text-slate-300 hover:text-white border-slate-700'
               }`}
+              title={isFullscreen ? 'Salir de pantalla completa' : 'Ver mapa en pantalla completa'}
             >
-              <PenTool className="w-3.5 h-3.5" />
-              <span>{isEditorOpen ? '✕ Cerrar Editor' : '✏️ Dibujar Plano'}</span>
+              <span>{isFullscreen ? '✕ Salir' : '⛶ Pantalla Completa'}</span>
             </button>
-          )}
+          </div>
+        </div>
 
-          {/* Pantalla Completa */}
-          <button
-            onClick={() => {
-              const next = !isFullscreen;
-              setIsFullscreen(next);
-              setTimeout(() => mapInstanceRef.current?.invalidateSize(), 150);
-              setTimeout(() => mapInstanceRef.current?.invalidateSize(), 350);
-            }}
-            className={`px-2.5 py-1.5 rounded-xl font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 border ${
-              isFullscreen
-                ? 'bg-rose-600 text-white border-rose-400'
-                : 'bg-slate-900 text-slate-300 hover:text-white border-slate-700'
-            }`}
-            title={isFullscreen ? 'Salir de pantalla completa' : 'Ver mapa en pantalla completa'}
-          >
-            <span>{isFullscreen ? '✕ Salir' : '⛶ Pantalla Completa'}</span>
-          </button>
+        {/* FILA 2: Capas y Utilidades (Scroll horizontal suave que nunca se corta) */}
+        <div className="flex items-center justify-between gap-2 overflow-x-auto pb-0.5 text-[11px]">
+          <div className="flex items-center gap-1.5 flex-nowrap">
+            {showControls && (
+              <>
+                <button
+                  onClick={() => setLayerFilters((p) => ({ ...p, perimetro: !p.perimetro }))}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-bold whitespace-nowrap ${
+                    layerFilters.perimetro ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                  title="Mostrar/Ocultar Límites de la OTB"
+                >
+                  <span>🏛️ Perímetro</span>
+                </button>
 
-          {/* Exportar GeoJSON */}
+                <button
+                  onClick={() => setLayerFilters((p) => ({ ...p, manzanos: !p.manzanos }))}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-bold whitespace-nowrap ${
+                    layerFilters.manzanos ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                  title="Mostrar/Ocultar Manzanos y Calles"
+                >
+                  <span>🏘️ Manzanos</span>
+                </button>
+
+                <button
+                  onClick={() => setLayerFilters((p) => ({ ...p, vecinos: !p.vecinos }))}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-bold whitespace-nowrap ${
+                    layerFilters.vecinos ? 'bg-purple-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                  title="Mostrar Casas de los Vecinos"
+                >
+                  <span>🏠 Vecinos ({neighbors.length})</span>
+                </button>
+
+                <button
+                  onClick={() => setLayerFilters((p) => ({ ...p, equipamiento: !p.equipamiento }))}
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 font-bold whitespace-nowrap ${
+                    layerFilters.equipamiento ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  }`}
+                  title="Mostrar Sede, Tinglado, Agua y Seguridad"
+                >
+                  <span>📍 Espacios Clave</span>
+                </button>
+              </>
+            )}
+
+            <button
+              onClick={() => setShowAdjacentOtbs(!showAdjacentOtbs)}
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1 border whitespace-nowrap ${
+                showAdjacentOtbs
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                  : 'bg-slate-900 text-slate-400 hover:text-white border-slate-800'
+              }`}
+              title="Mostrar u ocultar los límites de las OTBs colindantes de alrededor"
+            >
+              <span>🗺️ OTBs Vecinas</span>
+            </button>
+          </div>
+
           {canEditTerritory && (
             <button
               onClick={handleExportGeoJson}
               title="Descargar plano comunal en formato GeoJSON"
-              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 font-bold cursor-pointer whitespace-nowrap flex-shrink-0"
             >
               <Download className="w-3 h-3 text-blue-400" />
               <span>GeoJSON</span>
             </button>
           )}
         </div>
+
       </div>
 
       {/* Alerta de Dibujo con Lápiz en Vivo */}
@@ -1704,7 +1713,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       <div
         ref={mapContainerRef}
         className={`w-full flex-1 min-h-[380px] sm:min-h-[460px] relative z-0 ${isEditorOpen && drawingMethod === 'pencil' ? 'cursor-crosshair' : ''}`}
-        style={{ minHeight: '380px' }}
+        style={{ minHeight: '380px', backgroundColor: '#F8FAFC' }}
       />
 
       {/* =================================================================== */}

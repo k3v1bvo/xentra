@@ -63,6 +63,8 @@ jobs:
           cd ../..
 
       - name: 📱 Build Real Android APK with Gradle
+        env:
+          NODE_ENV: production
         run: |
           mkdir -p build/apk
           echo "sdk.dir=$ANDROID_HOME" > apps/mobile/android/local.properties

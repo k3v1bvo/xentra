@@ -33,21 +33,25 @@ export interface OtbTerritoryConfig {
 }
 
 const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
-  // OTB Villa Graciela (OTB No. 24 - Distrito 1 GAMC Cochabamba) / Villa Esperanza
+  // OTB Villa Graciela (OTB No. 24 - Distrito 1 GAMC Cochabamba)
   '11111111-1111-1111-1111-111111111111': {
     otbId: '11111111-1111-1111-1111-111111111111',
     otbName: 'OTB Villa Graciela (Distrito 1)',
     centerLat: -17.41315,
     centerLng: -66.16495,
     zoom: 16,
-    // Perímetro trazado por el eje de las avenidas y calles limítrofes oficiales
+    // Perímetro oficial ajustado al trazado vial del GAMC (Distrito 1)
     perimeter: [
-      [-17.4110, -66.1680], // Esquina NO: Av. Circunvalación esq. Av. Ecológica
-      [-17.4110, -66.1619], // Esquina NE: Av. Circunvalación esq. Calle Los Pinos (Límite con OTB 6 Pacata Central)
-      [-17.4153, -66.1619], // Esquina SE: Av. Litoral Sur esq. Calle Los Pinos
-      [-17.4153, -66.1680]  // Esquina SO: Av. Litoral Sur esq. Av. Ecológica
+      [-17.4110, -66.1672], // NO: Av. Circunvalación Norte
+      [-17.4110, -66.1616], // NE: Av. Circunvalación esq. Calle Los Pinos (Límite con OTB 6 Pacata Central)
+      [-17.4154, -66.1616], // SE: Av. Litoral Sur esq. Calle Los Pinos
+      [-17.4154, -66.1677], // Sur: Av. Litoral Sur
+      [-17.4151, -66.1687], // SO: Curva de unión vial
+      [-17.4144, -66.1692], // Oeste: Curva limítrofe con OTB 13 Mesadilla
+      [-17.4127, -66.1686], // NO: Corredor curvo
+      [-17.4118, -66.1680]  // Cierre NO
     ],
-    // Manzanos trazados con cuadrícula y corredores viales reales (Calles 12m-15m)
+    // Manzanos trazados con cuadrícula orgánica oficial y corredores viales reales
     manzanos: [
       // FILA NORTE (Bordeando Av. Circunvalación Norte)
       {
@@ -56,13 +60,15 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 263',
         color: '#FDBA74', // Durazno Melocotón (Plano GAMC OTB 24)
         polygon: [
-          [-17.4114, -66.1676],
-          [-17.4114, -66.1660],
-          [-17.4124, -66.1660],
-          [-17.4124, -66.1676]
+          [-17.4114, -66.1669],
+          [-17.4114, -66.1656],
+          [-17.4124, -66.1656],
+          [-17.4124, -66.1675],
+          [-17.4119, -66.1673],
+          [-17.4115, -66.1670]
         ],
         lotsCount: 22,
-        description: 'Av. Circunvalación esq. Calle Cochabamba • 22 Lotes Censados'
+        description: 'Av. Circunvalación Norte esq. Calle Cochabamba • Esquina curva noroeste'
       },
       {
         id: 'mza-262',
@@ -70,10 +76,10 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 262',
         color: '#FDBA74',
         polygon: [
-          [-17.4114, -66.1656],
-          [-17.4114, -66.1641],
-          [-17.4124, -66.1641],
-          [-17.4124, -66.1656]
+          [-17.4114, -66.1652],
+          [-17.4114, -66.1638],
+          [-17.4124, -66.1638],
+          [-17.4124, -66.1652]
         ],
         lotsCount: 24,
         description: 'Sector Central Norte • 24 Lotes Censados'
@@ -84,13 +90,13 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 261',
         color: '#FDBA74',
         polygon: [
-          [-17.4114, -66.1637],
-          [-17.4114, -66.1623],
-          [-17.4124, -66.1623],
-          [-17.4124, -66.1637]
+          [-17.4114, -66.1634],
+          [-17.4114, -66.1620],
+          [-17.4124, -66.1620],
+          [-17.4124, -66.1634]
         ],
         lotsCount: 20,
-        description: 'Av. Circunvalación esq. Calle Los Pinos • 20 Lotes Censados'
+        description: 'Av. Circunvalación Norte esq. Calle Los Pinos (Límite OTB 6 Pacata Central)'
       },
 
       // FILA CENTRAL (Bordeando Calle Los Ceibos y Calle Las Retamas)
@@ -100,13 +106,14 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 267',
         color: '#FDBA74',
         polygon: [
-          [-17.4127, -66.1676],
-          [-17.4127, -66.1660],
-          [-17.4136, -66.1660],
-          [-17.4136, -66.1676]
+          [-17.4127, -66.1678],
+          [-17.4127, -66.1656],
+          [-17.4136, -66.1656],
+          [-17.4136, -66.1683],
+          [-17.4131, -66.1681]
         ],
         lotsCount: 26,
-        description: 'Sector Residencial Oeste • 26 Lotes Censados'
+        description: 'Sector Residencial Oeste • Borde vial diagonal con OTB 13'
       },
       {
         id: 'mza-266',
@@ -114,57 +121,45 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 266',
         color: '#FDBA74',
         polygon: [
-          [-17.4127, -66.1656],
-          [-17.4127, -66.1641],
-          [-17.4136, -66.1641],
-          [-17.4136, -66.1656]
+          [-17.4127, -66.1652],
+          [-17.4127, -66.1638],
+          [-17.4136, -66.1638],
+          [-17.4136, -66.1652]
         ],
         lotsCount: 28,
         description: 'Corazón de la OTB • 28 Lotes Censados (Incluye Sede Social)'
       },
       {
-        id: 'mza-av5',
-        code: '5',
-        name: 'Área Verde 5 (Parque & Cancha Comunal)',
-        color: '#16A34A', // Verde Bosque Oficial DOT
+        id: 'mza-265',
+        code: '265',
+        name: 'Manzano 265',
+        color: '#FDBA74',
         polygon: [
-          [-17.4127, -66.1637],
-          [-17.4127, -66.1623],
-          [-17.4136, -66.1623],
-          [-17.4136, -66.1637]
+          [-17.4127, -66.1634],
+          [-17.4127, -66.1620],
+          [-17.4136, -66.1620],
+          [-17.4136, -66.1634]
         ],
-        lotsCount: 0,
-        description: '🌳 Equipamiento Comunal GAMC: Tinglado Deportivo, Cancha Polifuncional y Parque Infantil'
+        lotsCount: 22,
+        description: 'Sector Residencial Este • Calle Los Pinos'
       },
 
       // FILA SUR (Bordeando Av. Litoral Sur)
       {
         id: 'mza-270',
         code: '270',
-        name: 'Manzano 270',
+        name: 'Manzano 270 (Gran Manzano Suroeste)',
         color: '#FDBA74',
         polygon: [
-          [-17.4139, -66.1676],
-          [-17.4139, -66.1654],
-          [-17.4149, -66.1654],
-          [-17.4149, -66.1676]
+          [-17.4139, -66.1685],
+          [-17.4139, -66.1648],
+          [-17.4150, -66.1648],
+          [-17.4150, -66.1675],
+          [-17.4148, -66.1684],
+          [-17.4144, -66.1688]
         ],
-        lotsCount: 36,
-        description: 'Gran Manzano Suroeste • 36 Lotes Censados'
-      },
-      {
-        id: 'mza-269',
-        code: '269',
-        name: 'Manzano 269',
-        color: '#FDBA74',
-        polygon: [
-          [-17.4139, -66.1650],
-          [-17.4139, -66.1638],
-          [-17.4149, -66.1638],
-          [-17.4149, -66.1650]
-        ],
-        lotsCount: 18,
-        description: 'Sector Sur Central • 18 Lotes Censados'
+        lotsCount: 38,
+        description: 'Gran Manzano Suroeste • Curva vial y emblema oficial OTB 24'
       },
       {
         id: 'mza-268',
@@ -172,13 +167,27 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 268',
         color: '#FDBA74',
         polygon: [
-          [-17.4139, -66.1635],
-          [-17.4139, -66.1623],
-          [-17.4149, -66.1623],
-          [-17.4149, -66.1635]
+          [-17.4139, -66.1644],
+          [-17.4139, -66.1632],
+          [-17.4150, -66.1632],
+          [-17.4150, -66.1644]
         ],
         lotsCount: 20,
-        description: 'Sector Pasaje Los Pinos Sur • 20 Lotes Censados'
+        description: 'Sector Sur Central • 20 Lotes Censados'
+      },
+      {
+        id: 'mza-269',
+        code: '269',
+        name: 'Manzano 269',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4139, -66.1628],
+          [-17.4139, -66.1620],
+          [-17.4150, -66.1620],
+          [-17.4150, -66.1628]
+        ],
+        lotsCount: 18,
+        description: 'Sector Pasaje Los Pinos Sur • Límite con OTB 6 Pacata Central'
       }
     ],
     facilities: [
@@ -639,7 +648,7 @@ export const useCommunityMapStore = create<CommunityMapState>()(
       }
     }),
     {
-      name: 'xentra_community_territory_v2_gamc'
+      name: 'xentra_community_territory_v3_gamc_catastro'
     }
   )
 );

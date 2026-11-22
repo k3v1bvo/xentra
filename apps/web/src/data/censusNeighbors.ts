@@ -21,14 +21,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Juan José Flores Morales',
     ci: '7412589 CBBA',
     phone: '74567890',
-    block: 'Manzana A',
+    block: 'Manzano 263',
     house: 'Lote 12',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'En Mora',
     debt: 50.0,
-    latitude: -17.4128,
-    longitude: -66.1648
+    latitude: -17.4119,
+    longitude: -66.1664
   },
   {
     id: '2',
@@ -36,14 +36,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Silvia Rojas Torrico',
     ci: '8521479 CBBA',
     phone: '75678901',
-    block: 'Manzana B',
+    block: 'Manzano 266',
     house: 'Lote 05',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'En Mora',
     debt: 125.0,
-    latitude: -17.4138,
-    longitude: -66.1659
+    latitude: -17.4131,
+    longitude: -66.1645
   },
   {
     id: '3',
@@ -51,14 +51,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Roberto Fernández Vargas',
     ci: '5289341 CBBA',
     phone: '72345678',
-    block: 'Manzana A',
+    block: 'Manzano 262',
     house: 'Lote 01',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'Al Día',
     debt: 0.0,
-    latitude: -17.4122,
-    longitude: -66.1642
+    latitude: -17.4118,
+    longitude: -66.1645
   },
   {
     id: '4',
@@ -66,14 +66,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Marina Condori Rocha',
     ci: '6398412 CBBA',
     phone: '73456789',
-    block: 'Manzana C',
+    block: 'Manzano 270',
     house: 'Lote 08',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'Al Día',
     debt: 0.0,
-    latitude: -17.4145,
-    longitude: -66.1662
+    latitude: -17.4144,
+    longitude: -66.1665
   },
   {
     id: '5',
@@ -81,14 +81,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Pedro Gonzalo Canaviri',
     ci: '4896325 CBBA',
     phone: '78912345',
-    block: 'Manzana B',
+    block: 'Manzano 261',
     house: 'Lote 14',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'Al Día',
     debt: 0.0,
-    latitude: -17.414,
-    longitude: -66.1651
+    latitude: -17.4118,
+    longitude: -66.1628
   },
   {
     id: '6',
@@ -96,14 +96,14 @@ export const CENSUS_NEIGHBORS: CensusNeighbor[] = [
     name: 'Carlos Mamani Choque',
     ci: '5289140 CBBA',
     phone: '71234567',
-    block: 'Manzana B',
+    block: 'Manzano 268',
     house: 'Lote 08',
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'Villa Esperanza',
+    otbName: 'Villa Graciela (Distrito 1)',
     status: 'En Mora',
     debt: 75.0,
-    latitude: -17.4135,
-    longitude: -66.1656
+    latitude: -17.4144,
+    longitude: -66.1638
   },
   // OTB Los Pinos (La Paz)
   {

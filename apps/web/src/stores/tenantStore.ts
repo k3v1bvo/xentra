@@ -15,17 +15,17 @@ interface TenantState {
   updateOtb: (otbId: string, updatedFields: Partial<ExtendedOtb>) => void;
 }
 
-const STORAGE_KEY = 'xentra_tenant_otbs_v2';
+const STORAGE_KEY = 'xentra_tenant_otbs_v3_gamc';
 
 const DEFAULT_OTBS: ExtendedOtb[] = [
   {
     id: '11111111-1111-1111-1111-111111111111',
-    code: 'OTB-CBBA-001',
-    name: 'Villa Esperanza',
+    code: 'OTB-CBBA-024',
+    name: 'Villa Graciela (Distrito 1)',
     department: 'Cochabamba',
     municipality: 'Cochabamba (Cercado)',
-    zone: 'Distrito 4 - Zona Noroeste',
-    address: 'Av. Petrolera Km 4',
+    zone: 'Distrito 1 - GAMC',
+    address: 'Av. Circunvalación Norte esq. Av. Litoral',
     logo_url: 'bolivia',
     currency: 'BOB',
     is_active: true,

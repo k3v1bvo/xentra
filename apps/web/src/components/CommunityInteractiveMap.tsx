@@ -110,30 +110,72 @@ const COCHABAMBA_DISTRICT_1_NEIGHBORS = [
   {
     code: '6',
     name: 'OTB Pacata Central',
-    color: '#FEF08A', // Amarillo Crema
+    color: '#FEF08A', // Amarillo Crema (Plano GAMC)
     borderColor: '#CA8A04',
     direction: 'Este (Colindancia)',
     polygon: [
-      [-17.4110, -66.1616],
-      [-17.4110, -66.1565],
-      [-17.4153, -66.1565],
-      [-17.4153, -66.1616]
+      [-17.4110, -66.1614],
+      [-17.4110, -66.1560],
+      [-17.4154, -66.1560],
+      [-17.4154, -66.1614]
     ] as [number, number][],
-    description: 'OTB Colindante al Este • Incluye manzanos 271, 272, 273 y Área Verde comunal'
+    description: 'OTB Colindante al Este • Incluye manzanos 271, 272 y Área Verde comunal'
   },
   {
     code: '22',
     name: 'OTB Virgen de Luján',
-    color: '#FCA5A5', // Rosa Distrito
+    color: '#FECDD3', // Rosa Distrito (Plano GAMC)
     borderColor: '#E11D48',
     direction: 'Norte (Cruzando Av. Circunvalación)',
     polygon: [
-      [-17.4075, -66.1676],
-      [-17.4075, -66.1620],
-      [-17.4106, -66.1620],
-      [-17.4106, -66.1676]
+      [-17.4072, -66.1672],
+      [-17.4072, -66.1616],
+      [-17.4106, -66.1616],
+      [-17.4106, -66.1672]
     ] as [number, number][],
     description: 'OTB Colindante al Norte • Manzanos 180, 181, 182 y Plaza Barrial'
+  },
+  {
+    code: '13',
+    name: 'OTB Mesadilla',
+    color: '#FDA4AF', // Rosa Coral
+    borderColor: '#E11D48',
+    direction: 'Oeste (Cruzando Av. de Conexión)',
+    polygon: [
+      [-17.4110, -66.1735],
+      [-17.4110, -66.1688],
+      [-17.4154, -66.1688],
+      [-17.4154, -66.1735]
+    ] as [number, number][],
+    description: 'OTB Colindante al Oeste • Distrito 1 GAMC Cochabamba'
+  },
+  {
+    code: '4',
+    name: 'OTB Aeronáutica FAB',
+    color: '#ECFCCB', // Verde Lima Claro (Plano GAMC)
+    borderColor: '#65A30D',
+    direction: 'Sur-Este (Cruzando Av. Litoral)',
+    polygon: [
+      [-17.4158, -66.1614],
+      [-17.4158, -66.1555],
+      [-17.4188, -66.1555],
+      [-17.4188, -66.1614]
+    ] as [number, number][],
+    description: 'OTB Colindante al Sur-Este • Manzanos de la Fuerza Aérea'
+  },
+  {
+    code: '5',
+    name: 'OTB Urb. SEMAPA',
+    color: '#BBF7D0', // Verde Bosque Claro (Plano GAMC)
+    borderColor: '#16A34A',
+    direction: 'Sur (Corredor Ecológico y Torrentera)',
+    polygon: [
+      [-17.4158, -66.1686],
+      [-17.4158, -66.1620],
+      [-17.4185, -66.1620],
+      [-17.4185, -66.1686]
+    ] as [number, number][],
+    description: 'OTB Colindante al Sur • Franja y torrentera de amortiguamiento ambiental'
   },
   {
     code: '23',
@@ -142,40 +184,12 @@ const COCHABAMBA_DISTRICT_1_NEIGHBORS = [
     borderColor: '#D97706',
     direction: 'Noreste (Colindancia)',
     polygon: [
-      [-17.4075, -66.1616],
-      [-17.4075, -66.1565],
-      [-17.4106, -66.1565],
-      [-17.4106, -66.1616]
+      [-17.4072, -66.1614],
+      [-17.4072, -66.1560],
+      [-17.4106, -66.1560],
+      [-17.4106, -66.1614]
     ] as [number, number][],
     description: 'OTB Colindante al Noreste • Distrito 1 GAMC Cochabamba'
-  },
-  {
-    code: '4',
-    name: 'OTB Aeronáutica FAB',
-    color: '#BBF7D0', // Verde Lima Pastel
-    borderColor: '#16A34A',
-    direction: 'Sur (Cruzando Av. Litoral)',
-    polygon: [
-      [-17.4157, -66.1680],
-      [-17.4157, -66.1620],
-      [-17.4185, -66.1620],
-      [-17.4185, -66.1680]
-    ] as [number, number][],
-    description: 'OTB Colindante al Sur • Zona de equipamiento aeronáutico y residencial'
-  },
-  {
-    code: '13',
-    name: 'OTB Mesadilla',
-    color: '#FDA4AF', // Rosa Coral
-    borderColor: '#E11D48',
-    direction: 'Oeste (Cruzando Av. Ecológica)',
-    polygon: [
-      [-17.4110, -66.1735],
-      [-17.4110, -66.1684],
-      [-17.4153, -66.1684],
-      [-17.4153, -66.1735]
-    ] as [number, number][],
-    description: 'OTB Colindante al Oeste • Distrito 1 GAMC Cochabamba'
   }
 ];
 
@@ -267,7 +281,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
   // Manzano seleccionado para inspección
   const [inspectedManzano, setInspectedManzano] = useState<CommunityManzano | null>(null);
-  const [showCadastralReferences, setShowCadastralReferences] = useState(false);
 
   // Edición in-place de manzano existente (Directiva y Superadmin)
   const [isEditingInspectedManzano, setIsEditingInspectedManzano] = useState(false);
@@ -617,6 +630,21 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
           labelMarker.on('click', () => setInspectedManzano(mza));
         }
       });
+
+      // Emblema Oficial OTB 24 Villa Graciela (Distrito 1 GAMC) en Manzano 270
+      if (isCochabambaShowcase) {
+        const otb24Icon = L.divIcon({
+          html: `
+            <div style="background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 100%); color: #FFFFFF; font-size: 14px; font-weight: 900; font-family: ui-monospace, monospace; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(30,64,175,0.55); border: 2px solid #FFFFFF; pointer-events: none; letter-spacing: -0.5px;">
+              24
+            </div>
+          `,
+          className: 'otb-24-symbol-icon',
+          iconSize: [34, 34],
+          iconAnchor: [17, 17]
+        });
+        L.marker([-17.4142, -66.1666], { icon: otb24Icon }).addTo(group);
+      }
     }
 
     // B.2 DIBUJAR OTBs COLINDANTES DEL DISTRITO 1 (GAMC)
@@ -1138,19 +1166,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </button>
           )}
 
-          {/* Botón Referencias Catastrales (Estilo GAMC Cochabamba) */}
-          <button
-            onClick={() => setShowCadastralReferences(!showCadastralReferences)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer border ${
-              showCadastralReferences
-                ? 'bg-emerald-600 text-white border-emerald-400 shadow-md'
-                : 'bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-700'
-            }`}
-            title="Ver Cajetín de Referencias de Manzanos y Áreas Verdes (DOT GAMC)"
-          >
-            <span>📋 Referencias GAMC</span>
-          </button>
-
           <a
             href={googleMapsUrl}
             target="_blank"
@@ -1651,107 +1666,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       )}
 
       {/* =================================================================== */}
-      {/* 4. CAJETÍN OFICIAL DE REFERENCIAS URBANAS GAMC - DOT COCHABAMBA     */}
-      {/* =================================================================== */}
-      {showCadastralReferences && (
-        <div className="absolute top-16 right-4 z-30 max-w-sm w-full bg-[#030712]/95 backdrop-blur-md border-2 border-emerald-500/60 rounded-2xl p-3 shadow-2xl space-y-2 animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div>
-              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400 block">
-                Cajetín Catastral Oficial
-              </span>
-              <h4 className="text-xs font-black text-white">REFERENCIAS • GAMC - DOT</h4>
-            </div>
-            <button
-              onClick={() => setShowCadastralReferences(false)}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="text-[10.5px] text-slate-400 font-bold uppercase tracking-wider">
-            Plano de OTB y Manzanos • Cochabamba
-          </div>
-
-          <div className="max-h-72 overflow-y-auto space-y-2 pr-1 font-mono text-[11px]">
-            {/* Manzanos de la OTB */}
-            <div className="space-y-1">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
-                Jurisdicción {otbName}:
-              </span>
-              {territory.manzanos.map((m) => {
-                const isGreen =
-                  m.color.toLowerCase() === '#16a34a' ||
-                  m.color.toLowerCase() === '#15803d' ||
-                  m.name.toLowerCase().includes('verde') ||
-                  m.name.toLowerCase().includes('parque');
-
-                return (
-                  <div
-                    key={m.id}
-                    onClick={() => setInspectedManzano(m)}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800/80 hover:border-emerald-500/50 cursor-pointer transition-colors"
-                  >
-                    <span
-                      className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0 shadow-sm"
-                      style={{ backgroundColor: m.color }}
-                    >
-                      {m.code}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white text-xs truncate">
-                        {isGreen ? '🌳 ' : ''}{m.name}
-                      </p>
-                      <span className="text-[10px] text-slate-400 block truncate">
-                        {m.lotsCount > 0 ? `${m.lotsCount} Lotes Censados` : 'Área Verde Comunal'}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* OTBs Colindantes del Distrito 1 (Solo si es la OTB Showcase de Cochabamba) */}
-            {isCochabambaShowcase && (
-              <div className="space-y-1 pt-1 border-t border-slate-800/80">
-                <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
-                  OTBs Colindantes (Distrito 1 GAMC):
-                </span>
-                {COCHABAMBA_DISTRICT_1_NEIGHBORS.map((otb) => (
-                  <div
-                    key={otb.code}
-                    className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-950/80 border border-slate-800/60"
-                  >
-                    <span
-                      className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0"
-                      style={{ backgroundColor: otb.color }}
-                    >
-                      {otb.code}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-slate-200 text-xs truncate">
-                        {otb.name}
-                      </p>
-                      <span className="text-[9.5px] text-slate-500 block truncate">
-                        {otb.direction}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between items-center">
-            <span>{isCochabambaShowcase ? 'GAMC • Distrito 1' : otbName}</span>
-            <span className="text-emerald-400 font-bold">{isCochabambaShowcase ? 'DOT Cochabamba' : 'Catastro Comunal'}</span>
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* 5. CONTENEDOR DEL MAPA LEAFLET                                      */}
+      {/* 4. CONTENEDOR DEL MAPA LEAFLET                                      */}
       {/* =================================================================== */}
       <div
         ref={mapContainerRef}

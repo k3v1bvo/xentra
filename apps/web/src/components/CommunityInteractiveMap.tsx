@@ -154,7 +154,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     currentRole === 'secretario' ||
     currentRole === 'fiscalizador';
   const isAuthorizedLeader = isSuperadmin || isOtbAdmin;
-  const canEditTerritory = Boolean(enableAdminEditor && isAuthorizedLeader);
+  const canEditTerritory = Boolean(enableAdminEditor);
 
   const territory = getTerritory(otbId);
   const isCochabambaShowcase = otbId === '11111111-1111-1111-1111-111111111111';
@@ -955,7 +955,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>{isSuperadmin ? 'Superadmin Nacional' : 'Directiva OTB'}</span>
+              <span>{isSuperadmin ? 'Superadmin Nacional' : isOtbAdmin ? 'Directiva OTB' : 'Editor Habilitado'}</span>
             </span>
           ) : (
             <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-bold text-slate-400">

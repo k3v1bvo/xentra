@@ -19,16 +19,17 @@ interface NotificationState {
 
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [
+    // Notificaciones para la Directiva (Tesorería / Presidencia)
     {
       id: 'notif-1',
       recipient_user_id: 'cccccccc-cccc-cccc-cccc-cccccccccccc',
       otb_id: '11111111-1111-1111-1111-111111111111',
       type: 'PAYMENT_RECEIVED',
       category: 'Pagos',
-      title: 'Abono Registrado Exitosamente',
+      title: 'Abono Registrado en Caja',
       body: 'El vecino Juan José Flores amortizó Bs. 50,00 para el Fondo Pro-Tinglado.',
       priority: 'normal',
-      action_route: '/finanzas',
+      action_route: '/admin/finanzas',
       created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     },
     {
@@ -40,7 +41,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       title: 'Alerta Preventiva de AI Auditor',
       body: 'Se detectó un egreso de Bs. 850,00 sin comprobante de respaldo adjunto.',
       priority: 'high',
-      action_route: '/auditor',
+      action_route: '/admin/auditor',
       created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     },
     {
@@ -52,8 +53,45 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       title: 'Nueva Consulta Vecinal Abierta',
       body: 'La directiva ha publicado la consulta "Priorización de Obras 2027". Participa y vota.',
       priority: 'normal',
-      action_route: '/vota',
+      action_route: '/admin/vota',
       created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+    },
+    // Notificaciones para el Socio / Vecino
+    {
+      id: 'notif-vec-1',
+      recipient_user_id: 'demo-vecino',
+      otb_id: '11111111-1111-1111-1111-111111111111',
+      type: 'PAYMENT_RECEIVED',
+      category: 'Pagos',
+      title: 'Comprobante Aprobado y Certificado',
+      body: 'Tu abono de Bs. 50,00 para el Fondo Pro-Tinglado fue confirmado con Recibo N° OTB-CBBA-001-2026-00042.',
+      priority: 'normal',
+      action_route: '/verificar-recibo?receipt=OTB-CBBA-001-2026-00042',
+      created_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+    },
+    {
+      id: 'notif-vec-2',
+      recipient_user_id: 'demo-vecino',
+      otb_id: '11111111-1111-1111-1111-111111111111',
+      type: 'FEE_ASSIGNED',
+      category: 'Cuotas',
+      title: 'Nueva Cuota Mensual Asignada',
+      body: 'Se ha generado la Cuota Ordinaria Noviembre 2026 por Bs. 25,00 con vencimiento al 30 de noviembre.',
+      priority: 'normal',
+      action_route: '/vecino',
+      created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    },
+    {
+      id: 'notif-vec-3',
+      recipient_user_id: 'demo-vecino',
+      otb_id: '11111111-1111-1111-1111-111111111111',
+      type: 'POLL_CREATED',
+      category: 'VOTA',
+      title: 'Asamblea y Consulta Barrial Activa',
+      body: 'La Mesa Directiva convoca a todos los socios a la consulta para la Priorización de Obras 2027.',
+      priority: 'normal',
+      action_route: '/vecino',
+      created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
     }
   ],
   unreadCount: 3,

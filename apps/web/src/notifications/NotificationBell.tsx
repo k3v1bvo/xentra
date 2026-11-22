@@ -12,9 +12,20 @@ export const NotificationBell: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const isSuperadmin = currentRole === 'superadmin';
-  const unreadCount = notifications.filter(
-    (n) => !n.read_at && !n.archived_at && (isSuperadmin ? true : !n.otb_id || n.otb_id === currentOtb?.id)
-  ).length;
+  const isVecino = currentRole === 'vecino';
+
+  const visibleNotifications = notifications.filter((n) => {
+    if (!isSuperadmin && n.otb_id && currentOtb && n.otb_id !== currentOtb.id) {
+      return false;
+    }
+    if (isVecino) {
+      return n.recipient_user_id === 'demo-vecino' || n.category === 'Pagos' || n.category === 'Cuotas' || n.category === 'VOTA';
+    } else {
+      return n.recipient_user_id !== 'demo-vecino';
+    }
+  });
+
+  const unreadCount = visibleNotifications.filter((n) => !n.read_at && !n.archived_at).length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

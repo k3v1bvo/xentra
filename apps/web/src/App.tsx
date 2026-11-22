@@ -91,6 +91,13 @@ export const App: React.FC = () => {
           <Route path="pagos" element={<NeighborDashboardPage />} />
         </Route>
 
+        {/* Redirecciones automáticas de compatibilidad */}
+        <Route path="/finanzas" element={<Navigate to="/admin/finanzas" replace />} />
+        <Route path="/auditor" element={<Navigate to="/admin/auditor" replace />} />
+        <Route path="/vota" element={<Navigate to="/admin/vota" replace />} />
+        <Route path="/vecinos" element={<Navigate to="/admin/vecinos" replace />} />
+        <Route path="/trace" element={<Navigate to="/admin/trace" replace />} />
+
         {/* Fallback de compatibilidad */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

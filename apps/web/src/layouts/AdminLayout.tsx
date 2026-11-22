@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +12,8 @@ import {
   Building2,
   LogOut,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Menu,
   X,
   ArrowLeft,
@@ -38,11 +40,24 @@ const NAV_ITEMS = [
 
 export const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { profile, currentRole, setCurrentRole, logout } = useAuthStore();
   const { currentOtb, availableOtbs, setCurrentOtb } = useTenantStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isSuperadmin = currentRole === 'superadmin';
+
+  const isItemActive = (to: string) => {
+    if (to.includes('?')) {
+      const [path, search] = to.split('?');
+      return location.pathname === path && location.search === `?${search}`;
+    }
+    if (to === '/admin') {
+      return location.pathname === '/admin';
+    }
+    return location.pathname === to && !location.search;
+  };
 
   const handleRoleChange = (role: AppRole) => {
     setCurrentRole(role);
@@ -65,20 +80,29 @@ export const AdminLayout: React.FC = () => {
         />
       )}
 
-      {/* SIDEBAR (Desktop fixed, Mobile Slide-over Drawer) */}
+      {/* SIDEBAR (Desktop collapsible, Mobile Slide-over Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0B132B]/95 backdrop-blur-xl border-r border-slate-800 flex flex-col flex-shrink-0 transform transition-transform duration-300 ease-in-out md:static md:w-64 md:translate-x-0 ${
-          mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 bg-[#0B132B]/95 backdrop-blur-xl border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out md:static ${
+          sidebarCollapsed ? 'md:w-20' : 'md:w-64'
+        } ${mobileMenuOpen ? 'w-72 translate-x-0 shadow-2xl' : 'w-72 -translate-x-full md:translate-x-0'}`}
       >
-        <div className="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between">
-          <XentraLogo size="md" variant="light" />
+        <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <XentraLogo size={sidebarCollapsed ? 'sm' : 'md'} variant="light" />
+          </div>
           <button
             onClick={closeMobileMenu}
             aria-label="Cerrar Menú"
             className="md:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            title={sidebarCollapsed ? 'Expandir menú lateral' : 'Contraer menú lateral'}
+          >
+            {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
 
@@ -155,22 +179,22 @@ export const AdminLayout: React.FC = () => {
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
+            const active = isItemActive(item.to);
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === '/admin'}
                 onClick={closeMobileMenu}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-md shadow-blue-600/20'
-                      : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
-                  }`
-                }
+                title={sidebarCollapsed ? item.label : undefined}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  active
+                    ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-md shadow-blue-600/20'
+                    : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                } ${sidebarCollapsed ? 'md:justify-center md:px-2' : ''}`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0 text-blue-400" />
-                <span>{item.label}</span>
+                <span className={sidebarCollapsed ? 'md:hidden truncate' : 'truncate'}>{item.label}</span>
               </NavLink>
             );
           })}
@@ -184,50 +208,60 @@ export const AdminLayout: React.FC = () => {
             <NavLink
               to="/superadmin"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-300 bg-purple-950/40 border border-purple-500/30 hover:bg-purple-900/40 transition-colors"
+              title={sidebarCollapsed ? 'Consola Superadmin Nacional' : undefined}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-300 bg-purple-950/40 border border-purple-500/30 hover:bg-purple-900/40 transition-colors ${
+                sidebarCollapsed ? 'md:justify-center md:px-2' : ''
+              }`}
             >
-              <ShieldAlert className="w-4 h-4 text-purple-400" />
-              <span>Consola Superadmin Nacional</span>
+              <ShieldAlert className="w-4 h-4 text-purple-400 flex-shrink-0" />
+              <span className={sidebarCollapsed ? 'md:hidden truncate' : 'truncate'}>Consola Superadmin Nacional</span>
             </NavLink>
           )}
 
           <NavLink
             to="/"
             onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+            title={sidebarCollapsed ? 'Volver a Portada' : undefined}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors ${
+              sidebarCollapsed ? 'md:justify-center md:px-2' : ''
+            }`}
           >
-            <ArrowLeft className="w-4 h-4 text-slate-400" />
-            <span>Volver a Portada</span>
+            <ArrowLeft className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <span className={sidebarCollapsed ? 'md:hidden truncate' : 'truncate'}>Volver a Portada</span>
           </NavLink>
         </nav>
 
         {/* Perfil del Usuario Activo */}
         <div className="p-3 border-t border-slate-800 bg-[#020617]/90">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
+          <div className={`flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800 ${sidebarCollapsed ? 'md:justify-center md:p-1.5' : ''}`}>
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center font-bold text-xs flex-shrink-0">
                 {profile?.first_name ? profile.first_name[0] : 'A'}
               </div>
-              <div className="truncate">
-                <p className="text-xs font-bold text-white truncate">
-                  {profile?.first_name} {profile?.last_name}
-                </p>
-                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
-                  {currentRole === 'superadmin' ? 'Superadmin' : 'Directiva OTB'}
-                </span>
-              </div>
+              {!sidebarCollapsed && (
+                <div className="truncate">
+                  <p className="text-xs font-bold text-white truncate">
+                    {profile?.first_name} {profile?.last_name}
+                  </p>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                    {currentRole === 'superadmin' ? 'Superadmin' : 'Directiva OTB'}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <button
-              onClick={() => {
-                logout();
-                navigate('/');
-              }}
-              title="Cerrar sesión"
-              className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            {!sidebarCollapsed && (
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+                title="Cerrar sesión"
+                className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </aside>
@@ -239,8 +273,16 @@ export const AdminLayout: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              aria-label="Abrir Menú"
+              aria-label="Abrir Menú Móvil"
               className="md:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              aria-label="Alternar menú lateral"
+              title={sidebarCollapsed ? 'Expandir menú lateral' : 'Contraer menú lateral'}
+              className="hidden md:flex p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>

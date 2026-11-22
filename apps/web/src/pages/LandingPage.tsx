@@ -30,7 +30,8 @@ import {
   Award,
   Scale,
   Cpu,
-  RefreshCw
+  RefreshCw,
+  Menu
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
@@ -75,6 +76,7 @@ export const LandingPage: React.FC = () => {
   const [resolvedResult, setResolvedResult] = useState<SearchResult | null>(null);
 
   // Modales
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [payAmount, setPayAmount] = useState('50.00');
   const [copiedAccount, setCopiedAccount] = useState(false);
@@ -251,13 +253,21 @@ export const LandingPage: React.FC = () => {
     }
   };
 
+  const scrollToSection = (id: string) => {
+    setMobileNavOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col selection:bg-blue-600 selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col selection:bg-blue-600 selection:text-white relative overflow-x-clip">
       {/* Fondo 3D interactivo con partículas */}
       <Xentra3DCanvas />
 
       {/* =================================================================== */}
-      {/* 1. BARRA SUPERIOR INSTITUCIONAL ASIMÉTRICA (Senior Friendly ≥ 48px)  */}
+      {/* 1. BARRA SUPERIOR INSTITUCIONAL DINÁMICA (Sticky & Responsive)     */}
       {/* =================================================================== */}
       <header className="px-4 sm:px-8 py-3.5 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -275,6 +285,28 @@ export const LandingPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Enlaces de Navegación Fluidos (Desktop) */}
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
+            <button
+              onClick={() => scrollToSection('como-funciona')}
+              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              ¿Cómo Funciona?
+            </button>
+            <button
+              onClick={() => scrollToSection('mapa-comunal')}
+              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              Plano Barrial
+            </button>
+            <button
+              onClick={() => scrollToSection('marco-legal')}
+              className="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              Marco Legal & Leyes
+            </button>
+          </nav>
+
           {/* Lado Derecho: Enlaces de Servicio & Acceso */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
@@ -287,10 +319,10 @@ export const LandingPage: React.FC = () => {
 
             <button
               onClick={() => setIsInstallModalOpen(true)}
-              className="hidden lg:inline-flex min-h-[44px] px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-bold text-slate-200 items-center gap-2 transition-all cursor-pointer"
+              className="hidden xl:inline-flex min-h-[44px] px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-bold text-slate-200 items-center gap-2 transition-all cursor-pointer"
             >
               <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
-              <span>App Móvil APK</span>
+              <span>App APK</span>
             </button>
 
             <button
@@ -308,8 +340,61 @@ export const LandingPage: React.FC = () => {
             >
               Ingresar
             </button>
+
+            {/* Botón de Menú Móvil */}
+            <button
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              aria-label="Abrir Menú de Navegación"
+              className="lg:hidden p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            >
+              {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Menú Desplegable Móvil */}
+        {mobileNavOpen && (
+          <div className="lg:hidden mt-3 pt-3 border-t border-slate-800 space-y-2 animate-in fade-in slide-in-from-top-2">
+            <button
+              onClick={() => scrollToSection('como-funciona')}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors"
+            >
+              ¿Cómo Funciona?
+            </button>
+            <button
+              onClick={() => scrollToSection('mapa-comunal')}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors"
+            >
+              Plano Barrial Interactivo
+            </button>
+            <button
+              onClick={() => scrollToSection('marco-legal')}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors"
+            >
+              Marco Legal Boliviano
+            </button>
+            <button
+              onClick={() => {
+                setMobileNavOpen(false);
+                navigate('/verificar-recibo');
+              }}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-blue-300 hover:bg-slate-800 transition-colors flex items-center gap-2"
+            >
+              <QrCode className="w-4 h-4 text-blue-400" />
+              <span>Verificar Recibo TRACE</span>
+            </button>
+            <button
+              onClick={() => {
+                setMobileNavOpen(false);
+                setIsInstallModalOpen(true);
+              }}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-emerald-300 hover:bg-slate-800 transition-colors flex items-center gap-2"
+            >
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>Descargar App APK Móvil</span>
+            </button>
+          </div>
+        )}
       </header>
 
       {/* =================================================================== */}
@@ -629,7 +714,7 @@ export const LandingPage: React.FC = () => {
       {/* =================================================================== */}
       {/* 4. FLUJO DE 3 PASOS: CLARIDAD Y TRANSPARENCIA VECINAL              */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
+      <section id="como-funciona" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
         <div className="space-y-1.5 mb-8">
           <span className="text-xs font-black text-blue-400 uppercase tracking-wider block">
             ¿Cómo Funciona la Plataforma en tu Barrio?
@@ -687,7 +772,7 @@ export const LandingPage: React.FC = () => {
       {/* =================================================================== */}
       {/* 5. MAPA TERRITORIAL Y GEORREFERENCIACIÓN COMUNAL                    */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
+      <section id="mapa-comunal" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-12 border-t border-slate-800/80 text-left">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">

@@ -25,7 +25,7 @@ export const NeighborLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col pb-24 md:pb-0">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 px-3 sm:px-6 h-18 flex items-center justify-between shadow-md">
+      <header className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800 px-3 sm:px-6 h-16 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2.5 sm:gap-4">
           <button
             onClick={() => navigate('/')}
@@ -44,6 +44,38 @@ export const NeighborLayout: React.FC = () => {
             <span className="text-xs text-blue-300 font-bold">Portal Oficial del Vecino</span>
           </div>
         </div>
+
+        {/* Enlaces de Navegación del Portal Vecinal (Desktop) */}
+        <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 text-xs font-bold">
+          <NavLink
+            to="/vecino"
+            end
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`
+            }
+          >
+            <FileCheck className="w-4 h-4 text-blue-300" />
+            <span>Mis Cuotas</span>
+          </NavLink>
+
+          <NavLink
+            to="/verificar-recibo"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-black'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`
+            }
+          >
+            <QrCode className="w-4 h-4 text-purple-300" />
+            <span>Verificar Recibo TRACE</span>
+          </NavLink>
+        </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <button

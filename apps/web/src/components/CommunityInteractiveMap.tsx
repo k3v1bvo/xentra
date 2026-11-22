@@ -340,10 +340,10 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     });
     mapInstanceRef.current = map;
 
-    // Capa base OpenStreetMap Oficial y Estable (Cochabamba)
-    const primaryTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa base Esri World Street Map (100% limpia, sin marcas de agua, sin bloqueos ni API key)
+    const primaryTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: 'Tiles &copy; Esri'
     });
     primaryTileLayerRef.current = primaryTileLayer;
     primaryTileLayer.addTo(map);

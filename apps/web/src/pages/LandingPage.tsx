@@ -733,7 +733,8 @@ export const LandingPage: React.FC = () => {
             centerLng={-66.16543}
             zoom={16}
             heightClass="h-80 sm:h-96"
-            otbName="Territorio Comunal Bolivia"
+            otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+            otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
           />
         </TiltCard3D>
       </section>

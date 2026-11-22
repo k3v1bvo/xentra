@@ -471,14 +471,16 @@ export const VecinosPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Mapa Interactivo con pines de las casas */}
+              {/* Mapa Interactivo con Límites, Manzanos y pines de las casas con Modo Editor Admin */}
               <CommunityInteractiveMap
                 centerLat={focusedNeighbor ? focusedNeighbor.latitude : -17.41325}
                 centerLng={focusedNeighbor ? focusedNeighbor.longitude : -66.16543}
                 zoom={17}
-                heightClass="h-80 sm:h-96"
-                otbName={currentOtb?.name || 'OTB'}
+                heightClass="h-96 sm:h-[480px]"
+                otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+                otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
                 selectedLotName={focusedNeighbor ? `${focusedNeighbor.name} — ${focusedNeighbor.block}, ${focusedNeighbor.house}` : undefined}
+                enableAdminEditor={true}
               />
 
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-slate-400 border-t border-slate-800/80">

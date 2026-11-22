@@ -28,7 +28,9 @@ import {
   ShieldCheck,
   Search,
   KeyRound,
-  Lock
+  Lock,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import {
   useCommunityReportsStore,
@@ -55,7 +57,7 @@ interface CommunityAlertsAndEmergencyModalProps {
 }
 
 const OTBS_SISTEMA = [
-  { id: '11111111-1111-1111-1111-111111111111', name: 'Villa Esperanza', city: 'Cochabamba', code: 'OTB-CBBA-001', defaultAddress: 'Av. Petrolera Km 4' },
+  { id: '11111111-1111-1111-1111-111111111111', name: 'Villa Graciela (Distrito 1)', city: 'Cochabamba', code: 'OTB-CBBA-024', defaultAddress: 'Distrito 1 - GAMC' },
   { id: '22222222-2222-2222-2222-222222222222', name: 'Los Pinos', city: 'La Paz', code: 'OTB-LPZ-002', defaultAddress: 'Zona Sur - Calacoto' },
   { id: '33333333-3333-3333-3333-333333333333', name: 'Barrio Lindo Plan 4000', city: 'Santa Cruz', code: 'OTB-SCZ-003', defaultAddress: 'Distrito 8 - Plan 3000' }
 ];
@@ -65,13 +67,14 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
   onClose,
   initialTab = 'emergencias',
   otbId = '11111111-1111-1111-1111-111111111111',
-  otbName = 'Villa Esperanza',
+  otbName = 'Villa Graciela',
   socioCode,
   neighborName,
   lotName,
   phoneContact
 }) => {
   const [activeTab, setActiveTab] = useState<'emergencias' | 'reportar' | 'muro'>(initialTab);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Aislamiento estricto por OTB
   const [selectedOtbId, setSelectedOtbId] = useState(otbId);
@@ -282,19 +285,35 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0B132B] border-2 border-slate-600 text-white w-full max-w-2xl rounded-3xl p-5 sm:p-8 shadow-2xl relative max-h-[94vh] flex flex-col my-auto">
-        {/* Botón Cerrar */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 sm:right-6 sm:top-6 p-2.5 text-slate-300 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer"
-          aria-label="Cerrar modal"
-        >
-          <X className="w-6 h-6" />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className={`bg-[#0B132B] border-2 border-slate-600 text-white w-full rounded-3xl p-4 sm:p-6 lg:p-7 shadow-2xl relative flex flex-col transition-all duration-300 my-auto ${
+        isMaximized
+          ? 'w-[98vw] max-w-[98vw] h-[96vh] max-h-[96vh]'
+          : 'max-w-6xl max-h-[94vh]'
+      }`}>
+        {/* Botones de Cabecera: Maximizar y Cerrar */}
+        <div className="absolute right-4 top-4 sm:right-6 sm:top-6 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsMaximized(!isMaximized)}
+            className="hidden sm:flex p-2.5 text-slate-300 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer border border-slate-700"
+            title={isMaximized ? "Restaurar tamaño normal" : "Maximizar pantalla completa"}
+            aria-label="Maximizar modal"
+          >
+            {isMaximized ? <Minimize2 className="w-5 h-5 text-blue-400" /> : <Maximize2 className="w-5 h-5 text-slate-300" />}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2.5 text-slate-300 hover:text-white rounded-xl bg-slate-800/80 hover:bg-slate-700 transition-colors cursor-pointer border border-slate-700"
+            aria-label="Cerrar modal"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
         {/* Encabezado con Selector de OTB Aislado */}
-        <div className="mb-4 pr-12 space-y-2">
+        <div className="mb-4 pr-24 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs sm:text-sm font-black border border-rose-500/40">
               <Radio className="w-4 h-4 animate-pulse text-rose-400" />
@@ -949,34 +968,42 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
           </form>
         )}
 
-        {/* TAB 3: MURO VECINAL EN VIVO ESTRICTO DE LA OTB */}
+        {/* TAB 3: MURO VECINAL EN VIVO Y MAPA CATASTRAL HARMONIZADO */}
         {activeTab === 'muro' && (
-          <div className="space-y-3 overflow-y-auto pr-1">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-300 pb-1">
-              <span>
-                Reportes comunitarios activos en <strong className="text-emerald-400">{currentOtbInfo.name}</strong>:
-              </span>
-
+          <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+            {/* Barra Superior de Control del Muro */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-slate-300 pb-2 border-b border-slate-800">
               <div className="flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span>
+                  Incidentes y Catastro en <strong className="text-emerald-400 font-extrabold">{currentOtbInfo.name}</strong> ({otbReports.length} activos)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                {/* Selector Mapa / Lista (en móvil y vistas rápidas) */}
                 <div className="flex bg-[#020617] p-1 rounded-xl border border-slate-700">
                   <button
                     type="button"
                     onClick={() => setMuroViewMode('mapa')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1.5 transition-all ${
                       muroViewMode === 'mapa'
-                        ? 'bg-blue-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     <MapIcon className="w-3.5 h-3.5" />
-                    <span>Mapa</span>
+                    <span>Mapa Ampliado</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setMuroViewMode('lista')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1.5 transition-all ${
                       muroViewMode === 'lista'
-                        ? 'bg-blue-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -988,39 +1015,157 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                 <button
                   type="button"
                   onClick={() => setActiveTab('reportar')}
-                  className="text-amber-400 hover:underline font-black text-xs sm:text-sm whitespace-nowrap"
+                  className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm whitespace-nowrap shadow-md transition-colors cursor-pointer"
                 >
                   + Nuevo Reporte
                 </button>
               </div>
             </div>
 
-            {/* Vista 1: Mapa Comunal de Incidentes */}
-            {muroViewMode === 'mapa' && (
-              <div className="space-y-2">
-                <CommunityInteractiveMap
-                  reports={otbReports}
-                  centerLat={selectedOtbId.includes('2222') ? -16.54124 : -17.41325}
-                  centerLng={selectedOtbId.includes('2222') ? -68.08215 : -66.16543}
-                  zoom={16}
-                  heightClass="h-72 sm:h-80"
-                  otbName={currentOtbInfo.name}
-                />
-                <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded-xl border border-slate-700">
-                  <span className="font-bold text-slate-400">Pines en el mapa:</span>
-                  <span className="inline-flex items-center gap-1">🏛️ Sede</span>
-                  <span className="inline-flex items-center gap-1">⚽ Cancha</span>
-                  <span className="inline-flex items-center gap-1">🍺 Ebrio</span>
-                  <span className="inline-flex items-center gap-1">💧 Agua</span>
-                  <span className="inline-flex items-center gap-1">🐕 Mascota</span>
-                  <span className="inline-flex items-center gap-1">💡 Luz</span>
+            {/* VISTA 1: MODO MAPA ARMÓNICO (2 COLUMNAS EN ESCRITORIO / FULL EN MÓVIL) */}
+            {muroViewMode === 'mapa' ? (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                {/* COLUMNA PRINCIPAL DEL MAPA (8 de 12 columnas en escritorio) */}
+                <div className="lg:col-span-8 flex flex-col space-y-2">
+                  <div className="rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl relative bg-slate-950">
+                    <CommunityInteractiveMap
+                      reports={otbReports}
+                      otbId={selectedOtbId}
+                      otbName={currentOtbInfo.name}
+                      zoom={16}
+                      heightClass={
+                        isMaximized
+                          ? 'h-[520px] sm:h-[600px] lg:h-[680px]'
+                          : 'h-[420px] sm:h-[480px] lg:h-[540px]'
+                      }
+                    />
+                  </div>
+
+                  {/* Leyenda de Pines y Catastro */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-700/80 shadow-sm">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-black text-slate-400 uppercase tracking-wider text-[10px]">Pines de auxilio:</span>
+                      <span className="inline-flex items-center gap-1 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">🏛️ Sede</span>
+                      <span className="inline-flex items-center gap-1 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700">⚽ Cancha</span>
+                      <span className="inline-flex items-center gap-1 bg-rose-950/60 text-rose-300 px-2 py-0.5 rounded-md border border-rose-800/50">🍺 Ebrio</span>
+                      <span className="inline-flex items-center gap-1 bg-cyan-950/60 text-cyan-300 px-2 py-0.5 rounded-md border border-cyan-800/50">💧 Agua</span>
+                      <span className="inline-flex items-center gap-1 bg-amber-950/60 text-amber-300 px-2 py-0.5 rounded-md border border-amber-800/50">🐕 Mascota</span>
+                      <span className="inline-flex items-center gap-1 bg-yellow-950/60 text-yellow-300 px-2 py-0.5 rounded-md border border-yellow-800/50">💡 Luz</span>
+                    </div>
+                    <span className="text-[10.5px] text-emerald-400 font-bold hidden sm:inline">
+                      📍 Clic en cualquier manzano para ver lotes
+                    </span>
+                  </div>
+                </div>
+
+                {/* COLUMNA LATERAL DE REPORTES EN ESCRITORIO (4 de 12 columnas) */}
+                <div className="lg:col-span-4 flex flex-col space-y-2.5">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-xs font-black text-slate-300 uppercase tracking-wider">
+                      Incidentes Reportados ({otbReports.length}):
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-medium">En vivo</span>
+                  </div>
+
+                  <div className={`overflow-y-auto pr-1 space-y-2.5 ${
+                    isMaximized
+                      ? 'max-h-[560px] lg:max-h-[660px]'
+                      : 'max-h-[420px] lg:max-h-[540px]'
+                  }`}>
+                    {otbReports.length === 0 ? (
+                      <div className="p-6 text-center bg-[#020617] border border-slate-800 rounded-2xl text-slate-400 space-y-2">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                        <p className="font-bold text-white text-sm">Sin incidentes activos</p>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          La zona de {currentOtbInfo.name} se encuentra en orden y tranquilidad.
+                        </p>
+                      </div>
+                    ) : (
+                      otbReports.map((rep) => (
+                        <div
+                          key={rep.id}
+                          className="p-3.5 rounded-2xl bg-[#030712] border border-slate-700/80 hover:border-slate-600 transition-all space-y-2 shadow-sm"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="p-1.5 rounded-xl bg-slate-900 border border-slate-700 flex-shrink-0">
+                                {getCategoryIcon(rep.category)}
+                              </div>
+                              <div className="min-w-0">
+                                <h4 className="font-black text-white text-xs leading-snug truncate">
+                                  {rep.title}
+                                </h4>
+                                <span className="text-[10.5px] text-slate-400 block truncate">
+                                  {rep.timestamp}
+                                </span>
+                              </div>
+                            </div>
+                            <span
+                              className={`text-[9.5px] font-black px-2 py-0.5 rounded-full border flex-shrink-0 ${
+                                rep.status === 'resuelto'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                                  : rep.status === 'en_camino'
+                                  ? 'bg-rose-500/25 text-rose-300 border-rose-500/60 animate-pulse'
+                                  : rep.status === 'atendiendo'
+                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                                  : 'bg-blue-500/20 text-blue-300 border-blue-500/50'
+                              }`}
+                            >
+                              {rep.statusLabel}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-200 leading-relaxed bg-[#0B132B]/80 p-2.5 rounded-xl border border-slate-800/80 line-clamp-2">
+                            {rep.description}
+                          </p>
+
+                          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/60">
+                            <span className="text-slate-400 flex items-center gap-1 truncate max-w-[170px]">
+                              <MapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                              <span className="truncate">{rep.location}</span>
+                            </span>
+                            {rep.photoUrl && (
+                              <button
+                                type="button"
+                                onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
+                                className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 text-[11px] cursor-pointer"
+                              >
+                                <Camera className="w-3.5 h-3.5" />
+                                <span>Ver Foto</span>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Botones rápidos de atención vecinal */}
+                          {rep.status !== 'resuelto' && (
+                            <div className="flex items-center gap-2 pt-1">
+                              {rep.status !== 'en_camino' && (
+                                <button
+                                  type="button"
+                                  onClick={() => updateReportStatus(rep.id, 'en_camino', 'La Ronda Vecinal y Directiva acuden en auxilio.')}
+                                  className="flex-1 py-1 rounded-lg bg-rose-600/25 hover:bg-rose-600/40 text-rose-200 border border-rose-500/50 text-[10.5px] font-black cursor-pointer text-center"
+                                >
+                                  En Camino
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => updateReportStatus(rep.id, 'resuelto', 'Incidente atendido y resuelto favorablemente por la comunidad.')}
+                                className="flex-1 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-200 border border-emerald-500/50 text-[10.5px] font-black cursor-pointer text-center flex items-center justify-center gap-1"
+                              >
+                                <Check className="w-3 h-3" /> Resuelto
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-
-            {/* Vista 2: Lista de Reportes (o si no hay mapa activo) */}
-            {(muroViewMode === 'lista' || otbReports.length === 0) && (
-              <>
+            ) : (
+              /* VISTA 2: SOLO LISTA DETALLADA */
+              <div className="space-y-3">
                 {otbReports.length === 0 ? (
                   <div className="p-8 text-center bg-[#020617] border border-slate-700 rounded-2xl text-slate-400 space-y-2">
                     <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
@@ -1030,142 +1175,143 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                     </p>
                   </div>
                 ) : (
-                  otbReports.map((rep) => (
-                <div
-                  key={rep.id}
-                  className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-3 shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 flex-shrink-0">
-                        {getCategoryIcon(rep.category)}
-                      </div>
-                      <div>
-                        <h4 className="font-extrabold text-white text-sm sm:text-base leading-snug">
-                          {rep.title}
-                        </h4>
-                        <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{rep.location} • <strong className="text-amber-400">{rep.timestamp}</strong></span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {otbReports.map((rep) => (
+                      <div
+                        key={rep.id}
+                        className="p-4 rounded-2xl bg-[#030712] border-2 border-slate-700 space-y-3 shadow-md"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2 rounded-xl bg-slate-900 border border-slate-700 flex-shrink-0">
+                              {getCategoryIcon(rep.category)}
+                            </div>
+                            <div>
+                              <h4 className="font-extrabold text-white text-sm sm:text-base leading-snug">
+                                {rep.title}
+                              </h4>
+                              <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                <span>{rep.location} • <strong className="text-amber-400">{rep.timestamp}</strong></span>
+                              </p>
+                            </div>
+                          </div>
+
+                          <span
+                            className={`text-[11px] font-black px-3 py-1 rounded-full border flex-shrink-0 ${
+                              rep.status === 'resuelto'
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                                : rep.status === 'en_camino'
+                                ? 'bg-rose-500/25 text-rose-300 border-rose-500/60 animate-pulse'
+                                : rep.status === 'atendiendo'
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                                : 'bg-blue-500/20 text-blue-300 border-blue-500/50'
+                            }`}
+                          >
+                            {rep.statusLabel}
+                          </span>
+                        </div>
+
+                        <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-[#0B132B] p-3 rounded-xl border border-slate-800">
+                          {rep.description}
                         </p>
+
+                        {/* Foto de Evidencia Adjunta si existe */}
+                        {rep.photoUrl && (
+                          <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-black/60 max-h-56 group">
+                            <img
+                              src={rep.photoUrl}
+                              alt="Evidencia fotográfica del reporte"
+                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform cursor-pointer"
+                              onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
+                              className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-black/75 hover:bg-black text-white text-[11px] font-bold border border-white/20 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5 text-blue-400" />
+                              <span>Ver Foto Completa</span>
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Botón GPS Google Maps si tiene coordenadas */}
+                        {rep.mapUrl && (
+                          <div className="pt-1">
+                            <a
+                              href={rep.mapUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-950/80 hover:bg-blue-900 border border-blue-500/50 text-blue-300 text-xs font-bold transition-colors"
+                            >
+                              <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>📍 Abrir Ubicación en Google Maps (GPS)</span>
+                              <ExternalLink className="w-3 h-3 text-slate-400" />
+                            </a>
+                          </div>
+                        )}
+
+                        {rep.actionNotes && (
+                          <div className="p-2.5 rounded-xl bg-blue-950/60 border border-blue-500/40 text-xs text-blue-200">
+                            <strong className="text-white block font-bold mb-0.5">Respuesta de la Mesa Directiva:</strong>
+                            {rep.actionNotes}
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-xs text-slate-400">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {rep.isVerifiedNeighbor !== false ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-black">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                Socio Acreditado:
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-black">
+                                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                                Vecino No Censado:
+                              </span>
+                            )}
+                            <strong className="text-white font-bold">{rep.neighborName}</strong>
+                            <span className="text-slate-400 font-mono text-[11px]">({rep.socioCode} • {rep.lotName})</span>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {rep.phoneContact && (
+                              <a
+                                href={`tel:${rep.phoneContact}`}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/40 text-[11px] font-bold transition-colors"
+                              >
+                                <PhoneCall className="w-3 h-3 text-blue-300" />
+                                <span>Llamar ({rep.phoneContact})</span>
+                              </a>
+                            )}
+
+                            {rep.status !== 'en_camino' && rep.status !== 'resuelto' && (
+                              <button
+                                type="button"
+                                onClick={() => updateReportStatus(rep.id, 'en_camino', 'La Ronda Vecinal y Directiva acuden en auxilio.')}
+                                className="px-2.5 py-1 rounded-lg bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/50 text-[11px] font-black cursor-pointer"
+                              >
+                                Marcar "En Camino"
+                              </button>
+                            )}
+                            {rep.status !== 'resuelto' && (
+                              <button
+                                type="button"
+                                onClick={() => updateReportStatus(rep.id, 'resuelto', 'Incidente atendido y resuelto favorablemente por la comunidad.')}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/50 text-[11px] font-black cursor-pointer flex items-center gap-1"
+                              >
+                                <Check className="w-3 h-3" /> Resuelto
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-
-                    <span
-                      className={`text-[11px] font-black px-3 py-1 rounded-full border flex-shrink-0 ${
-                        rep.status === 'resuelto'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                          : rep.status === 'en_camino'
-                          ? 'bg-rose-500/25 text-rose-300 border-rose-500/60 animate-pulse'
-                          : rep.status === 'atendiendo'
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                          : 'bg-blue-500/20 text-blue-300 border-blue-500/50'
-                      }`}
-                    >
-                      {rep.statusLabel}
-                    </span>
+                    ))}
                   </div>
-
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-[#0B132B] p-3 rounded-xl border border-slate-800">
-                    {rep.description}
-                  </p>
-
-                  {/* Foto de Evidencia Adjunta si existe */}
-                  {rep.photoUrl && (
-                    <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-black/60 max-h-56 group">
-                      <img
-                        src={rep.photoUrl}
-                        alt="Evidencia fotográfica del reporte"
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform cursor-pointer"
-                        onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEnlargedPhoto(rep.photoUrl || null)}
-                        className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-black/75 hover:bg-black text-white text-[11px] font-bold border border-white/20 flex items-center gap-1 cursor-pointer"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-blue-400" />
-                        <span>Ver Foto Completa</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Botón GPS Google Maps si tiene coordenadas */}
-                  {rep.mapUrl && (
-                    <div className="pt-1">
-                      <a
-                        href={rep.mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-950/80 hover:bg-blue-900 border border-blue-500/50 text-blue-300 text-xs font-bold transition-colors"
-                      >
-                        <Navigation className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>📍 Abrir Ubicación en Google Maps (GPS)</span>
-                        <ExternalLink className="w-3 h-3 text-slate-400" />
-                      </a>
-                    </div>
-                  )}
-
-                  {rep.actionNotes && (
-                    <div className="p-2.5 rounded-xl bg-blue-950/60 border border-blue-500/40 text-xs text-blue-200">
-                      <strong className="text-white block font-bold mb-0.5">Respuesta de la Mesa Directiva:</strong>
-                      {rep.actionNotes}
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80 text-xs text-slate-400">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {rep.isVerifiedNeighbor !== false ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-black">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          Socio Acreditado:
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-black">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                          Vecino No Censado:
-                        </span>
-                      )}
-                      <strong className="text-white font-bold">{rep.neighborName}</strong>
-                      <span className="text-slate-400 font-mono text-[11px]">({rep.socioCode} • {rep.lotName})</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {rep.phoneContact && (
-                        <a
-                          href={`tel:${rep.phoneContact}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/40 text-[11px] font-bold transition-colors"
-                        >
-                          <PhoneCall className="w-3 h-3 text-blue-300" />
-                          <span>Llamar ({rep.phoneContact})</span>
-                        </a>
-                      )}
-
-                      {/* Acciones de Mesa Directiva / Vecinos para cambiar estado */}
-                      {rep.status !== 'en_camino' && rep.status !== 'resuelto' && (
-                        <button
-                          type="button"
-                          onClick={() => updateReportStatus(rep.id, 'en_camino', 'La Ronda Vecinal y Directiva acuden en auxilio.')}
-                          className="px-2.5 py-1 rounded-lg bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/50 text-[11px] font-black cursor-pointer"
-                        >
-                          Marcar "En Camino"
-                        </button>
-                      )}
-                      {rep.status !== 'resuelto' && (
-                        <button
-                          type="button"
-                          onClick={() => updateReportStatus(rep.id, 'resuelto', 'Incidente atendido y resuelto favorablemente por la comunidad.')}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/50 text-[11px] font-black cursor-pointer flex items-center gap-1"
-                        >
-                          <Check className="w-3 h-3" /> Resuelto
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-              </>
+                )}
+              </div>
             )}
           </div>
         )}

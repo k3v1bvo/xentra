@@ -243,8 +243,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
   const territory = getTerritory(otbId);
   const isCochabambaShowcase = otbId === '11111111-1111-1111-1111-111111111111';
-  const effectiveCenterLat = centerLat !== -17.41325 ? centerLat : territory.centerLat;
-  const effectiveCenterLng = centerLng !== -66.16543 ? centerLng : territory.centerLng;
+  const effectiveCenterLat = centerLat !== undefined ? centerLat : territory.centerLat;
+  const effectiveCenterLng = centerLng !== undefined ? centerLng : territory.centerLng;
 
   // Filtros de visualización
   const [layerFilters, setLayerFilters] = useState({

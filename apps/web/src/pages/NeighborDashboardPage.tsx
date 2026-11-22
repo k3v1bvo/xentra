@@ -484,13 +484,10 @@ export const NeighborDashboardPage: React.FC = () => {
           </span>
         </div>
         <CommunityInteractiveMap
-          centerLat={-17.41325}
-          centerLng={-66.16543}
-          zoom={16}
           heightClass="h-80 sm:h-[420px]"
-          otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+          otbName={currentOtb?.name || 'OTB Villa Graciela'}
           otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
-          selectedLotName="Manzana A, Lote 12"
+          selectedLotName="Manzano 267, Lote 14"
         />
       </div>
 

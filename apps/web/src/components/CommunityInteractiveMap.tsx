@@ -505,7 +505,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     if (!mapInstanceRef.current) return;
     const t = setTimeout(() => {
       mapInstanceRef.current?.invalidateSize();
-      primaryTileLayerRef.current?.redraw();
     }, 150);
     return () => clearTimeout(t);
   }, [isFullscreen]);

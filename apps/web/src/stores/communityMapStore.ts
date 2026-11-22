@@ -33,167 +33,201 @@ export interface OtbTerritoryConfig {
 }
 
 const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
-  // OTB Villa Esperanza (Cochabamba - Av. Petrolera Km 4)
+  // OTB Villa Graciela (OTB No. 24 - Distrito 1 GAMC Cochabamba) / Villa Esperanza
   '11111111-1111-1111-1111-111111111111': {
     otbId: '11111111-1111-1111-1111-111111111111',
-    otbName: 'OTB Villa Esperanza',
-    centerLat: -17.41325,
-    centerLng: -66.16543,
+    otbName: 'OTB Villa Graciela (Distrito 1)',
+    centerLat: -17.41315,
+    centerLng: -66.16495,
     zoom: 16,
+    // Perímetro trazado por el eje de las avenidas y calles limítrofes oficiales
     perimeter: [
-      [-17.4115, -66.1670],
-      [-17.4110, -66.1635],
-      [-17.4128, -66.1625],
-      [-17.4145, -66.1627],
-      [-17.4155, -66.1648],
-      [-17.4148, -66.1672]
+      [-17.4110, -66.1680], // Esquina NO: Av. Circunvalación esq. Av. Ecológica
+      [-17.4110, -66.1619], // Esquina NE: Av. Circunvalación esq. Calle Los Pinos (Límite con OTB 6 Pacata Central)
+      [-17.4153, -66.1619], // Esquina SE: Av. Litoral Sur esq. Calle Los Pinos
+      [-17.4153, -66.1680]  // Esquina SO: Av. Litoral Sur esq. Av. Ecológica
     ],
+    // Manzanos trazados con cuadrícula y corredores viales reales (Calles 12m-15m)
     manzanos: [
+      // FILA NORTE (Bordeando Av. Circunvalación Norte)
       {
-        id: 'mza-a',
-        code: '1',
-        name: 'Manzano 1 (Urb. Central)',
-        color: '#FCA5A5', // Rosa Distrito (GAMC)
+        id: 'mza-263',
+        code: '263',
+        name: 'Manzano 263',
+        color: '#FDBA74', // Durazno Melocotón (Plano GAMC OTB 24)
         polygon: [
-          [-17.4117, -66.1666],
-          [-17.4114, -66.1650],
-          [-17.4128, -66.1648],
-          [-17.4130, -66.1664]
-        ],
-        lotsCount: 24,
-        description: 'Sector Central y Av. Petrolera • 24 Lotes Censados (Incluye Sede Social y Lote 12)'
-      },
-      {
-        id: 'mza-b',
-        code: '2',
-        name: 'Manzano 2 (Paseo Las Retamas)',
-        color: '#D8B4FE', // Lavanda Queru Queru
-        polygon: [
-          [-17.4114, -66.1648],
-          [-17.4111, -66.1636],
-          [-17.4125, -66.1634],
-          [-17.4128, -66.1646]
-        ],
-        lotsCount: 28,
-        description: 'Sector Este y Calle Las Retamas • 28 Lotes Censados'
-      },
-      {
-        id: 'mza-c',
-        code: '3',
-        name: 'Manzano 3 (Sector Polifuncional)',
-        color: '#FDE047', // Amarillo Comunal
-        polygon: [
-          [-17.4132, -66.1664],
-          [-17.4130, -66.1648],
-          [-17.4144, -66.1646],
-          [-17.4146, -66.1662]
-        ],
-        lotsCount: 26,
-        description: 'Sector Deportivo y Tinglado Comunal • 26 Lotes Censados'
-      },
-      {
-        id: 'mza-d',
-        code: '4',
-        name: 'Manzano 4 (Sector Los Pinos)',
-        color: '#93C5FD', // Azul Cielo Catastral
-        polygon: [
-          [-17.4130, -66.1646],
-          [-17.4127, -66.1634],
-          [-17.4142, -66.1630],
-          [-17.4144, -66.1644]
+          [-17.4114, -66.1676],
+          [-17.4114, -66.1660],
+          [-17.4124, -66.1660],
+          [-17.4124, -66.1676]
         ],
         lotsCount: 22,
-        description: 'Sector Sur, Residencial Los Pinos • 22 Lotes Censados'
+        description: 'Av. Circunvalación esq. Calle Cochabamba • 22 Lotes Censados'
       },
       {
-        id: 'mza-av1',
+        id: 'mza-262',
+        code: '262',
+        name: 'Manzano 262',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4114, -66.1656],
+          [-17.4114, -66.1641],
+          [-17.4124, -66.1641],
+          [-17.4124, -66.1656]
+        ],
+        lotsCount: 24,
+        description: 'Sector Central Norte • 24 Lotes Censados'
+      },
+      {
+        id: 'mza-261',
+        code: '261',
+        name: 'Manzano 261',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4114, -66.1637],
+          [-17.4114, -66.1623],
+          [-17.4124, -66.1623],
+          [-17.4124, -66.1637]
+        ],
+        lotsCount: 20,
+        description: 'Av. Circunvalación esq. Calle Los Pinos • 20 Lotes Censados'
+      },
+
+      // FILA CENTRAL (Bordeando Calle Los Ceibos y Calle Las Retamas)
+      {
+        id: 'mza-267',
+        code: '267',
+        name: 'Manzano 267',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4127, -66.1676],
+          [-17.4127, -66.1660],
+          [-17.4136, -66.1660],
+          [-17.4136, -66.1676]
+        ],
+        lotsCount: 26,
+        description: 'Sector Residencial Oeste • 26 Lotes Censados'
+      },
+      {
+        id: 'mza-266',
+        code: '266',
+        name: 'Manzano 266',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4127, -66.1656],
+          [-17.4127, -66.1641],
+          [-17.4136, -66.1641],
+          [-17.4136, -66.1656]
+        ],
+        lotsCount: 28,
+        description: 'Corazón de la OTB • 28 Lotes Censados (Incluye Sede Social)'
+      },
+      {
+        id: 'mza-av5',
         code: '5',
         name: 'Área Verde 5 (Parque & Cancha Comunal)',
         color: '#16A34A', // Verde Bosque Oficial DOT
         polygon: [
-          [-17.4134, -66.1656],
-          [-17.4134, -66.1650],
-          [-17.4140, -66.1650],
-          [-17.4140, -66.1656]
+          [-17.4127, -66.1637],
+          [-17.4127, -66.1623],
+          [-17.4136, -66.1623],
+          [-17.4136, -66.1637]
         ],
         lotsCount: 0,
-        description: '🌳 Área Verde de Equipamiento Comunal: Complejo Deportivo, Tinglado y Parque Infantil'
+        description: '🌳 Equipamiento Comunal GAMC: Tinglado Deportivo, Cancha Polifuncional y Parque Infantil'
+      },
+
+      // FILA SUR (Bordeando Av. Litoral Sur)
+      {
+        id: 'mza-270',
+        code: '270',
+        name: 'Manzano 270',
+        color: '#FDBA74',
+        polygon: [
+          [-17.4139, -66.1676],
+          [-17.4139, -66.1654],
+          [-17.4149, -66.1654],
+          [-17.4149, -66.1676]
+        ],
+        lotsCount: 36,
+        description: 'Gran Manzano Suroeste • 36 Lotes Censados'
       },
       {
-        id: 'mza-e',
-        code: '6',
-        name: 'Manzano 6 (Colina Mirador)',
-        color: '#FDBA74', // Durazno Melocotón
+        id: 'mza-269',
+        code: '269',
+        name: 'Manzano 269',
+        color: '#FDBA74',
         polygon: [
-          [-17.4146, -66.1662],
-          [-17.4144, -66.1646],
-          [-17.4153, -66.1648],
-          [-17.4150, -66.1668]
+          [-17.4139, -66.1650],
+          [-17.4139, -66.1638],
+          [-17.4149, -66.1638],
+          [-17.4149, -66.1650]
         ],
         lotsCount: 18,
-        description: 'Sector Sudoeste Mirador • 18 Lotes Censados'
+        description: 'Sector Sur Central • 18 Lotes Censados'
       },
       {
-        id: 'mza-av2',
-        code: '7',
-        name: 'Área Verde 7 (Franja Ecológica)',
-        color: '#15803D', // Verde Oscuro de Preservación
+        id: 'mza-268',
+        code: '268',
+        name: 'Manzano 268',
+        color: '#FDBA74',
         polygon: [
-          [-17.4148, -66.1672],
-          [-17.4146, -66.1662],
-          [-17.4150, -66.1668]
+          [-17.4139, -66.1635],
+          [-17.4139, -66.1623],
+          [-17.4149, -66.1623],
+          [-17.4149, -66.1635]
         ],
-        lotsCount: 0,
-        description: '🌲 Franja de Amortiguamiento y Preservación Forestal Vecinal'
+        lotsCount: 20,
+        description: 'Sector Pasaje Los Pinos Sur • 20 Lotes Censados'
       }
     ],
     facilities: [
       {
         id: 'fac-1',
-        name: '🏛️ Sede Social OTB Villa Esperanza',
+        name: '🏛️ Sede Social OTB Villa Graciela',
         category: 'sede',
-        lat: -17.4124,
-        lng: -66.1655,
-        description: 'Salón de Asambleas Generales, Oficina de Secretaría y Tesorería Comunal.'
+        lat: -17.4131,
+        lng: -66.1648,
+        description: 'Salón de Asambleas Generales, Oficina de Presidencia y Secretaría.'
       },
       {
         id: 'fac-2',
         name: '⚽ Cancha Polifuncional & Tinglado',
         category: 'cancha',
-        lat: -17.4137,
-        lng: -66.1654,
+        lat: -17.4131,
+        lng: -66.1630,
         description: 'Complejo deportivo barrial con obra de tinglado metálico e iluminación LED.'
       },
       {
         id: 'fac-3',
         name: '🚨 Alarma Vecinal & Cámara de Seguridad (Acceso Norte)',
         category: 'seguridad',
-        lat: -17.4116,
-        lng: -66.1656,
-        description: 'Pulsador de pánico vecinal y monitoreo de ingreso principal al barrio.'
+        lat: -17.4111,
+        lng: -66.1650,
+        description: 'Pulsador de pánico vecinal y monitoreo de ingreso por Av. Circunvalación.'
       },
       {
         id: 'fac-4',
         name: '🚨 Alarma Vecinal & Cámara de Seguridad (Acceso Sur)',
         category: 'seguridad',
-        lat: -17.4144,
-        lng: -66.1638,
-        description: 'Circuito preventivo en Pasaje Los Pinos.'
+        lat: -17.4151,
+        lng: -66.1650,
+        description: 'Circuito preventivo en Av. Litoral.'
       },
       {
         id: 'fac-5',
         name: '💧 Tanque Comunitario y Válvula Matriz',
         category: 'agua',
-        lat: -17.4136,
-        lng: -66.1635,
+        lat: -17.4144,
+        lng: -66.1630,
         description: 'Punto de distribución de agua potable y control de presión barrial.'
       },
       {
         id: 'fac-6',
         name: '🛝 Parque Infantil y Área Verde',
         category: 'parque',
-        lat: -17.4140,
-        lng: -66.1637,
+        lat: -17.4134,
+        lng: -66.1630,
         description: 'Juegos infantiles, jardines comunales y bancos de descanso vecinal.'
       }
     ],
@@ -406,7 +440,7 @@ export const useCommunityMapStore = create<CommunityMapState>()(
       }
     }),
     {
-      name: 'xentra_community_territory_v1'
+      name: 'xentra_community_territory_v2_gamc'
     }
   )
 );

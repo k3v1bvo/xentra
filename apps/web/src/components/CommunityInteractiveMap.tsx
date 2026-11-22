@@ -105,6 +105,91 @@ const COCHABAMBA_CADASTRE_PALETTE = [
   { name: 'Verde Lima', color: '#86EFAC' }
 ];
 
+// OTBs Colindantes del Distrito 1 de Cochabamba (GAMC - DOT), réplica fidedigna del plano municipal
+const COCHABAMBA_DISTRICT_1_NEIGHBORS = [
+  {
+    code: '6',
+    name: 'OTB Pacata Central',
+    color: '#FEF08A', // Amarillo Crema
+    borderColor: '#CA8A04',
+    direction: 'Este (Colindancia)',
+    polygon: [
+      [-17.4110, -66.1616],
+      [-17.4110, -66.1565],
+      [-17.4153, -66.1565],
+      [-17.4153, -66.1616]
+    ] as [number, number][],
+    description: 'OTB Colindante al Este • Incluye manzanos 271, 272, 273 y Área Verde comunal'
+  },
+  {
+    code: '22',
+    name: 'OTB Virgen de Luján',
+    color: '#FCA5A5', // Rosa Distrito
+    borderColor: '#E11D48',
+    direction: 'Norte (Cruzando Av. Circunvalación)',
+    polygon: [
+      [-17.4075, -66.1676],
+      [-17.4075, -66.1620],
+      [-17.4106, -66.1620],
+      [-17.4106, -66.1676]
+    ] as [number, number][],
+    description: 'OTB Colindante al Norte • Manzanos 180, 181, 182 y Plaza Barrial'
+  },
+  {
+    code: '23',
+    name: 'OTB 10 de Diciembre',
+    color: '#FDE047', // Ocre Ámbar
+    borderColor: '#D97706',
+    direction: 'Noreste (Colindancia)',
+    polygon: [
+      [-17.4075, -66.1616],
+      [-17.4075, -66.1565],
+      [-17.4106, -66.1565],
+      [-17.4106, -66.1616]
+    ] as [number, number][],
+    description: 'OTB Colindante al Noreste • Distrito 1 GAMC Cochabamba'
+  },
+  {
+    code: '4',
+    name: 'OTB Aeronáutica FAB',
+    color: '#BBF7D0', // Verde Lima Pastel
+    borderColor: '#16A34A',
+    direction: 'Sur (Cruzando Av. Litoral)',
+    polygon: [
+      [-17.4157, -66.1680],
+      [-17.4157, -66.1620],
+      [-17.4185, -66.1620],
+      [-17.4185, -66.1680]
+    ] as [number, number][],
+    description: 'OTB Colindante al Sur • Zona de equipamiento aeronáutico y residencial'
+  },
+  {
+    code: '13',
+    name: 'OTB Mesadilla',
+    color: '#FDA4AF', // Rosa Coral
+    borderColor: '#E11D48',
+    direction: 'Oeste (Cruzando Av. Ecológica)',
+    polygon: [
+      [-17.4110, -66.1735],
+      [-17.4110, -66.1684],
+      [-17.4153, -66.1684],
+      [-17.4153, -66.1735]
+    ] as [number, number][],
+    description: 'OTB Colindante al Oeste • Distrito 1 GAMC Cochabamba'
+  }
+];
+
+// Calles y Avenidas principales de la cuadrícula urbana (para rotulación precisa)
+const COCHABAMBA_STREET_LABELS = [
+  { name: '🛣️ Av. Circunvalación Norte', lat: -17.4108, lng: -66.1650, type: 'avenida' },
+  { name: '🛣️ Av. Litoral Sur', lat: -17.4151, lng: -66.1650, type: 'avenida' },
+  { name: '🛣️ Av. Ecológica (Oeste)', lat: -17.4131, lng: -66.1678, type: 'avenida' },
+  { name: 'Calle Los Pinos (Límite Este)', lat: -17.4131, lng: -66.1618, type: 'calle' },
+  { name: 'Calle Los Ceibos', lat: -17.41255, lng: -66.1650, type: 'calle' },
+  { name: 'Calle Las Retamas', lat: -17.41375, lng: -66.1650, type: 'calle' },
+  { name: 'Calle Cochabamba', lat: -17.4131, lng: -66.1658, type: 'calle' }
+];
+
 export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = ({
   reports = [],
   neighbors = [],
@@ -162,6 +247,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const [layerFilters, setLayerFilters] = useState({
     perimetro: true,
     manzanos: true,
+    colindantes: true,
+    calles: true,
     equipamiento: true,
     vecinos: true,
     reportes: true
@@ -526,6 +613,66 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
           const labelMarker = L.marker(centroid, { icon: labelIcon }).addTo(group);
           labelMarker.on('click', () => setInspectedManzano(mza));
         }
+      });
+    }
+
+    // B.2 DIBUJAR OTBs COLINDANTES DEL DISTRITO 1 (GAMC)
+    if (layerFilters.colindantes) {
+      COCHABAMBA_DISTRICT_1_NEIGHBORS.forEach((otb) => {
+        const poly = L.polygon(otb.polygon, {
+          color: otb.borderColor,
+          weight: 2,
+          dashArray: '5, 5',
+          fillColor: otb.color,
+          fillOpacity: 0.38
+        }).addTo(group);
+
+        poly.bindPopup(`
+          <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 220px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #CBD5E1; padding-bottom: 4px;">
+              <strong style="color: #0F172A; font-size: 14px;">🏘️ ${otb.name}</strong>
+              <span style="background: ${otb.color}; color: #0F172A; font-weight: 900; font-size: 11px; padding: 2px 7px; border-radius: 6px; border: 1px solid ${otb.borderColor};">
+                OTB No. ${otb.code}
+              </span>
+            </div>
+            <p style="color: #475569; font-size: 12px; margin: 4px 0;">${otb.description}</p>
+            <div style="font-size: 11px; color: #64748B; font-weight: bold; margin-top: 4px;">
+              📍 Ubicación: ${otb.direction}
+            </div>
+          </div>
+        `);
+
+        // Badge en el centro de la OTB colindante
+        const centroid = getPolygonCentroid(otb.polygon);
+        const otbLabelIcon = L.divIcon({
+          html: `
+            <div style="background-color: ${otb.color}; color: #0F172A; padding: 2.5px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; font-family: ui-monospace, monospace; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1.5px solid ${otb.borderColor}; opacity: 0.95; cursor: pointer;">
+              <span>OTB ${otb.code}: ${otb.name.replace('OTB ', '')}</span>
+            </div>
+          `,
+          className: 'otb-colindante-label',
+          iconSize: [80, 22],
+          iconAnchor: [40, 11]
+        });
+        L.marker(centroid, { icon: otbLabelIcon }).addTo(group);
+      });
+    }
+
+    // B.3 DIBUJAR ROTULACIÓN DE CALLES Y AVENIDAS
+    if (layerFilters.calles) {
+      COCHABAMBA_STREET_LABELS.forEach((st) => {
+        const isAvenue = st.type === 'avenida';
+        const streetIcon = L.divIcon({
+          html: `
+            <div style="background-color: ${isAvenue ? '#0F172A' : '#1E293B'}; color: ${isAvenue ? '#38BDF8' : '#94A3B8'}; padding: 1.5px 6px; border-radius: 6px; font-weight: 800; font-size: 9.5px; font-family: system-ui, sans-serif; white-space: nowrap; border: 1px solid ${isAvenue ? '#0284C7' : '#334155'}; pointer-events: none; letter-spacing: 0.3px; box-shadow: 0 1px 4px rgba(0,0,0,0.4);">
+              ${st.name}
+            </div>
+          `,
+          className: 'street-label-icon',
+          iconSize: [60, 18],
+          iconAnchor: [30, 9]
+        });
+        L.marker([st.lat, st.lng], { icon: streetIcon }).addTo(group);
       });
     }
 
@@ -918,6 +1065,26 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 title="Mostrar Sede, Tinglado, Agua y Seguridad"
               >
                 <span>📍 Puntos Clave</span>
+              </button>
+
+              <button
+                onClick={() => setLayerFilters((p) => ({ ...p, colindantes: !p.colindantes }))}
+                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                  layerFilters.colindantes ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="Mostrar/Ocultar OTBs Colindantes del Distrito 1 (GAMC)"
+              >
+                <span>🗺️ OTBs Vecinas</span>
+              </button>
+
+              <button
+                onClick={() => setLayerFilters((p) => ({ ...p, calles: !p.calles }))}
+                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                  layerFilters.calles ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="Mostrar/Ocultar Rótulos de Calles y Avenidas"
+              >
+                <span>🛣️ Calles</span>
               </button>
             </div>
           )}
@@ -1484,7 +1651,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       {/* 4. CAJETÍN OFICIAL DE REFERENCIAS URBANAS GAMC - DOT COCHABAMBA     */}
       {/* =================================================================== */}
       {showCadastralReferences && (
-        <div className="absolute top-16 right-4 z-30 max-w-xs w-full bg-[#030712]/95 backdrop-blur-md border-2 border-emerald-500/60 rounded-2xl p-3 shadow-2xl space-y-2 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute top-16 right-4 z-30 max-w-sm w-full bg-[#030712]/95 backdrop-blur-md border-2 border-emerald-500/60 rounded-2xl p-3 shadow-2xl space-y-2 animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <div>
               <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400 block">
@@ -1500,46 +1667,80 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </button>
           </div>
 
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[10.5px] text-slate-400 font-bold uppercase tracking-wider">
             Plano de OTB y Manzanos • Cochabamba
           </div>
 
-          <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px]">
-            {territory.manzanos.map((m) => {
-              const isGreen =
-                m.color.toLowerCase() === '#16a34a' ||
-                m.color.toLowerCase() === '#15803d' ||
-                m.name.toLowerCase().includes('verde') ||
-                m.name.toLowerCase().includes('parque');
+          <div className="max-h-72 overflow-y-auto space-y-2 pr-1 font-mono text-[11px]">
+            {/* Manzanos de la OTB */}
+            <div className="space-y-1">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
+                Jurisdicción {otbName}:
+              </span>
+              {territory.manzanos.map((m) => {
+                const isGreen =
+                  m.color.toLowerCase() === '#16a34a' ||
+                  m.color.toLowerCase() === '#15803d' ||
+                  m.name.toLowerCase().includes('verde') ||
+                  m.name.toLowerCase().includes('parque');
 
-              return (
+                return (
+                  <div
+                    key={m.id}
+                    onClick={() => setInspectedManzano(m)}
+                    className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800/80 hover:border-emerald-500/50 cursor-pointer transition-colors"
+                  >
+                    <span
+                      className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0 shadow-sm"
+                      style={{ backgroundColor: m.color }}
+                    >
+                      {m.code}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white text-xs truncate">
+                        {isGreen ? '🌳 ' : ''}{m.name}
+                      </p>
+                      <span className="text-[10px] text-slate-400 block truncate">
+                        {m.lotsCount > 0 ? `${m.lotsCount} Lotes Censados` : 'Área Verde Comunal'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* OTBs Colindantes del Distrito 1 */}
+            <div className="space-y-1 pt-1 border-t border-slate-800/80">
+              <span className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
+                OTBs Colindantes (Distrito 1 GAMC):
+              </span>
+              {COCHABAMBA_DISTRICT_1_NEIGHBORS.map((otb) => (
                 <div
-                  key={m.id}
-                  onClick={() => setInspectedManzano(m)}
-                  className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-900/90 border border-slate-800/80 hover:border-emerald-500/50 cursor-pointer transition-colors"
+                  key={otb.code}
+                  className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-950/80 border border-slate-800/60"
                 >
                   <span
-                    className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0 shadow-sm"
-                    style={{ backgroundColor: m.color }}
+                    className="w-6 h-5 rounded-md flex items-center justify-center text-[10px] font-black text-slate-950 flex-shrink-0"
+                    style={{ backgroundColor: otb.color }}
                   >
-                    {m.code}
+                    {otb.code}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-white text-xs truncate">
-                      {isGreen ? '🌳 ' : ''}{m.name}
+                    <p className="font-bold text-slate-200 text-xs truncate">
+                      {otb.name}
                     </p>
-                    <span className="text-[10px] text-slate-400 block truncate">
-                      {m.lotsCount > 0 ? `${m.lotsCount} Lotes Censados` : 'Área Verde Comunal'}
+                    <span className="text-[9.5px] text-slate-500 block truncate">
+                      {otb.direction}
                     </span>
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
           <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between items-center">
-            <span>GAMC • Distrito Municipal</span>
-            <span className="text-emerald-400 font-bold">DOT</span>
+            <span>GAMC • Distrito 1</span>
+            <span className="text-emerald-400 font-bold">DOT Cochabamba</span>
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Linking, Alert, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NeighborHomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -30,11 +31,12 @@ export default function NeighborHomeScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />}
-    >
+    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: '#0B132B' }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />}
+      >
       {/* Offline banner */}
       {isOffline && (
         <View style={styles.offlineBanner}>
@@ -197,6 +199,7 @@ export default function NeighborHomeScreen() {
         </Text>
       </View>
     </ScrollView>
+  </SafeAreaView>
   );
 }
 

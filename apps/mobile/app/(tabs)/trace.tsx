@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NeighborTraceScreen() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: '#0B132B' }}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.banner}>
         <Text style={styles.bannerTitle}>XENTRA TRACE — Trazabilidad Contable</Text>
         <Text style={styles.bannerSub}>
@@ -67,6 +69,7 @@ export default function NeighborTraceScreen() {
         </View>
       </View>
     </ScrollView>
+  </SafeAreaView>
   );
 }
 

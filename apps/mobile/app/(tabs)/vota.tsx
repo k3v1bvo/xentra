@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NeighborVotaScreen() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -19,7 +20,8 @@ export default function NeighborVotaScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: '#0B132B' }}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Democracia Participativa OTB</Text>
         <Text style={styles.headerSub}>
@@ -74,6 +76,7 @@ export default function NeighborVotaScreen() {
         )}
       </View>
     </ScrollView>
+  </SafeAreaView>
   );
 }
 

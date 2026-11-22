@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NeighborPaymentsScreen() {
   const [activeTab, setActiveTab] = useState<'historial' | 'reportar'>('historial');
@@ -20,7 +21,8 @@ export default function NeighborPaymentsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={{ flex: 1, backgroundColor: '#0B132B' }}>
+      <View style={styles.container}>
       {/* Tab Switcher Superior */}
       <View style={styles.tabBar}>
         <TouchableOpacity
@@ -171,6 +173,7 @@ export default function NeighborPaymentsScreen() {
         </ScrollView>
       )}
     </View>
+  </SafeAreaView>
   );
 }
 

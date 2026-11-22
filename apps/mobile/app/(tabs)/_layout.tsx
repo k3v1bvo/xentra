@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, Platform } from 'react-native';
+import { View, Text, Platform, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -17,20 +17,22 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#0B132B',
           borderTopColor: '#1E293B',
-          height: Platform.OS === 'ios' ? 84 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 10,
-          paddingTop: 10,
-          elevation: 12,
+          borderTopWidth: 1.5,
+          height: Platform.OS === 'ios' ? 88 : 72,
+          paddingBottom: Platform.OS === 'ios' ? 26 : 12,
+          paddingTop: 8,
+          elevation: 16,
           shadowColor: '#000000',
           shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.35,
-          shadowRadius: 8,
+          shadowOpacity: 0.4,
+          shadowRadius: 10,
         },
-        tabBarActiveTintColor: '#3B82F6',
+        tabBarActiveTintColor: '#60A5FA',
         tabBarInactiveTintColor: '#94A3B8',
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: 'bold',
+          fontSize: 11,
+          fontWeight: '800',
+          marginTop: 2,
         },
       }}
     >
@@ -40,6 +42,11 @@ export default function TabLayout() {
           title: 'Mis Cuotas',
           tabBarLabel: 'Inicio',
           headerTitle: 'XENTRA OTB — Mi Portal',
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.iconContainer, focused && styles.iconActive]}>
+              <Text style={styles.iconEmoji}>🏠</Text>
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
@@ -48,6 +55,11 @@ export default function TabLayout() {
           title: 'Mis Pagos',
           tabBarLabel: 'Pagos',
           headerTitle: 'Historial de Pagos y Recibos',
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.iconContainer, focused && styles.iconActive]}>
+              <Text style={styles.iconEmoji}>💳</Text>
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
@@ -56,6 +68,11 @@ export default function TabLayout() {
           title: 'Xentra TRACE',
           tabBarLabel: 'Transparencia',
           headerTitle: 'Trazabilidad de Fondos',
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.iconContainer, focused && styles.iconActive]}>
+              <Text style={styles.iconEmoji}>🛡️</Text>
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
@@ -64,8 +81,29 @@ export default function TabLayout() {
           title: 'Xentra VOTA',
           tabBarLabel: 'Votaciones',
           headerTitle: 'Consultas Vecinales Activas',
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.iconContainer, focused && styles.iconActive]}>
+              <Text style={styles.iconEmoji}>🗳️</Text>
+            </View>
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+  },
+  iconActive: {
+    backgroundColor: 'rgba(59, 130, 246, 0.25)',
+  },
+  iconEmoji: {
+    fontSize: 18,
+  },
+});

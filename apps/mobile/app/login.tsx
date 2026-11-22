@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MobileLoginScreen() {
   const router = useRouter();
@@ -17,152 +27,214 @@ export default function MobileLoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.brandContainer}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoText}>X</Text>
-        </View>
-        <Text style={styles.title}>XENTRA OTB</Text>
-        <Text style={styles.subtitle}>Tu comunidad, en orden. Tu gestión, transparente.</Text>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo e Identidad Comunal */}
+          <View style={styles.brandContainer}>
+            <View style={styles.logoBadge}>
+              <Text style={styles.logoText}>X</Text>
+            </View>
+            <Text style={styles.title}>XENTRA OTB</Text>
+            <Text style={styles.subtitle}>Gestión Financiera & Democracia Vecinal</Text>
+          </View>
 
-      <View style={styles.formCard}>
-        <Text style={styles.loginTitle}>Iniciar Sesión</Text>
-        <Text style={styles.loginDesc}>Accede con tu correo o número de C.I. registrado</Text>
+          {/* Tarjeta de Inicio de Sesión */}
+          <View style={styles.formCard}>
+            <Text style={styles.loginTitle}>Iniciar Sesión</Text>
+            <Text style={styles.loginDesc}>
+              Accede a la plataforma de tu comunidad barrial
+            </Text>
 
-        <Text style={styles.label}>Correo Electrónico o C.I.:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="ej. juan.vecino@xentra.app"
-          placeholderTextColor="#64748B"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
+            <Text style={styles.label}>Correo Electrónico o C.I.:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="ej. juan.vecino@xentra.app"
+              placeholderTextColor="#64748B"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-        <Text style={styles.label}>Contraseña:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••"
-          placeholderTextColor="#64748B"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+            <Text style={styles.label}>Contraseña Asignada:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#64748B"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-          <Text style={styles.buttonText}>{loading ? 'Verificando...' : 'Entrar a mi OTB'}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? 'Verificando...' : 'Entrar a mi OTB'}
+              </Text>
+            </TouchableOpacity>
 
-        <View style={styles.demoBox}>
-          <Text style={styles.demoTitle}>Credenciales Demo:</Text>
-          <Text style={styles.demoText}>Vecino: juan.vecino@xentra.app / xentra2026</Text>
-          <Text style={styles.demoText}>Directiva: roberto.presidencia@xentra.app</Text>
-        </View>
-      </View>
-    </View>
+            {/* Aviso de Seguridad y Credenciales */}
+            <View style={styles.demoBox}>
+              <Text style={styles.demoTitle}>🔒 Acceso Seguro y Aislamiento de Datos:</Text>
+              <Text style={styles.demoText}>• Vecino: juan.vecino@xentra.app / xentra2026</Text>
+              <Text style={styles.demoText}>• Mesa Directiva: roberto.presidencia@xentra.app</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0B132B',
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
+    paddingVertical: 32,
   },
   brandContainer: {
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
   },
   logoBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
     backgroundColor: '#2563EB',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    borderWidth: 2,
+    borderColor: '#60A5FA',
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
   },
   logoText: {
     color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '900',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: 1,
   },
   subtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
+    fontSize: 13,
+    color: '#93C5FD',
     marginTop: 4,
     textAlign: 'center',
+    fontWeight: '600',
   },
   formCard: {
     backgroundColor: '#1E293B',
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 24,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#334155',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 5,
   },
   loginTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 4,
   },
   loginDesc: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: '#CBD5E1',
     marginBottom: 20,
+    lineHeight: 18,
   },
   label: {
     fontSize: 13,
-    color: '#CBD5E1',
-    marginBottom: 6,
-    fontWeight: '500',
+    color: '#E2E8F0',
+    marginBottom: 8,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   input: {
     backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 12,
+    borderWidth: 2,
+    borderColor: '#475569',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     color: '#FFFFFF',
-    fontSize: 15,
-    marginBottom: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 18,
+    minHeight: 54, // Target táctil accesible
   },
   button: {
     backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 8,
+    minHeight: 54,
+    borderRadius: 16,
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'center',
+    marginTop: 6,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   demoBox: {
     backgroundColor: '#0F172A',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 14,
+    padding: 14,
     marginTop: 20,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: '#334155',
   },
   demoTitle: {
-    fontSize: 11,
-    fontWeight: 'bold',
-    color: '#3B82F6',
-    marginBottom: 4,
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#60A5FA',
+    marginBottom: 6,
   },
   demoText: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: '#CBD5E1',
+    lineHeight: 18,
+    fontWeight: '500',
   },
 });

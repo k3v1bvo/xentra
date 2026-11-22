@@ -1,106 +1,105 @@
 # 🎙️ GUION MAESTRO DE PITCH — XENTRA OTB v3.0
 ## "Democratizando la Gestión Comunal en Bolivia con Transparencia Radical"
 
-> **Duración recomendada:** 3 a 5 minutos  
+> **Formato de Competencia:** **4 minutos de Pitch en vivo** + **3 minutos de Preguntas del Jurado**  
 > **Público objetivo:** Jurado de Hackathon (Evaluadores técnicos, de impacto social y modelos de negocio)  
-> **Demostración en vivo:** [https://xentra-two.vercel.app/](https://xentra-two.vercel.app/)  
-> **App Móvil:** Android Standalone APK (Expo SDK 52 + Hermes) compilado en GitHub Actions
+> **Demostración en vivo:** [https://stirring-pony-eb17cc.netlify.app/](https://stirring-pony-eb17cc.netlify.app/)  
+> **App Móvil Oficial:** Android APK Standalone v3.0 ([Descargar Release v3.0.0](https://github.com/k3v1bvo/xentra/releases/tag/v3.0.0))
 
 ---
 
-### ⏱️ CRONOMETRÍA DEL PITCH
+### ⏱️ CRONOMETRÍA EXACTA PARA 4 MINUTOS
 
-| Bloque | Tiempo | Propósito Clave |
-| :--- | :---: | :--- |
-| **1. Hook & El Dolor Real** | 0:00 - 0:45 | Conectar emocionalmente con la realidad de las 14,000+ OTBs en Bolivia. |
-| **2. La Solución Xentra** | 0:45 - 1:30 | Presentar la plataforma como el sistema operativo de la comunidad. |
-| **3. Demo en Vivo (3 Actos)** | 1:30 - 3:00 | Demostrar Pago QR, Verificación TRACE y Muro de Auxilio 24/7. |
-| **4. Accesibilidad Senior & Inclusión** | 3:00 - 3:45 | Desarmar la objeción: *"¿Cómo lo usarán los adultos mayores de 40 a 60 años?"*. |
-| **5. Viabilidad, Tracción & Cierre** | 3:45 - 4:30 | Modelo de sostenibilidad (Bs. 1/lote), tracción real y llamado a la acción. |
+| Bloque | Tiempo | Propósito Clave | Pantalla / Acción |
+| :--- | :---: | :--- | :--- |
+| **1. Hook & El Dolor Real** | 0:00 - 0:50 | Conectar con la realidad de las 14.000 OTBs: cuadernos perdidos, 55% morosidad y desconfianza. | Sostener celular o cuaderno físico. |
+| **2. Demo: Pagos QR & TRACE** | 0:50 - 2:00 | Vecino paga con QR Simple nacional (0% comisión). Tesorero concilia y sella con Hash SHA-256 inmutable. | Mostrar portal vecino y recibo sellado. |
+| **3. Demo: Mapeo Territorial** | 2:00 - 3:00 | Catastro barrial: manzanos por calles, pantalla completa, dibujo con lápiz y exportación GeoJSON municipal. | Mostrar mapa interactivo ampliado y dibujar. |
+| **4. Inclusión Senior & Auxilio** | 3:00 - 3:35 | Diseñado para dirigentes de 40-60 años (WCAG AAA) + Centro de auxilio y sirena vecinal 24/7. | Mostrar tipografía grande y botón 110/165. |
+| **5. Viabilidad & Cierre** | 3:35 - 4:00 | Sostenibilidad con micro-canon (Bs. 1/lote/mes), APK disponible y llamado a la acción. | Conclusión contundente mirando al jurado. |
 
 ---
 
-## 🎬 GUION PALABRA POR PALABRA
+## 🎬 GUION PALABRA POR PALABRA (4 MINUTOS EXACTOS)
 
-### BLOQUE 1: EL GANCHO Y LA HERIDA COMUNAL (0:00 – 0:45)
+### BLOQUE 1: EL GANCHO Y LA HERIDA COMUNAL (0:00 – 0:50)
 
 *(Ponte de pie, mira fijamente al jurado, sonríe con seguridad y sostén un cuaderno viejo o tu celular).*
 
-> *"Estimado jurado: ¿Cuándo fue la última vez que fueron a una reunión de su OTB o junta vecinal?*  
-> *Lo más seguro es que recuerden tres cosas: **discusiones a gritos**, un tesorero con un **cuaderno de 50 hojas manchado de café**, y la sospecha constante de: **'¿En qué se gastó la plata de las cuotas?'**.*
+> *"Estimado jurado: ¿Cuándo fue la última vez que asistieron a una reunión de su OTB o junta vecinal?*  
+> *Lo más probable es que recuerden tres cosas: **discusiones acaloradas**, un dirigente con un **cuaderno escolar manchado de café**, y la sospecha constante de: **'¿En qué se gastó la plata de las cuotas?'**.*
 >
-> *En Bolivia existen más de **14.000 Organizaciones Territoriales de Base (OTBs)**. El 90% todavía se administra con cuadernos escolares y mensajes de WhatsApp donde se publican listas de deudores, exponiendo la privacidad y seguridad de las familias.*
+> *En Bolivia existen más de **14.000 Organizaciones Territoriales de Base (OTBs)**. El 90% todavía se administra a mano y con mensajes de WhatsApp donde se publican listas de deudores, exponiendo la privacidad y seguridad de las familias.*
 >
-> *El resultado es desastroso: **morosidad de más del 55%**, desconfianza vecinal, obras comunales paralizadas y tesoreros honestos que renuncian por puro desgaste mental tras perder 30 horas al mes llenando recibos a mano.*
+> *El resultado es grave: **morosidad superior al 55%**, desconfianza vecinal, obras vecinales paralizadas y tesoreros honestos que renuncian por puro desgaste mental tras perder 30 horas al mes llenando recibos manuales.*
 >
-> *Hoy les presentamos **XENTRA OTB**: la primera plataforma web y móvil diseñada específicamente para digitalizar, transparentar y pacificar la vida barrial en Bolivia."*
+> *Hoy les presentamos **XENTRA OTB**: la primera plataforma territorial y financiera diseñada específicamente para transparentar, modernizar y pacificar la vida barrial en Bolivia."*
 
 ---
 
-### BLOQUE 2: QUÉ ES XENTRA OTB (0:45 – 1:30)
+### BLOQUE 2: COBRANZA QR Y AUDITORÍA CRIPTOGRÁFICA (0:50 – 2:00)
 
-> *"Xentra no es un Excel disfrazado de página web ni un sistema contable corporativo inflado.*
+*(Comparte pantalla con la web en vivo o el celular).*
+
+> *"Xentra no es un Excel disfrazado ni un sistema corporativo complicado. Es un sistema integral que resuelve el problema de raíz:*
 >
-> *Xentra es la **infraestructura digital comunitaria** que conecta tres pilares:*
-> 1. **Cuentas Claras:** Cobranza mediante **QR Simple boliviano sin comisiones bancarias**, respaldada por el **Protocolo TRACE**, que sella cada ingreso y gasto con un **hash criptográfico inmutable SHA-256** auditado por matemáticas, no por promesas.
-> 2. **Privacidad Zero-PII:** El vecino consulta su estado con su carnet o código de lote sin exponer su nombre ni ver la deuda ajena.
-> 3. **Convivencia y Seguridad 24/7:** Un centro barrial con geolocalización satelital para reportar fugas de agua, postes quemados, personas merodeando y botón directo a Radio Patrullas 110 y SAMU 165."*
+> 1. **Para el Vecino:** Don Juan entra desde su celular, digita su código de lote o carnet y ve su estado al día. Con un solo toque presiona **'Pagar con QR'**, guarda la imagen y transfiere directamente desde su banca móvil de Banco Unión, BancoSol, BNB o BCP. **Cero comisiones bancarias**, porque el dinero viaja directo a la cuenta de la OTB; Xentra no custodia ni cobra tajadas.
+>
+> 2. **Para el Tesorero:** El tesorero revisa el comprobante en su bandeja en 5 segundos y pulsa **'Aprobar Pago'**.
+>
+> 3. **Protocolo TRACE:** En ese instante exacto, el sistema sella el aporte con un **código hash SHA-256 único e inalterable**. Genera un recibo digital oficial con código QR que cualquier vecino o autoridad municipal puede escanear para verificar que ese centavo ingresó legítimamente al libro mayor de la comunidad."*
 
 ---
 
-### BLOQUE 3: DEMOSTRACIÓN EN VIVO EN 3 ACTOS (1:30 – 3:00)
+### BLOQUE 3: CATASTRO BARRIAL Y MAPEO TERRITORIAL EN VIVO (2:00 – 3:00)
 
-*(Comparte pantalla con https://xentra-two.vercel.app/ o tu celular conectado).*
+*(Desplázate en vivo a la sección del Mapa Comunitario de la OTB Villa Graciela).*
 
-#### 🎭 Acto 1: La Experiencia del Vecino (30 segundos)
-> *"Vean qué fácil es para Don Juan, un vecino de 55 años.*  
-> *Ingresa a la app, digita **`SOC-012`** o **`Lote 12`**. Al instante, el sistema le indica su estado: cuota ordinaria de noviembre pendiente por Bs. 50.*  
-> *Con un toque presiona **'Pagar con QR'**, guarda la imagen en su galería, paga desde su banco móvil (Banco Unión, BancoSol, BNB o BCP) y sube su comprobante.*  
-> *Cero filas, cero cobradores golpeando su puerta un domingo por la mañana."*
-
-#### 🎭 Acto 2: El Panel del Tesorero y la Conciliación Antifraude (30 segundos)
-> *"Ahora pasemos al rol del Tesorero.*  
-> *En su bandeja de verificación de pagos ve el comprobante de Don Juan. Lo coteja contra su extracto bancario en 5 segundos y pulsa **'Aprobar Pago'**.*  
-> *En ese microsegundo, el motor **TRACE** genera un recibo digital oficial sellado criptográficamente con código QR único. Si Don Juan imprime este recibo o lo comparte, cualquier autoridad municipal puede escanear el QR y verificar en tiempo real que el aporte está registrado en el libro mayor inmutable."*
-
-#### 🎭 Acto 3: Muro Barrial y Alerta Comunitaria 24/7 (30 segundos)
-> *"Pero una OTB no vive solo a fin de mes. Vive todos los días.*  
-> *Si a las 11 de la noche se revienta una matriz de agua en la esquina de la cancha o una luminaria se quema, el vecino entra al **Centro de Auxilio**, toma una foto y en dos toques reporta el incidente con **GPS satelital preciso**.*  
-> *La directiva recibe la notificación sonora, marca 'Directiva en Camino' y canaliza la cuadrilla de SEMAPA o llama a Radio Patrullas 110 con un solo toque desde la misma pantalla."*
+> *"Pero una OTB no es solo dinero: es **territorio**.*
+>
+> *Aquí pueden ver el **Plano Catastral Oficial en Vivo de la OTB Villa Graciela en Cochabamba**. Observen el nivel de detalle y precisión profesional:*
+> - *Las manzanas (del 261 al 270) están perfectamente delimitadas siguiendo el **eje real de las calles** (Av. 6 de Agosto, Calle Sipe Sipe, Viloma y Villar), sin sobreponerse jamás ni invadir las veredas.*
+> - *Con este botón de **'Pantalla Completa'**, el mapa se expande para asambleas vecinales o pantallas gigantes.*
+> - *Podemos activar **'OTBs Vecinas'** para ver las colindancias limítrofes con Pacata Central, Virgen de Luján y la FAB sin conflictos territoriales.*
+> - *Y lo más potente: la directiva cuenta con una **Herramienta de Lápiz Digital** que permite dibujar a mano alzada o por vértices nuevos manzanos, lotes y áreas verdes comunales, pudiendo además **exportar todo el catastro en formato GeoJSON oficial** compatible con los sistemas de catastro municipal y SEMAPA."*
 
 ---
 
-### BLOQUE 4: ACCESIBILIDAD SENIOR — DISEÑADO PARA ADULTOS DE 40 A 60 AÑOS (3:00 – 3:45)
+### BLOQUE 4: ACCESIBILIDAD SENIOR Y AUXILIO BARRIAL (3:00 – 3:35)
 
-*(Señala la claridad visual, el tamaño de letra grande y los botones generosos en la pantalla).*
+*(Muestra la claridad visual, las letras grandes y el botón de Auxilio).*
 
-> *"El jurado seguramente se estará preguntando:  
-> **'La idea es excelente, ¿pero cómo van a convencer a dirigentes de 50 o 60 años de usarla?'**
->
-> *Esa fue nuestra prioridad desde el día uno. No diseñamos pensando en Silicon Valley, diseñamos pensando en el vecino boliviano:*
->
-> 1. **Diseño Cómodo y Accesible Directo por Defecto (WCAG AAA):** La plataforma NO requiere activar ningún botón ni configurar nada: **viene en vista cómoda por defecto**, con contraste **7:1**, fuentes grandes base de **18px-20px** y botones táctiles gigantes de **56px a 64px**, imposibles de fallar para cualquier persona con presbicia o temblores.
-> 2. **Cero Anglicismos:** En vez de palabras confusas como 'Dashboard', 'Login' o 'Ledger', usamos el lenguaje cotidiano de la OTB: **'Cuentas Claras'**, **'Aporte al Día'**, **'Recibo Sellado'** y **'Asamblea Barrial'**.
-> 3. **Solución al dilema del QR en celular:** La app incluye un botón destacado para **'Guardar QR en Galería'** y una guía en 4 pasos para que la persona mayor pague desde su aplicación bancaria sin enredos."*
+> *"Muchos se preguntarán: **'¿Cómo van a usar esto dirigentes o vecinos de 50 o 60 años?'**  
+> Esa fue nuestra prioridad central:*
+> - *La plataforma viene en **modo cómodo por defecto**, cumpliendo el estándar **WCAG AAA**: tipografía grande de **18 a 20 píxeles**, contraste ultra nítido **7:1**, botones de más de 56 píxeles y **cero tecnicismos**.*
+> - *Además, integra un **Centro de Auxilio Barrial 24/7**: si a medianoche hay una fuga de agua o una emergencia, el vecino reporta con foto y geolocalización GPS, con botón directo a Radio Patrullas 110 y SAMU 165."*
 
 ---
 
-### BLOQUE 5: VIABILIDAD, MODELO DE NEGOCIO Y CIERRE (3:45 – 4:30)
+### BLOQUE 5: MODELO DE SOSTENIBILIDAD Y CIERRE (3:35 – 4:00)
 
-> *"¿Es viable y sostenible Xentra? Absolutamente:*
+*(Mira al jurado con convicción y firmeza).*
+
+> *"¿Es viable económicamente Xentra? Totalmente:*
+> - *Se financia con un micro-canon de **Bs. 1 por lote al mes** incluido en las cuotas ordinarias. Una OTB de 350 lotes genera **Bs. 350 al mes**, lo que cubre sobradamente los servidores y deja un **margen operativo bruto del 94%**.*
+> - *No es una promesa de PowerPoint: está desplegado en producción en la web y cuenta con su **APK nativo Android oficial de 74.9 MB compilado en GitHub Actions** con funcionamiento offline.*
 >
-> - **Modelo de Micro-canon Comunal:** Xentra no cobra comisiones porcentuales a las transferencias ni requiere subsidios. Se financia con un micro-aporte de **Bs. 1 por lote al mes** incluido en las expensas de la OTB.  
->   Una OTB típica de 350 lotes genera **Bs. 350 al mes**, lo que cubre sobradamente los servidores en la nube y deja margen operativo.
-> - **Tecnología en Producción:** Está desplegado en vivo en Vercel, respaldado por Supabase PostgreSQL multi-tenant y cuenta con su **APK Android oficial compilado automáticamente en GitHub Actions** para su instalación directa.
+> *Las OTBs son el pilar de la democracia vecinal en Bolivia. Con XENTRA OTB, reemplazamos las sospechas por matemáticas, las peleas por confianza y el papel por soberanía digital comunitaria.*
 >
-> *Estimado jurado: las OTBs son el corazón de la democracia y la convivencia en Bolivia. Con XENTRA OTB, reemplazamos el conflicto por confianza, la opacidad por matemáticas y el papel por eficiencia digital.*
->
-> *¡Muchas gracias! Quedamos listos para sus preguntas."*
+> *¡Muchas gracias! Estamos listos para sus preguntas."*
 
 ---
 
-## 🎯 TIPS DE LENGUAJE CORPORAL Y TONO
+## 🛡️ GUÍA DE RESPUESTA PARA LOS 3 MINUTOS DE PREGUNTAS DEL JURADO
 
-1. **Contacto visual:** Mira a cada miembro del jurado al menos 3 segundos. No mires al suelo ni leas diapositivas.
-2. **Entonación:** Sube el tono al hablar del dolor (discusiones, cuadernos perdidos) y habla con calma, firmeza y orgullo al hablar de la solución criptográfica TRACE y la accesibilidad.
-3. **El celular en mano:** Mostrar la app en un teléfono real o el simulador causa un 80% más de credibilidad que solo diapositivas estáticas.
+### Pregunta 1: "¿Qué pasa si se corta el internet en zonas periféricas o los vecinos no tienen megas?"
+> **Respuesta contundente (30 seg):**  
+> *"Excelente pregunta. Xentra está construido bajo arquitectura **Offline-First**. En el celular, el APK cuenta con su bundle JavaScript embebido y base de datos local IndexedDB/DexieDB. Don Juan puede consultar sus recibos anteriores, ver el mapa de la OTB y preparar su reporte sin consumir un solo mega. En cuanto el teléfono detecta señal Wi-Fi o datos, los eventos se sincronizan automáticamente con el servidor sin colisiones."*
+
+### Pregunta 2: "¿Qué validez legal tienen estos recibos digitales ante la Ley 1551 de Participación Popular?"
+> **Respuesta contundente (30 seg):**  
+> *"Bajo la Ley 1551 y la Ley N° 164 de Telecomunicaciones y Tecnologías de Información de Bolivia, los documentos electrónicos con trazabilidad e integridad garantizada tienen plena fuerza probatoria. Cada recibo emitido por Xentra incluye un hash SHA-256 y un código de verificación que permite al Comité de Vigilancia y a la Dirección de Participación Ciudadana del Municipio auditar las cuentas en segundos sin depender de libros manipulables."*
+
+### Pregunta 3: "¿Cómo vencen la resistencia de un dirigente mayor que prefiere su cuaderno de papel?"
+> **Respuesta contundente (30 seg):**  
+> *"No le quitamos el control al dirigente; le devolvemos 30 horas de su vida al mes. Cuando un tesorero ve que no tiene que llenar 300 recibos a mano con carbónico, que el sistema no le cobra comisiones bancarias y que las letras son grandes y claras como un cartel, la adopción es inmediata. Además, el sistema permite imprimir en un solo clic el Libro de Caja mensual en formato físico tradicional para los vecinos que aún deseen firmar en papel en la asamblea."*

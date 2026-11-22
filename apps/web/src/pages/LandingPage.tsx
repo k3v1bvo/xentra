@@ -28,7 +28,10 @@ import {
   AlertTriangle,
   ChevronRight,
   Layers,
-  Check
+  Check,
+  PenTool,
+  Vote,
+  Compass
 } from 'lucide-react';
 import { XentraLogo } from '../components/XentraLogo';
 import { Xentra3DCanvas } from '../components/Xentra3DCanvas';
@@ -702,45 +705,226 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* =================================================================== */}
-      {/* 6. MAPA TERRITORIAL Y GEORREFERENCIACIÓN COMUNAL                    */}
+      {/* 6. MAPA TERRITORIAL Y GEORREFERENCIACIÓN COMUNAL (DESTACADO)        */}
       {/* =================================================================== */}
       <section id="mapa-comunal" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <span className="text-xs font-black text-emerald-400 uppercase tracking-wider block">
-              Georreferenciación Comunal
-            </span>
-            <h2 className="text-xl sm:text-3xl font-black text-white">
-              Territorio y Equipamiento Barrial
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+          <div className="max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+              <Compass className="w-4 h-4 text-emerald-400" />
+              <span>Soberanía Territorial & Catastro Comunal • Ley N° 1551</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Conoce con Exactitud de Dónde a Dónde Llega tu OTB
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Sedes sociales, centros de salud, canchas polifuncionales y avisos vecinales geolocalizados.
+
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+              Delimitación territorial transparente en vivo: la directiva traza los límites oficiales y organiza el barrio por manzanos para que cada vecino conozca su jurisdicción, ubique su lote y consulte los servicios comunales sin trámites engorrosos.
             </p>
           </div>
 
-          <button
-            onClick={() => setIsInstallModalOpen(true)}
-            className="h-11 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-black text-slate-200 flex items-center gap-2 transition-all cursor-pointer self-start sm:self-auto"
-          >
-            <Smartphone className="w-4 h-4 text-emerald-400" />
-            <span>Descargar App APK Móvil</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto">
+            <button
+              onClick={() => navigate('/login')}
+              className="h-11 px-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            >
+              <span>Acceder al Catastro de mi OTB</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="h-11 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 flex items-center gap-2 transition-all cursor-pointer"
+            >
+              <Smartphone className="w-4 h-4 text-emerald-400" />
+              <span>App APK</span>
+            </button>
+          </div>
         </div>
 
+        {/* Franja de Métricas Territoriales Oficiales */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-blue-500/30 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">Superficie Delimitada</span>
+            <strong className="text-xl sm:text-2xl font-black font-mono text-blue-400 block">~14.8 ha</strong>
+            <span className="text-[10px] text-slate-400">Polígono Jurisdiccional</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-indigo-500/30 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">Manzanos Censados</span>
+            <strong className="text-xl sm:text-2xl font-black font-mono text-indigo-400 block">4 Cuadras</strong>
+            <span className="text-[10px] text-slate-400">Manzanos A, B, C y D</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-emerald-500/30 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">Lotes en Padrón</span>
+            <strong className="text-xl sm:text-2xl font-black font-mono text-emerald-400 block">96 Lotes</strong>
+            <span className="text-[10px] text-slate-400">Viviendas Georreferenciadas</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-purple-500/30 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">Equipamiento Barrial</span>
+            <strong className="text-xl sm:text-2xl font-black font-mono text-purple-400 block">6 Puntos</strong>
+            <span className="text-[10px] text-slate-400">Sede, Cancha, Agua, Alarma</span>
+          </div>
+        </div>
+
+        {/* MAPA INTERACTIVO PÚBLICO TOTALMENTE OPERATIVO */}
         <TiltCard3D intensity={3}>
           <CommunityInteractiveMap
             centerLat={-17.41325}
             centerLng={-66.16543}
             zoom={16}
-            heightClass="h-80 sm:h-96"
+            heightClass="h-96 sm:h-[480px]"
             otbName={currentOtb?.name || 'OTB Villa Esperanza'}
             otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
           />
         </TiltCard3D>
+
+        {/* 4 Pilares del Sistema Catastral Comunal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-blue-400 font-black text-sm">
+              <PenTool className="w-4 h-4" />
+              <span>Delimitación con Trazo Libre</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed font-normal">
+              La directiva traza los límites exactos de la OTB a mano alzada en el mapa satelital, resolviendo colindancias y evitando invasiones territoriales.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-indigo-400 font-black text-sm">
+              <Layers className="w-4 h-4" />
+              <span>Organización por Manzanos</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed font-normal">
+              El barrio se organiza en Manzanos (A, B, C, D) con código y color propio para censar lotes, convocar delegados de cuadra y ordenar el cobro de cuotas.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-black text-sm">
+              <Building2 className="w-4 h-4" />
+              <span>Equipamiento Comunal</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed font-normal">
+              Ubicación geolocalizada de la Sede Social, Cancha & Tinglado, tanques de agua, alarmas vecinales y áreas verdes visibles para toda la comunidad.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0B132B]/80 border border-slate-800 space-y-2">
+            <div className="flex items-center gap-2 text-purple-400 font-black text-sm">
+              <Download className="w-4 h-4" />
+              <span>Exportación Oficial GeoJSON</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed font-normal">
+              Planos digitales descargables con validez comunal según Ley N° 1551, listos para presentar ante el Gobierno Municipal sin pagar topógrafos externos.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* =================================================================== */}
-      {/* 7. LLAMADO A LA ACCIÓN FINAL (HIGH CONVERSION CTA)                  */}
+      {/* 7. ECOSISTEMA INTEGRAL XENTRA OTB (6 MÓDULOS CLAVE)                 */}
+      {/* =================================================================== */}
+      <section className="scroll-mt-20 sm:scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-left">
+        <div className="max-w-3xl space-y-3 mb-10">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+            Tecnología Comunitaria Integral
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Todo lo que Necesita una OTB Moderna en una Sola Plataforma
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+            Seis herramientas diseñadas para la realidad boliviana: simples para los vecinos adultos mayores y transparentes para la fiscalización comunitaria.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* MÓDULO 1: PAGOS QR */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-emerald-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-black">
+                <QrCode className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">1. Cobro por QR Simple en 10s</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                0% comisiones bancarias. El vecino paga su cuota desde Banco Unión, BCP, BNB o BancoSol. El dinero va directo a la cuenta de la OTB, sin sobres ni dinero en mano.
+              </p>
+            </div>
+          </TiltCard3D>
+
+          {/* MÓDULO 2: RECIBO TRACE */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-blue-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center font-black">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">2. Recibo Oficial Inmutable TRACE</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Cada pago genera una firma digital única SHA-256. El recibo es infalsificable y verificable públicamente con la cámara de cualquier teléfono celular.
+              </p>
+            </div>
+          </TiltCard3D>
+
+          {/* MÓDULO 3: AI AUDITOR */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-purple-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-black">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">3. XENTRA AI Auditor Comunal</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Fiscalización automática preventiva. Detecta gastos sin factura respaldatoria o cobros duplicados antes de la asamblea dominical de rendición de cuentas.
+              </p>
+            </div>
+          </TiltCard3D>
+
+          {/* MÓDULO 4: VOTA DEMOCRACIA */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-indigo-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center font-black">
+                <Vote className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">4. Democracia Barrial VOTA OTB</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Consultas vecinales transparentes para priorizar obras comunitarias: tinglado de la cancha, instalación de cámaras o asfaltado de pasajes.
+              </p>
+            </div>
+          </TiltCard3D>
+
+          {/* MÓDULO 5: AUXILIO 24/7 */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-rose-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center font-black">
+                <PhoneCall className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">5. Central de Auxilio & Alertas 24/7</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Llamada en 1 toque a Policía 110, SAMU 168, Bomberos 119 y activación de sirenas vecinales ante sospechosos o emergencias en la cuadra.
+              </p>
+            </div>
+          </TiltCard3D>
+
+          {/* MÓDULO 6: LOCAL-FIRST SQLITE */}
+          <TiltCard3D intensity={4}>
+            <div className="h-full p-6 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 hover:border-amber-500/50 transition-all space-y-3 shadow-xl">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-black">
+                <Cpu className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-black text-white">6. Local-First SQLite (Sin Internet)</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Funciona en el celular aunque no haya señal en la sede o se corte la luz en el barrio. Registra cobros localmente y sincroniza al volver la red.
+              </p>
+            </div>
+          </TiltCard3D>
+        </div>
+      </section>
+
+      {/* =================================================================== */}
+      {/* 8. LLAMADO A LA ACCIÓN FINAL (HIGH CONVERSION CTA)                  */}
       {/* =================================================================== */}
       <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800/80 text-center">
         <TiltCard3D intensity={4}>

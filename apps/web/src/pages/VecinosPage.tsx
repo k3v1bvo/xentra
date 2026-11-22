@@ -480,6 +480,7 @@ export const VecinosPage: React.FC = () => {
                 otbName={currentOtb?.name || 'OTB Villa Esperanza'}
                 otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
                 selectedLotName={focusedNeighbor ? `${focusedNeighbor.name} — ${focusedNeighbor.block}, ${focusedNeighbor.house}` : undefined}
+                neighbors={visibleNeighbors}
                 enableAdminEditor={true}
               />
 

@@ -25,11 +25,30 @@ import {
   Compass,
   CheckCircle2,
   Eye,
-  EyeOff
+  EyeOff,
+  PenTool,
+  Maximize2,
+  Download,
+  Users,
+  Info
 } from 'lucide-react';
+
+export interface MapNeighbor {
+  id: string;
+  name: string;
+  socioCode: string;
+  block: string;
+  house: string;
+  status: 'Al Día' | 'En Mora';
+  debt: number;
+  latitude: number;
+  longitude: number;
+  phone?: string;
+}
 
 interface CommunityInteractiveMapProps {
   reports?: CommunityReport[];
+  neighbors?: MapNeighbor[];
   centerLat?: number;
   centerLng?: number;
   zoom?: number;
@@ -43,7 +62,7 @@ interface CommunityInteractiveMapProps {
   showControls?: boolean;
 }
 
-// Cálculo aproximado de superficie en hectáreas para el perímetro comunal
+// Cálculo de superficie en hectáreas usando aproximación esférica (Shoelace)
 function calculatePolygonAreaHectares(coords: [number, number][]): number {
   if (coords.length < 3) return 0;
   const earthRadius = 6378137;
@@ -61,7 +80,7 @@ function calculatePolygonAreaHectares(coords: [number, number][]): number {
   return area / 10000;
 }
 
-// Centroide para centrar etiquetas de manzanos
+// Centroide para centrar etiquetas
 function getPolygonCentroid(pts: [number, number][]): [number, number] {
   if (pts.length === 0) return [-17.41325, -66.16543];
   let latSum = 0;
@@ -75,10 +94,11 @@ function getPolygonCentroid(pts: [number, number][]): [number, number] {
 
 export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = ({
   reports = [],
+  neighbors = [],
   centerLat = -17.41325,
   centerLng = -66.16543,
   zoom = 16,
-  heightClass = 'h-80 sm:h-[420px]',
+  heightClass = 'h-80 sm:h-[450px]',
   otbName = 'OTB Villa Esperanza',
   otbId = '11111111-1111-1111-1111-111111111111',
   selectedLotName,
@@ -92,12 +112,16 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const selectionMarkerRef = useRef<L.Marker | null>(null);
   const layersGroupRef = useRef<L.LayerGroup | null>(null);
   const editorLayerGroupRef = useRef<L.LayerGroup | null>(null);
+  const freehandPolylineRef = useRef<L.Polyline | null>(null);
 
-  // Store de territorio comunal
+  // Referencias para trazo con lápiz a mano alzada
+  const isPencilDrawingRef = useRef(false);
+  const pencilStrokePointsRef = useRef<[number, number][]>([]);
+
+  // Store territorial
   const {
     getTerritory,
     updatePerimeter,
-    addPerimeterVertex,
     removeLastPerimeterVertex,
     clearPerimeter,
     addManzano,
@@ -109,21 +133,27 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
   const territory = getTerritory(otbId);
 
-  // Filtros de visualización para vecinos
+  // Filtros de visualización
   const [layerFilters, setLayerFilters] = useState({
     perimetro: true,
     manzanos: true,
     equipamiento: true,
+    vecinos: true,
     reportes: true
   });
 
-  // Estado del Editor Territorial para Administradores
+  // Editor Territorial Admin
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [drawingMethod, setDrawingMethod] = useState<'pencil' | 'click'>('pencil'); // Lápiz vs Clics
   const [editorTool, setEditorTool] = useState<'perimetro' | 'manzano' | 'equipamiento'>('perimetro');
   const [editingPerimeter, setEditingPerimeter] = useState<[number, number][]>(territory.perimeter);
+  const [isCurrentlyDrawingPencil, setIsCurrentlyDrawingPencil] = useState(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
 
-  // Formulario de nuevo manzano
+  // Manzano seleccionado para inspección
+  const [inspectedManzano, setInspectedManzano] = useState<CommunityManzano | null>(null);
+
+  // Formulario nuevo manzano
   const [newManzanoName, setNewManzanoName] = useState('Manzano E');
   const [newManzanoCode, setNewManzanoCode] = useState('MZE');
   const [newManzanoLots, setNewManzanoLots] = useState(20);
@@ -131,19 +161,19 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const [newManzanoDesc, setNewManzanoDesc] = useState('Ampliación Sector Oeste');
   const [newManzanoPoints, setNewManzanoPoints] = useState<[number, number][]>([]);
 
-  // Formulario de nuevo equipamiento
+  // Formulario nuevo equipamiento
   const [newFacName, setNewFacName] = useState('');
   const [newFacCategory, setNewFacCategory] = useState<CommunityFacility['category']>('seguridad');
   const [newFacDesc, setNewFacDesc] = useState('');
   const [newFacCoord, setNewFacCoord] = useState<[number, number] | null>(null);
 
-  // Sincronizar perímetro local al cambiar en store
+  // Sincronizar perímetro local
   useEffect(() => {
     setEditingPerimeter(territory.perimeter);
   }, [territory.perimeter]);
 
   // =========================================================================
-  // 1. INICIALIZACIÓN DEL MAPA BASE LEAFLET
+  // 1. INICIALIZAR MAPA Y MANEJO DE EVENTOS (LÁPIZ / CLICK)
   // =========================================================================
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -176,18 +206,86 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
     primaryTileLayer.addTo(map);
 
-    // Grupos de capas
     const mainGroup = L.layerGroup().addTo(map);
     layersGroupRef.current = mainGroup;
 
     const editorGroup = L.layerGroup().addTo(map);
     editorLayerGroupRef.current = editorGroup;
 
-    // Manejo de clic en el mapa
+    // EVENTO MOUSE DOWN: INICIAR TRAZO CON LÁPIZ
+    map.on('mousedown', (e: L.LeafletMouseEvent) => {
+      if (!isEditorOpen || drawingMethod !== 'pencil') return;
+
+      isPencilDrawingRef.current = true;
+      setIsCurrentlyDrawingPencil(true);
+      map.dragging.disable();
+
+      const startPt: [number, number] = [e.latlng.lat, e.latlng.lng];
+      pencilStrokePointsRef.current = [startPt];
+
+      if (freehandPolylineRef.current) {
+        freehandPolylineRef.current.remove();
+      }
+
+      freehandPolylineRef.current = L.polyline([startPt], {
+        color: editorTool === 'manzano' ? newManzanoColor : '#3B82F6',
+        weight: 4,
+        opacity: 0.9,
+        dashArray: '3, 6'
+      }).addTo(editorGroup);
+    });
+
+    // EVENTO MOUSE MOVE: DIBUJAR LÍNEA CON LÁPIZ FLUIDO
+    map.on('mousemove', (e: L.LeafletMouseEvent) => {
+      if (!isPencilDrawingRef.current || !isEditorOpen || drawingMethod !== 'pencil') return;
+
+      const pts = pencilStrokePointsRef.current;
+      const last = pts[pts.length - 1];
+      const dist = Math.hypot(e.latlng.lat - last[0], e.latlng.lng - last[1]);
+
+      // Filtrar puntos demasiado cercanos para mantener rendimiento óptimo
+      if (dist > 0.00008) {
+        pts.push([e.latlng.lat, e.latlng.lng]);
+        if (freehandPolylineRef.current) {
+          freehandPolylineRef.current.setLatLngs(pts);
+        }
+      }
+    });
+
+    // EVENTO MOUSE UP: CERRAR POLÍGONO DE LÁPIZ
+    const handleEndDrawing = () => {
+      if (!isPencilDrawingRef.current) return;
+      isPencilDrawingRef.current = false;
+      setIsCurrentlyDrawingPencil(false);
+      map.dragging.enable();
+
+      if (freehandPolylineRef.current) {
+        freehandPolylineRef.current.remove();
+        freehandPolylineRef.current = null;
+      }
+
+      const drawnPts = pencilStrokePointsRef.current;
+      if (drawnPts.length >= 3) {
+        if (editorTool === 'perimetro') {
+          setEditingPerimeter(drawnPts);
+          setSaveSuccessMsg(`¡Perímetro trazado con lápiz (${drawnPts.length} vértices)!`);
+          setTimeout(() => setSaveSuccessMsg(null), 3500);
+        } else if (editorTool === 'manzano') {
+          setNewManzanoPoints(drawnPts);
+          setSaveSuccessMsg(`¡Límites del manzano trazados (${drawnPts.length} vértices)!`);
+          setTimeout(() => setSaveSuccessMsg(null), 3500);
+        }
+      }
+    };
+
+    map.on('mouseup', handleEndDrawing);
+    mapContainerRef.current.addEventListener('mouseleave', handleEndDrawing);
+
+    // EVENTO CLICK GENERAL (MODO CLIC O SELECCIÓN)
     map.on('click', (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
 
-      // Si está en modo selección interactiva (ej. reportes)
+      // Modo selección de coordenadas para reportes o puntos
       if (interactiveSelection && onSelectCoordinates) {
         if (selectionMarkerRef.current) {
           selectionMarkerRef.current.setLatLng([lat, lng]);
@@ -208,8 +306,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         return;
       }
 
-      // Si el Administrador está dibujando territorio
-      if (isEditorOpen) {
+      // Si el Administrador usa modo CLIC punto a punto
+      if (isEditorOpen && drawingMethod === 'click') {
         if (editorTool === 'perimetro') {
           setEditingPerimeter((prev) => [...prev, [lat, lng]]);
         } else if (editorTool === 'manzano') {
@@ -220,7 +318,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       }
     });
 
-    // Invalida tamaño para asegurar carga perfecta en tabs y modales
+    // Invalida tamaño en múltiples ciclos
     const t1 = setTimeout(() => map.invalidateSize(), 150);
     const t2 = setTimeout(() => map.invalidateSize(), 500);
 
@@ -232,10 +330,10 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         mapInstanceRef.current = null;
       }
     };
-  }, [centerLat, centerLng, zoom, interactiveSelection, onSelectCoordinates, isEditorOpen, editorTool]);
+  }, [centerLat, centerLng, zoom, interactiveSelection, onSelectCoordinates, isEditorOpen, drawingMethod, editorTool, newManzanoColor]);
 
   // =========================================================================
-  // 2. RENDERIZADO DE CAPAS: PERÍMETRO, MANZANOS, EQUIPAMIENTO & VIVIENDA
+  // 2. RENDERIZADO DE CAPAS (PERÍMETRO, MANZANOS, VECINOS, EQUIPAMIENTO)
   // =========================================================================
   useEffect(() => {
     if (!mapInstanceRef.current || !layersGroupRef.current) return;
@@ -244,7 +342,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
     const perimeterToRender = isEditorOpen ? editingPerimeter : territory.perimeter;
 
-    // A. DIBUJAR PERÍMETRO COMUNAL OFICIAL (POLÍGONO DE LÍMITES)
+    // A. DIBUJAR PERÍMETRO COMUNAL OFICIAL
     if (layerFilters.perimetro && perimeterToRender.length >= 3) {
       const areaHa = calculatePolygonAreaHectares(perimeterToRender);
 
@@ -257,91 +355,142 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       }).addTo(group);
 
       perimeterPolygon.bindPopup(`
-        <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 200px;">
+        <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 210px;">
           <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
             <span style="font-size: 16px;">🏛️</span>
-            <strong style="color: #1E3A8A; font-size: 14px;">Límites de ${otbName}</strong>
+            <strong style="color: #1E3A8A; font-size: 14px;">Jurisdicción Oficial ${otbName}</strong>
           </div>
           <p style="color: #475569; font-size: 12px; margin: 4px 0;">
-            Polígono Jurisdiccional Reconocido bajo Personería Jurídica Comunal.
+            Límites territoriales delimitados según Ley N° 1551 de Participación Popular.
           </p>
           <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 6px; margin-top: 6px;">
             <span style="font-size: 11px; color: #1D4ED8; font-weight: bold; display: block;">
-              Superficie Aprox: ~${areaHa.toFixed(2)} Hectáreas
+              Superficie: ~${areaHa.toFixed(2)} Hectáreas (~${(areaHa * 10000).toLocaleString('es-BO')} m²)
             </span>
-            <span style="font-size: 11px; color: #64748B;">
-              Total Vértices de Delimitación: ${perimeterToRender.length} puntos
+            <span style="font-size: 10.5px; color: #64748B;">
+              Delimitación geométrica de ${perimeterToRender.length} vértices
             </span>
           </div>
         </div>
       `);
     }
 
-    // B. DIBUJAR MANZANOS Y CUADRAS (CON COLOR Y ETIQUETA AL CENTRO)
+    // B. DIBUJAR MANZANOS Y CUADRAS
     if (layerFilters.manzanos) {
       territory.manzanos.forEach((mza) => {
         if (mza.polygon.length >= 3) {
+          // Filtrar vecinos que pertenecen a este manzano
+          const neighborsInBlock = neighbors.filter(
+            (n) => n.block.toLowerCase().includes(mza.name.toLowerCase()) || n.block.toLowerCase().includes(mza.code.toLowerCase())
+          );
+
           const mzaPolygon = L.polygon(mza.polygon, {
             color: mza.color,
             weight: 2.5,
             fillColor: mza.color,
-            fillOpacity: 0.24
+            fillOpacity: 0.25
           }).addTo(group);
 
+          mzaPolygon.on('click', () => {
+            setInspectedManzano(mza);
+          });
+
           mzaPolygon.bindPopup(`
-            <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 210px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #E2E8F0; pb: 4px;">
+            <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 230px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #E2E8F0; padding-bottom: 4px;">
                 <strong style="color: ${mza.color}; font-size: 14px;">🏘️ ${mza.name} (${mza.code})</strong>
                 <span style="background: ${mza.color}20; color: ${mza.color}; font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 6px;">
                   ${mza.lotsCount} Lotes
                 </span>
               </div>
-              <p style="color: #475569; font-size: 12px; margin: 6px 0;">${mza.description}</p>
+              <p style="color: #475569; font-size: 12px; margin: 4px 0;">${mza.description}</p>
+              
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 6px; margin: 6px 0;">
+                <span style="font-size: 11px; font-weight: bold; color: #0F172A; display: block;">
+                  Vecinos Registrados en Padrón: ${neighborsInBlock.length}
+                </span>
+                <span style="font-size: 10px; color: #64748B;">
+                  ${neighborsInBlock.length > 0 ? neighborsInBlock.map(n => `${n.name.split(' ')[0]} (${n.house})`).join(', ') : 'Lotes disponibles para empadronar'}
+                </span>
+              </div>
+
               <div style="font-size: 11px; color: #059669; font-weight: bold;">
                 ✓ Cuadra integrada al Catastro Comunal
               </div>
             </div>
           `);
 
-          // Etiqueta flotante en el centro del manzano
+          // Insignia en el centro del manzano
           const centroid = getPolygonCentroid(mza.polygon);
           const labelIcon = L.divIcon({
             html: `
-              <div style="background-color: ${mza.color}; color: white; padding: 2px 7px; border-radius: 12px; font-weight: 900; font-size: 10px; font-family: monospace; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.4); border: 1.5px solid white; display: flex; align-items: center; gap: 3px;">
+              <div style="background-color: ${mza.color}; color: white; padding: 2.5px 8px; border-radius: 12px; font-weight: 900; font-size: 10px; font-family: monospace; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.45); border: 1.5px solid white; display: flex; align-items: center; gap: 3px; cursor: pointer;">
                 <span>${mza.code}</span>
-                <span style="opacity: 0.85; font-size: 9px;">(${mza.lotsCount})</span>
+                <span style="opacity: 0.9; font-size: 9px;">(${mza.lotsCount} lotes)</span>
               </div>
             `,
             className: 'mza-label-icon',
-            iconSize: [60, 20],
-            iconAnchor: [30, 10]
+            iconSize: [64, 22],
+            iconAnchor: [32, 11]
           });
 
-          L.marker(centroid, { icon: labelIcon, interactive: false }).addTo(group);
+          const labelMarker = L.marker(centroid, { icon: labelIcon }).addTo(group);
+          labelMarker.on('click', () => setInspectedManzano(mza));
         }
       });
     }
 
-    // C. DIBUJAR EQUIPAMIENTO COMUNAL (SEDE, TINGLADO, SEGURIDAD, AGUA)
+    // C. DIBUJAR VIVIENDAS DE LOS VECINOS REGISTRADOS
+    if (layerFilters.vecinos && neighbors.length > 0) {
+      neighbors.forEach((neighbor) => {
+        if (!neighbor.latitude || !neighbor.longitude) return;
+
+        const isSettled = neighbor.status === 'Al Día';
+        const houseIcon = L.divIcon({
+          html: `
+            <div style="background-color: ${isSettled ? '#059669' : '#D97706'}; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; border: 2px solid white; box-shadow: 0 3px 8px rgba(0,0,0,0.35); cursor: pointer;" title="${neighbor.name} (${neighbor.house})">
+              🏠
+            </div>
+          `,
+          className: 'neighbor-house-icon',
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
+        });
+
+        L.marker([neighbor.latitude, neighbor.longitude], { icon: houseIcon })
+          .addTo(group)
+          .bindPopup(`
+            <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 190px;">
+              <div style="font-size: 10.5px; font-weight: bold; color: #64748B;">${neighbor.socioCode} • ${neighbor.block}</div>
+              <strong style="color: #0F172A; font-size: 14px; display: block; margin: 2px 0;">${neighbor.name}</strong>
+              <div style="color: #334155; font-size: 12px; margin-bottom: 4px;">Inmueble: <strong>${neighbor.house}</strong></div>
+              
+              <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #E2E8F0; padding-top: 5px;">
+                <span style="font-size: 11px; font-weight: bold; color: ${isSettled ? '#16A34A' : '#DC2626'};">
+                  ${isSettled ? '✓ Al Día con Cuotas' : `⚠️ Deuda: Bs. ${neighbor.debt.toFixed(2)}`}
+                </span>
+                <span style="font-size: 10.5px; color: #2563EB; font-weight: bold;">
+                  Tel: ${neighbor.phone || 'S/N'}
+                </span>
+              </div>
+            </div>
+          `);
+      });
+    }
+
+    // D. DIBUJAR EQUIPAMIENTO COMUNAL
     if (layerFilters.equipamiento) {
       territory.facilities.forEach((fac) => {
         const getFacilityStyle = (cat: CommunityFacility['category']) => {
           switch (cat) {
-            case 'sede':
-              return { bg: '#1D4ED8', emoji: '🏛️' };
+            case 'sede': return { bg: '#1D4ED8', emoji: '🏛️' };
             case 'cancha':
-            case 'tinglado':
-              return { bg: '#059669', emoji: '⚽' };
-            case 'seguridad':
-              return { bg: '#DC2626', emoji: '🚨' };
-            case 'agua':
-              return { bg: '#0284C7', emoji: '💧' };
-            case 'parque':
-              return { bg: '#16A34A', emoji: '🛝' };
-            case 'salud':
-              return { bg: '#E11D48', emoji: '🏥' };
-            default:
-              return { bg: '#6B7280', emoji: '📍' };
+            case 'tinglado': return { bg: '#059669', emoji: '⚽' };
+            case 'seguridad': return { bg: '#DC2626', emoji: '🚨' };
+            case 'agua': return { bg: '#0284C7', emoji: '💧' };
+            case 'parque': return { bg: '#16A34A', emoji: '🛝' };
+            case 'salud': return { bg: '#E11D48', emoji: '🏥' };
+            default: return { bg: '#6B7280', emoji: '📍' };
           }
         };
 
@@ -376,7 +525,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       });
     }
 
-    // D. DIBUJAR EL LOTE DEL VECINO LOGUEADO (CON EFECTO RADIAL)
+    // E. DIBUJAR LOTE DEL VECINO DESTACADO (SI APLICA)
     if (selectedLotName) {
       const lotIcon = L.divIcon({
         html: `
@@ -396,17 +545,17 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         .addTo(group)
         .bindPopup(`
           <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 190px;">
-            <span style="font-size: 10px; font-weight: 900; color: #9333EA; text-transform: uppercase;">Ubicación en el Padrón</span>
+            <span style="font-size: 10px; font-weight: 900; color: #9333EA; text-transform: uppercase;">Ubicación Censada</span>
             <strong style="color: #0F172A; font-size: 14px; display: block; margin-top: 1px;">🏠 ${selectedLotName}</strong>
             <p style="color: #475569; font-size: 11.5px; margin: 4px 0;">
-              Vivienda censada y geolocalizada en el catastro comunal de ${otbName}.
+              Vivienda geolocalizada en el catastro comunal de ${otbName}.
             </p>
           </div>
         `)
         .openPopup();
     }
 
-    // E. DIBUJAR REPORTES ACTIVOS
+    // F. DIBUJAR REPORTES BARRIALES
     if (layerFilters.reportes) {
       reports.forEach((rep) => {
         if (!rep.latitude || !rep.longitude) return;
@@ -451,13 +600,14 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     layerFilters,
     selectedLotName,
     reports,
+    neighbors,
     otbName,
     centerLat,
     centerLng
   ]);
 
   // =========================================================================
-  // 3. CAPA TEMPORAL DEL EDITOR (VÉRTICES EN VIVO AL DIBUJAR)
+  // 3. CAPA TEMPORAL DEL EDITOR EN MODO DIBUJO
   // =========================================================================
   useEffect(() => {
     if (!mapInstanceRef.current || !editorLayerGroupRef.current) return;
@@ -466,8 +616,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
     if (!isEditorOpen) return;
 
-    // A. Si se está trazando el perímetro
-    if (editorTool === 'perimetro') {
+    // Marcadores de vértices al usar modo clic
+    if (drawingMethod === 'click' && editorTool === 'perimetro') {
       editingPerimeter.forEach((pt, idx) => {
         const vertexIcon = L.divIcon({
           html: `
@@ -479,31 +629,16 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
           iconSize: [22, 22],
           iconAnchor: [11, 11]
         });
-
         L.marker(pt, { icon: vertexIcon }).addTo(group);
       });
     }
 
-    // B. Si se está trazando un nuevo manzano
-    if (editorTool === 'manzano') {
-      newManzanoPoints.forEach((pt, idx) => {
-        const mzaVertex = L.divIcon({
-          html: `
-            <div style="background-color: ${newManzanoColor}; color: white; width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; border: 1.5px solid white;">
-              ${idx + 1}
-            </div>
-          `,
-          className: 'mza-vertex',
-          iconSize: [20, 20],
-          iconAnchor: [10, 10]
-        });
-        L.marker(pt, { icon: mzaVertex }).addTo(group);
-      });
-
+    // Vértices del nuevo manzano
+    if (editorTool === 'manzano' && newManzanoPoints.length > 0) {
       if (newManzanoPoints.length >= 3) {
         L.polygon(newManzanoPoints, {
           color: newManzanoColor,
-          weight: 2,
+          weight: 2.5,
           dashArray: '4, 4',
           fillColor: newManzanoColor,
           fillOpacity: 0.35
@@ -511,36 +646,36 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       }
     }
 
-    // C. Si se seleccionó punto para nuevo equipamiento
+    // Pin del nuevo equipamiento
     if (editorTool === 'equipamiento' && newFacCoord) {
       const pinIcon = L.divIcon({
         html: `
-          <div style="background-color: #EF4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2.5px solid white; box-shadow: 0 4px 12px rgba(239,68,68,0.7);">
+          <div style="background-color: #EF4444; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; border: 2.5px solid white; box-shadow: 0 4px 14px rgba(239,68,68,0.7);">
             📍
           </div>
         `,
         className: 'new-pin',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
       });
       L.marker(newFacCoord, { icon: pinIcon }).addTo(group);
     }
-  }, [isEditorOpen, editorTool, editingPerimeter, newManzanoPoints, newManzanoColor, newFacCoord]);
+  }, [isEditorOpen, drawingMethod, editorTool, editingPerimeter, newManzanoPoints, newManzanoColor, newFacCoord]);
 
-  // Acciones de guardado del Administrador
+  // Acciones de Guardado del Administrador
   const handleSavePerimeter = () => {
     if (editingPerimeter.length < 3) {
-      alert('Debes marcar al menos 3 vértices en el mapa para delimitar el perímetro de la OTB.');
+      alert('Debes trazar al menos 3 puntos o encerrar un área con el lápiz para guardar el perímetro.');
       return;
     }
     updatePerimeter(otbId, editingPerimeter);
-    setSaveSuccessMsg('¡Límites de la OTB actualizados y guardados exitosamente!');
+    setSaveSuccessMsg('¡Perímetro comunal guardado en el catastro oficial!');
     setTimeout(() => setSaveSuccessMsg(null), 3000);
   };
 
   const handleSaveNewManzano = () => {
     if (newManzanoPoints.length < 3) {
-      alert('Haz clic en el mapa al menos 3 veces para definir la forma del manzano.');
+      alert('Traza el contorno del manzano con el lápiz o haz al menos 3 clics.');
       return;
     }
     addManzano(otbId, {
@@ -552,24 +687,24 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       polygon: newManzanoPoints
     });
     setNewManzanoPoints([]);
-    setSaveSuccessMsg(`¡${newManzanoName} agregado al catastro con éxito!`);
+    setSaveSuccessMsg(`¡${newManzanoName} registrado con éxito en el mapa!`);
     setTimeout(() => setSaveSuccessMsg(null), 3000);
   };
 
   const handleSaveNewFacility = () => {
     if (!newFacCoord) {
-      alert('Haz clic en el mapa para indicar la ubicación exacta del equipamiento.');
+      alert('Haz clic en el mapa para marcar el lugar del equipamiento.');
       return;
     }
     if (!newFacName.trim()) {
-      alert('Ingresa el nombre del equipamiento comunal (ej. Salón Vecinal, Sirena 3).');
+      alert('Escribe el nombre del equipamiento comunal (ej. Salón Vecinal, Sirena 3).');
       return;
     }
 
     addFacility(otbId, {
       name: newFacName,
       category: newFacCategory,
-      description: newFacDesc || 'Equipamiento comunitario verificado.',
+      description: newFacDesc || 'Equipamiento comunal verificado.',
       lat: newFacCoord[0],
       lng: newFacCoord[1]
     });
@@ -577,8 +712,53 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     setNewFacName('');
     setNewFacDesc('');
     setNewFacCoord(null);
-    setSaveSuccessMsg('¡Punto comunal registrado con éxito!');
+    setSaveSuccessMsg('¡Lugar comunal registrado exitosamente!');
     setTimeout(() => setSaveSuccessMsg(null), 3000);
+  };
+
+  // Exportar Catastro a GeoJSON Oficial
+  const handleExportGeoJson = () => {
+    const geoJsonData = {
+      type: 'FeatureCollection',
+      name: `Catastro_${otbName.replace(/\s+/g, '_')}`,
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            tipo: 'Perimetro_Jurisdiccional',
+            otb: otbName,
+            superficie_ha: calculatePolygonAreaHectares(territory.perimeter).toFixed(2),
+            normativa: 'Ley N° 1551 de Participación Popular'
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [territory.perimeter.map(([lat, lng]) => [lng, lat])]
+          }
+        },
+        ...territory.manzanos.map((m) => ({
+          type: 'Feature',
+          properties: {
+            tipo: 'Manzano',
+            codigo: m.code,
+            nombre: m.name,
+            lotes: m.lotsCount,
+            descripcion: m.description
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [m.polygon.map(([lat, lng]) => [lng, lat])]
+          }
+        }))
+      ]
+    };
+
+    const blob = new Blob([JSON.stringify(geoJsonData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Catastro_Oficial_${otbName.replace(/\s+/g, '_')}.geojson`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const googleMapsUrl = `https://www.google.com/maps?q=${centerLat},${centerLng}`;
@@ -588,19 +768,19 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
     <div className={`w-full ${heightClass} rounded-3xl overflow-hidden border-2 border-slate-700 shadow-2xl relative z-10 flex flex-col bg-[#0B132B]`}>
       
       {/* =================================================================== */}
-      {/* 1. BARRA SUPERIOR: ESTADO DEL MAPA & CAPAS INTERACTIVAS             */}
+      {/* 1. BARRA SUPERIOR DE CONTROL, CAPAS Y HERRAMIENTA LÁPIZ             */}
       {/* =================================================================== */}
       <div className="px-3 sm:px-5 py-2.5 bg-[#030712]/95 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2.5 text-xs z-30">
         
-        {/* Identificación de la OTB y Métricas Territoriales */}
+        {/* Identidad de la OTB y Métricas Territoriales */}
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
             <span className="font-black text-white text-xs sm:text-sm">
-              Territorio Comunal: {otbName}
+              {otbName}
             </span>
             <span className="text-[10px] text-blue-300 font-mono font-bold">
-              ({territory.manzanos.length} Manzanos • {totalLots} Lotes Censados)
+              ({territory.manzanos.length} Manzanos • {totalLots} Lotes • {neighbors.length} Vecinos)
             </span>
           </div>
         </div>
@@ -608,7 +788,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         {/* Acciones de la barra */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           
-          {/* Conmutador de Capas (Visible para Vecinos y Directiva) */}
+          {/* Conmutador de Capas Interactivas */}
           {showControls && (
             <div className="hidden md:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-[11px] font-bold">
               <button
@@ -632,29 +812,51 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               </button>
 
               <button
+                onClick={() => setLayerFilters((p) => ({ ...p, vecinos: !p.vecinos }))}
+                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                  layerFilters.vecinos ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="Mostrar Casas de los Vecinos"
+              >
+                <span>🏠 Vecinos ({neighbors.length})</span>
+              </button>
+
+              <button
                 onClick={() => setLayerFilters((p) => ({ ...p, equipamiento: !p.equipamiento }))}
                 className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
                   layerFilters.equipamiento ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
                 }`}
                 title="Mostrar Sede, Tinglado, Agua y Seguridad"
               >
-                <span>📍 Equipamiento</span>
+                <span>📍 Puntos Clave</span>
               </button>
             </div>
           )}
 
-          {/* Botón Modo Editor para el Administrador de la OTB */}
+          {/* Exportar GeoJSON Oficial */}
+          {enableAdminEditor && (
+            <button
+              onClick={handleExportGeoJson}
+              title="Descargar Catastro Comunal en GeoJSON Oficial para Alcaldía"
+              className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold transition-all cursor-pointer"
+            >
+              <Download className="w-3 h-3 text-blue-400" />
+              <span>GeoJSON</span>
+            </button>
+          )}
+
+          {/* Botón Maestro: Modo Dibujo / Editor para la Directiva */}
           {enableAdminEditor && (
             <button
               onClick={() => setIsEditorOpen(!isEditorOpen)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-black text-xs transition-all cursor-pointer shadow-md ${
                 isEditorOpen
                   ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-300'
-                  : 'bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-600/25'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>{isEditorOpen ? 'Cerrar Editor' : '✏️ Dibujar Territorio'}</span>
+              <PenTool className="w-3.5 h-3.5" />
+              <span>{isEditorOpen ? 'Finalizar Dibujo' : '✏️ Dibujar con Lápiz'}</span>
             </button>
           )}
 
@@ -663,7 +865,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold transition-all cursor-pointer"
-            title="Abrir satélite en Google Maps"
           >
             <span>GPS Satelital</span>
             <ExternalLink className="w-3 h-3 text-slate-400" />
@@ -671,30 +872,61 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
         </div>
       </div>
 
-      {/* Notificación Flotante de Guardado Exitoso */}
-      {saveSuccessMsg && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+      {/* Alerta de Dibujo con Lápiz en Vivo */}
+      {isCurrentlyDrawingPencil && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-blue-600 text-white font-black text-xs px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 border-2 border-blue-400 animate-pulse">
+          <PenTool className="w-4 h-4 text-white" />
+          <span>Trazando libremente con el lápiz... Suelta para cerrar el área.</span>
+        </div>
+      )}
+
+      {/* Notificación Flotante de Éxito */}
+      {saveSuccessMsg && !isCurrentlyDrawingPencil && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-emerald-500 text-slate-950 font-black text-xs sm:text-sm px-4 py-2 rounded-2xl shadow-2xl flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-slate-950" />
           <span>{saveSuccessMsg}</span>
         </div>
       )}
 
       {/* =================================================================== */}
-      {/* 2. PANEL DESPLEGABLE DEL EDITOR DE TERRITORIO PARA LA DIRECTIVA     */}
+      {/* 2. PANEL DEL EDITOR TERRITORIAL CON LÁPIZ Y VÉRTICES                */}
       {/* =================================================================== */}
       {isEditorOpen && enableAdminEditor && (
         <div className="bg-[#0B132B]/98 border-b-2 border-amber-500/50 p-3 sm:p-4 z-30 shadow-2xl space-y-3 text-left">
           
-          {/* Selector de Herramienta de Dibujo */}
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-black text-amber-400 uppercase tracking-wider">
-                Herramienta Activa:
+                Modalidad:
               </span>
+
+              {/* Conmutador Lápiz vs Clics */}
               <div className="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-bold">
                 <button
+                  onClick={() => setDrawingMethod('pencil')}
+                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    drawingMethod === 'pencil' ? 'bg-amber-500 text-slate-950 font-black shadow-sm' : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <PenTool className="w-3.5 h-3.5" />
+                  <span>Trazo Libre (Lápiz)</span>
+                </button>
+                <button
+                  onClick={() => setDrawingMethod('click')}
+                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    drawingMethod === 'click' ? 'bg-blue-600 text-white font-black shadow-sm' : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Punto a Punto (Vértices)</span>
+                </button>
+              </div>
+
+              {/* Qué se está delimitando */}
+              <div className="inline-flex rounded-xl bg-slate-900 p-0.5 border border-slate-800 text-xs font-bold ml-1">
+                <button
                   onClick={() => setEditorTool('perimetro')}
-                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
                     editorTool === 'perimetro' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -702,7 +934,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 </button>
                 <button
                   onClick={() => setEditorTool('manzano')}
-                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
                     editorTool === 'manzano' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -710,7 +942,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 </button>
                 <button
                   onClick={() => setEditorTool('equipamiento')}
-                  className={`px-3 py-1 rounded-lg transition-colors cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
                     editorTool === 'equipamiento' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -724,19 +956,24 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
               className="text-[11px] text-slate-400 hover:text-rose-400 flex items-center gap-1 font-bold cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>Restablecer Todo por Defecto</span>
+              <span>Restablecer OTB por Defecto</span>
             </button>
           </div>
 
-          {/* HERRAMIENTA 1: DIBUJAR PERÍMETRO */}
+          {/* HERRAMIENTA 1: PERÍMETRO */}
           {editorTool === 'perimetro' && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="space-y-1">
-                <p className="text-slate-200 font-bold">
-                  📍 Haz clic directamente en el mapa para marcar los límites de la OTB ({editingPerimeter.length} vértices marcados).
+                <p className="text-slate-200 font-bold flex items-center gap-1.5">
+                  <PenTool className="w-3.5 h-3.5 text-blue-400" />
+                  <span>
+                    {drawingMethod === 'pencil'
+                      ? 'Mantén presionado el botón izquierdo del mouse o la pantalla táctil y arrastra para dibujar el contorno de la OTB como si fuera un lápiz.'
+                      : `Haz clic en las esquinas de la OTB para añadir vértices (${editingPerimeter.length} vértices marcados).`}
+                  </span>
                 </p>
-                <span className="text-[11px] text-blue-300 font-mono">
-                  Superficie estimada: ~{calculatePolygonAreaHectares(editingPerimeter).toFixed(2)} hectáreas
+                <span className="text-[11px] text-blue-300 font-mono block">
+                  Superficie calculada: ~{calculatePolygonAreaHectares(editingPerimeter).toFixed(2)} hectáreas ({editingPerimeter.length} vértices)
                 </span>
               </div>
 
@@ -744,22 +981,22 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 <button
                   onClick={() => removeLastPerimeterVertex(otbId)}
                   disabled={editingPerimeter.length === 0}
-                  className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 font-bold text-xs transition-colors cursor-pointer disabled:opacity-40"
+                  className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 font-bold text-xs cursor-pointer disabled:opacity-40"
                 >
                   ↩️ Deshacer Último
                 </button>
                 <button
                   onClick={() => clearPerimeter(otbId)}
-                  className="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-500/40 font-bold text-xs transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 hover:text-white border border-rose-500/40 font-bold text-xs cursor-pointer"
                 >
                   🗑️ Limpiar
                 </button>
                 <button
                   onClick={handleSavePerimeter}
-                  className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-md"
+                  className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Guardar Límites Oficiales</span>
+                  <span>Guardar Límites de la OTB</span>
                 </button>
               </div>
             </div>
@@ -770,7 +1007,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Nombre:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Nombre Manzano:</label>
                   <input
                     type="text"
                     value={newManzanoName}
@@ -780,7 +1017,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Código:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Código Oficial:</label>
                   <input
                     type="text"
                     value={newManzanoCode}
@@ -790,7 +1027,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">N° de Lotes:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Total Lotes:</label>
                   <input
                     type="number"
                     value={newManzanoLots}
@@ -800,7 +1037,7 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Color Identificador:</label>
                   <input
                     type="color"
                     value={newManzanoColor}
@@ -821,7 +1058,9 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
 
               <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
                 <span>
-                  📍 Haz clic 3 o 4 veces en el mapa para marcar los límites del manzano ({newManzanoPoints.length} puntos seleccionados).
+                  {drawingMethod === 'pencil'
+                    ? `✏️ Dibuja el contorno del manzano arrastrando el lápiz en el mapa (${newManzanoPoints.length} vértices trazados).`
+                    : `📍 Haz clic en el mapa para marcar las esquinas del manzano (${newManzanoPoints.length} puntos seleccionados).`}
                 </span>
                 {newManzanoPoints.length > 0 && (
                   <button
@@ -835,12 +1074,12 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             </div>
           )}
 
-          {/* HERRAMIENTA 3: AGREGAR EQUIPAMIENTO */}
+          {/* HERRAMIENTA 3: EQUIPAMIENTO COMUNAL */}
           {editorTool === 'equipamiento' && (
             <div className="space-y-3 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Nombre del Lugar:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Nombre del Espacio:</label>
                   <input
                     type="text"
                     value={newFacName}
@@ -857,22 +1096,22 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                     className="w-full px-2.5 py-1.5 bg-[#030712] border border-slate-700 rounded-xl text-white font-bold"
                   >
                     <option value="sede">🏛️ Sede Social</option>
-                    <option value="cancha">⚽ Cancha / Deporte</option>
-                    <option value="tinglado">🏗️ Tinglado</option>
-                    <option value="seguridad">🚨 Seguridad / Alarma</option>
-                    <option value="agua">💧 Agua / Servicios</option>
-                    <option value="parque">🛝 Parque Infantil</option>
-                    <option value="salud">🏥 Salud / Primeros Auxilios</option>
+                    <option value="cancha">⚽ Cancha Polifuncional</option>
+                    <option value="tinglado">🏗️ Tinglado Deportivo</option>
+                    <option value="seguridad">🚨 Sirena / Cámara de Seguridad</option>
+                    <option value="agua">💧 Tanque de Agua / Válvula</option>
+                    <option value="parque">🛝 Parque Infantil / Área Verde</option>
+                    <option value="salud">🏥 Posta Sanitaria / Primeros Auxilios</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Descripción / Función:</label>
+                  <label className="text-[10px] text-slate-400 font-bold block mb-1">Función Comunitaria:</label>
                   <input
                     type="text"
                     value={newFacDesc}
                     onChange={(e) => setNewFacDesc(e.target.value)}
                     className="w-full px-2.5 py-1.5 bg-[#030712] border border-slate-700 rounded-xl text-white font-bold"
-                    placeholder="Ej. Circuito preventivo vecinal"
+                    placeholder="Ej. Punto de auxilio vecinal 24/7"
                   />
                 </div>
                 <div className="flex items-end">
@@ -881,18 +1120,18 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                     className="w-full h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1 cursor-pointer shadow-md"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Guardar Lugar</span>
+                    <span>Guardar Punto</span>
                   </button>
                 </div>
               </div>
 
               <p className="text-[11px] text-slate-400">
-                📍 {newFacCoord ? `Coordenadas seleccionadas: ${newFacCoord[0].toFixed(5)}, ${newFacCoord[1].toFixed(5)}` : 'Haz clic en el punto exacto del mapa donde se encuentra este equipamiento.'}
+                📍 {newFacCoord ? `Ubicación marcada: ${newFacCoord[0].toFixed(5)}, ${newFacCoord[1].toFixed(5)}` : 'Haz clic en el mapa en el lugar exacto del equipamiento.'}
               </p>
             </div>
           )}
 
-          {/* Lista de Manzanos Actuales con Opción de Eliminar */}
+          {/* Manzanos Existentes con Borrado Rápido */}
           <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2 text-[11px]">
             <span className="font-bold text-slate-400">Manzanos Registrados:</span>
             {territory.manzanos.map((m) => (
@@ -917,12 +1156,68 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
       )}
 
       {/* =================================================================== */}
-      {/* 3. CONTENEDOR DEL MAPA LEAFLET                                      */}
+      {/* 3. MODAL / CARD DE INSPECCIÓN DE MANZANO SELECCIONADO               */}
       {/* =================================================================== */}
-      <div ref={mapContainerRef} className="w-full flex-1 min-h-[240px]" />
+      {inspectedManzano && (
+        <div className="absolute bottom-12 right-4 z-40 max-w-sm w-full bg-[#0B132B]/98 border-2 border-slate-700 rounded-2xl p-4 shadow-2xl backdrop-blur-xl space-y-3 animate-in fade-in slide-in-from-bottom-2 text-left">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: inspectedManzano.color }} />
+              <strong className="text-sm font-black text-white">{inspectedManzano.name} ({inspectedManzano.code})</strong>
+            </div>
+            <button
+              onClick={() => setInspectedManzano(null)}
+              className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="space-y-1.5 text-xs text-slate-300">
+            <p className="text-slate-400">{inspectedManzano.description}</p>
+            <div className="grid grid-cols-2 gap-2 py-1">
+              <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-400 block font-bold uppercase">Capacidad</span>
+                <strong className="text-white text-sm font-mono font-black">{inspectedManzano.lotsCount} Lotes</strong>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                <span className="text-[10px] text-slate-400 block font-bold uppercase">Empadronados</span>
+                <strong className="text-emerald-400 text-sm font-mono font-black">
+                  {neighbors.filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase())).length} Socios
+                </strong>
+              </div>
+            </div>
+
+            {/* Lista de Vecinos en este manzano */}
+            <div className="space-y-1 pt-1">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vecinos en esta cuadra:</span>
+              <div className="max-h-28 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
+                {neighbors
+                  .filter((n) => n.block.toLowerCase().includes(inspectedManzano.name.toLowerCase()) || n.block.toLowerCase().includes(inspectedManzano.code.toLowerCase()))
+                  .map((n) => (
+                    <div key={n.id} className="flex justify-between items-center p-1.5 rounded-lg bg-[#030712] border border-slate-800">
+                      <span className="text-white font-bold truncate max-w-[170px]">{n.name}</span>
+                      <span className={n.status === 'Al Día' ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
+                        {n.house}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =================================================================== */}
-      {/* 4. LEYENDA INFERIOR INSTITUCIONAL (CLARA Y ACCESIBLE)               */}
+      {/* 4. CONTENEDOR DEL MAPA LEAFLET                                      */}
+      {/* =================================================================== */}
+      <div
+        ref={mapContainerRef}
+        className={`w-full flex-1 min-h-[260px] ${isEditorOpen && drawingMethod === 'pencil' ? 'cursor-crosshair' : ''}`}
+      />
+
+      {/* =================================================================== */}
+      {/* 5. LEYENDA INFERIOR INSTITUCIONAL (CLARA Y ACCESIBLE)               */}
       {/* =================================================================== */}
       <div className="px-4 py-2 bg-[#030712] border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 z-20">
         <div className="flex flex-wrap items-center gap-3 sm:gap-5">
@@ -936,19 +1231,19 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
             <span>Manzanos (A, B, C, D)</span>
           </span>
 
-          <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-            <span>Sede Social & Cancha</span>
-          </span>
-
           <span className="flex items-center gap-1.5 text-purple-400 font-bold">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" />
-            <span>Vivienda Vecinal</span>
+            <span>Viviendas de Vecinos</span>
+          </span>
+
+          <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+            <span>Sede & Tinglado</span>
           </span>
         </div>
 
         <span className="font-mono text-[10px] text-slate-500">
-          Catastro Comunal Ley N° 1551 • Cochabamba, Bolivia
+          Catastro Comunal Ley N° 1551 • Bolivia
         </span>
       </div>
 

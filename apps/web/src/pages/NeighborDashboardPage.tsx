@@ -487,10 +487,10 @@ export const NeighborDashboardPage: React.FC = () => {
           centerLat={-17.41325}
           centerLng={-66.16543}
           zoom={16}
-          heightClass="h-80 sm:h-[400px]"
+          heightClass="h-80 sm:h-[420px]"
           otbName={currentOtb?.name || 'OTB Villa Esperanza'}
           otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
-          selectedLotName="Lote 12"
+          selectedLotName="Manzana A, Lote 12"
         />
       </div>
 

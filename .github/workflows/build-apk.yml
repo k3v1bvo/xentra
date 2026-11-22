@@ -56,10 +56,14 @@ jobs:
           pnpm --filter @xentra/sync-engine build || true
           pnpm --filter @xentra/web build
 
-      - name: 📱 Pre-export Expo Android Bundle
+      - name: 📱 Pre-bundle Offline JavaScript Bundle for Android APK
         run: |
+          mkdir -p apps/mobile/android/app/src/main/assets
           cd apps/mobile
-          npx expo export --platform android
+          ENTRY_PATH=$(node -e "console.log(require.resolve('expo-router/entry'))")
+          echo "Resolving entry at: $ENTRY_PATH"
+          npx expo export:embed --entry-file "$ENTRY_PATH" --platform android --dev false --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          ls -lh android/app/src/main/assets/index.android.bundle
           cd ../..
 
       - name: 📱 Build Real Android APK with Gradle

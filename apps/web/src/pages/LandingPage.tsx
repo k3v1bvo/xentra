@@ -71,7 +71,7 @@ const QrPhoneIllustration: React.FC = () => (
   </div>
 );
 
-// 2. Vector Ilustración: Recibo Digital Oficial Criptográfico
+// 2. Vector Ilustración: Recibo Digital Oficial con Código QR
 const DigitalReceiptIllustration: React.FC = () => (
   <div className="w-full h-36 flex items-center justify-center relative select-none">
     <svg viewBox="0 0 200 130" fill="none" className="w-full h-full max-w-[200px] drop-shadow-lg">
@@ -93,7 +93,7 @@ const DigitalReceiptIllustration: React.FC = () => (
       {/* Monto destacado en caja */}
       <rect x="68" y="70" width="64" height="18" rx="5" fill="#064E3B" stroke="#10B981" strokeWidth="1" />
       <rect x="74" y="76" width="32" height="6" rx="2" fill="#34D399" />
-      {/* Sello de Seguridad Criptográfico */}
+      {/* Sello de Seguridad Comunal */}
       <circle cx="124" cy="98" r="16" fill="#0B132B" stroke="#10B981" strokeWidth="2" />
       <circle cx="124" cy="98" r="12" fill="#10B981" opacity="0.2" />
       <polyline points="119,98 122,101 129,94" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -644,9 +644,9 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* =================================================================== */}
-      {/* 5. GEORREFERENCIACIÓN COMUNAL EN VIVO: TERRITORIO Y EQUIPAMIENTO    */}
+      {/* 5. MAPA OFICIAL DEL BARRIO: TERRITORIO Y EQUIPAMIENTO               */}
       {/* =================================================================== */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800 text-left">
+      <section id="mapa-barrio" className="scroll-mt-24 relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800 text-left">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
           <div className="max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black">

@@ -7,20 +7,14 @@ import {
   QrCode,
   MapPin,
   Clock,
-  Phone,
   Building,
   ExternalLink,
-  Vote,
-  FileCheck,
   Building2,
-  Users,
   Compass,
   ArrowRight,
-  Github,
-  Scale,
-  Lock,
-  Cpu,
-  CheckCircle2
+  CheckCircle2,
+  Smartphone,
+  Receipt
 } from 'lucide-react';
 import { useTenantStore } from '../stores/tenantStore';
 
@@ -50,12 +44,12 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
     <footer id="marco-legal" className="scroll-mt-20 sm:scroll-mt-24 relative z-10 border-t-2 border-slate-800 bg-[#020617] text-slate-300">
       
       {/* =================================================================== */}
-      {/* 1. BANDA SUPERIOR DE INGENIERÍA, SEGURIDAD & LICENCIAS              */}
+      {/* 1. BANDA SUPERIOR DE BENEFICIOS VECINALES Y CONFIANZA INSTITUCIONAL */}
       {/* =================================================================== */}
       <div className="bg-[#0B132B] border-b border-slate-800/80 px-4 sm:px-8 py-4">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs">
           
-          {/* Identidad Institucional Nacional */}
+          {/* Identidad Institucional */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black shadow-md flex-shrink-0">
               <ShieldCheck className="w-5 h-5 text-white" />
@@ -63,52 +57,52 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-black text-white uppercase tracking-wider text-sm">
-                  {isPublic ? 'Plataforma Nacional Comunal' : `OTB ${currentOtb?.name || 'Registrada'}`}
+                  {isPublic ? 'Plataforma Vecinal de Bolivia' : `OTB ${currentOtb?.name || 'Registrada'}`}
                 </span>
                 <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  {isPublic ? 'BOLIVIA' : (currentOtb?.code || 'OTB-CBBA-001')}
+                  {isPublic ? 'COMUNIDADES UNIDAS' : (currentOtb?.code || 'OTB-CBBA-001')}
                 </span>
               </div>
               <p className="text-slate-400 text-xs">
                 {isPublic
-                  ? 'Sistema Integral de Gobernanza Barrial y Control Social Comunitario'
+                  ? 'Gestión de cuotas, cobros por QR y cuentas claras para barrios y OTBs'
                   : `${currentOtb?.zone || 'Zona Urbana'}, ${currentOtb?.municipality || 'Municipio'} — ${currentOtb?.department || 'Bolivia'}`}
               </p>
             </div>
           </div>
 
-          {/* Badges de Arquitectura & Seguridad */}
+          {/* Badges de Beneficios para el Vecino */}
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-emerald-400 font-bold">
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Cifrado SHA-256 Inmutable</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>0% Comisión por Pago QR</span>
             </span>
 
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-blue-400 font-bold">
-              <Cpu className="w-3.5 h-3.5 text-blue-400" />
-              <span>Local-First SQLite</span>
+              <Receipt className="w-3.5 h-3.5 text-blue-400" />
+              <span>Recibos Oficiales al Instante</span>
             </span>
 
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-purple-400 font-bold">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-              <span>Multi-Tenant Zero-PII</span>
+              <Smartphone className="w-3.5 h-3.5 text-purple-400" />
+              <span>Funciona en Cualquier Celular</span>
             </span>
 
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-400 font-bold">
-              <Scale className="w-3.5 h-3.5 text-amber-400" />
-              <span>Licencia Libre MIT</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+              <span>Cuentas Claras en Asamblea</span>
             </span>
           </div>
         </div>
       </div>
 
       {/* =================================================================== */}
-      {/* 2. CUERPO PRINCIPAL: 4 COLUMNAS ESTRUCTURADAS                       */}
+      {/* 2. CUERPO PRINCIPAL: 4 COLUMNAS DE UTILIDAD REAL                    */}
       {/* =================================================================== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14 text-left">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           
-          {/* Columna 1: Identidad & Marco Jurídico */}
+          {/* Columna 1: Identidad & Marco Vecinal */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-base shadow-md">
@@ -116,25 +110,24 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
               </div>
               <div>
                 <span className="font-black text-white text-base tracking-tight block">XENTRA OTB</span>
-                <span className="text-xs text-blue-400 font-bold block">Plataforma Comunal Bolivia</span>
+                <span className="text-xs text-blue-400 font-bold block">Sistema Vecinal de Bolivia</span>
               </div>
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              Software libre y soberano diseñado para la gestión transparente de cuotas comunales, auditoría criptográfica con código QR y participación democrática vecinal en Bolivia.
+              Plataforma diseñada para que los vecinos paguen sus cuotas por QR de forma rápida y segura, reciban sus comprobantes oficiales y las directivas rindan cuentas claras a la asamblea.
             </p>
 
             <div className="p-3.5 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-1.5 text-xs text-slate-300">
               <p className="font-bold text-white flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Marco Legal Vigente:</span>
+                <span>Base Legal y Control Social:</span>
               </p>
               <ul className="space-y-1 pl-4 list-disc text-slate-400 text-[11px] leading-relaxed">
-                <li><strong>Ley N° 1551:</strong> Participación Popular.</li>
-                <li><strong>Ley N° 3488:</strong> Personería Jurídica Comunal.</li>
-                <li><strong>Ley N° 031:</strong> Autonomías y Descentralización.</li>
-                <li><strong>CPE Art. 241:</strong> Control Social Comunitario.</li>
-                <li><strong>Ley N° 164:</strong> Firma y Documentos Digitales.</li>
+                <li><strong>CPE Art. 241:</strong> Participación y Control Social Comunitario.</li>
+                <li><strong>Ley N° 3488:</strong> Personerías Jurídicas de OTBs y Juntas Vecinales.</li>
+                <li><strong>Ley N° 031:</strong> Autonomías y Organización Vecinal.</li>
+                <li><strong>Ley N° 164:</strong> Validez de Documentos y Recibos Digitales.</li>
               </ul>
             </div>
           </div>
@@ -146,7 +139,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
               <span>Emergencias Bolivia 24/7</span>
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Líneas gratuitas de atención inmediata para auxilios policiales, de bomberos y servicios en el barrio:
+              Líneas gratuitas de atención inmediata para auxilios policiales, médicos y servicios en tu barrio:
             </p>
 
             <div className="space-y-2">
@@ -189,7 +182,7 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
               >
                 <div className="flex items-center gap-2">
                   <span className="font-black text-purple-400 font-mono text-sm">156</span>
-                  <span className="font-bold text-white">Defensoría Niñez y Mujer</span>
+                  <span className="font-bold text-white">Defensoría Niñez y Familia</span>
                 </div>
                 <span className="text-[11px] text-purple-300 font-mono group-hover:underline">Llamar →</span>
               </a>
@@ -201,14 +194,14 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
             </div>
           </div>
 
-          {/* Columna 3: Servicios para el Ciudadano & Recursos Abiertos */}
+          {/* Columna 3: Accesos Útiles para el Vecino */}
           <div className="space-y-3.5">
             <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
-              <FileCheck className="w-4 h-4 text-blue-400" />
-              <span>Servicios & Recursos</span>
+              <CheckCircle2 className="w-4 h-4 text-blue-400" />
+              <span>Accesos para el Vecino</span>
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Accede a las herramientas oficiales de comprobación y al código fuente abierto:
+              Herramientas directas para consultar pagos, comprobar recibos y participar en tu barrio:
             </p>
 
             <ul className="space-y-2 text-xs sm:text-sm">
@@ -222,9 +215,9 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 >
                   <span className="flex items-center gap-2">
                     <Download className="w-4 h-4 text-emerald-400" />
-                    <span>Descargar APK Móvil Oficial</span>
+                    <span>Descargar la App en tu Celular</span>
                   </span>
-                  <span className="text-[11px] text-emerald-400 font-mono font-bold">v3.0.0</span>
+                  <span className="text-[11px] text-emerald-400 font-mono font-bold">Instalar</span>
                 </button>
               </li>
 
@@ -235,69 +228,71 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
                 >
                   <span className="flex items-center gap-2">
                     <QrCode className="w-4 h-4 text-blue-400" />
-                    <span>Verificar Recibo Oficial TRACE</span>
+                    <span>Comprobar Validez de un Recibo</span>
                   </span>
                   <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
                 </button>
               </li>
 
               <li>
-                <a
-                  href="https://github.com/k3v1bvo/xentra"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => {
+                    if (onOpenEmergency) onOpenEmergency();
+                    else navigate('/login');
+                  }}
                   className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
                 >
                   <span className="flex items-center gap-2">
-                    <Github className="w-4 h-4 text-purple-400" />
-                    <span>Repositorio Abierto en GitHub</span>
+                    <PhoneCall className="w-4 h-4 text-rose-400" />
+                    <span>Centro de Auxilio Barrial</span>
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
-                </a>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">24/7</span>
+                </button>
               </li>
 
               <li>
-                <a
-                  href="https://github.com/k3v1bvo/xentra/blob/main/LICENSE"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => {
+                    const mapSection = document.getElementById('mapa-barrio');
+                    if (mapSection) mapSection.scrollIntoView({ behavior: 'smooth' });
+                    else navigate('/');
+                  }}
                   className="w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-white font-bold transition-colors cursor-pointer group"
                 >
                   <span className="flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-amber-400" />
-                    <span>Licencia de Software MIT</span>
+                    <Compass className="w-4 h-4 text-amber-400" />
+                    <span>Ver Mapa y Manzanos del Barrio</span>
                   </span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold">Libre</span>
-                </a>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">Mapa</span>
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Columna 4: Gobernanza / Directiva Comunal */}
+          {/* Columna 4: Para Directivas y Dirigentes */}
           {isPublic ? (
-            /* Vista Pública: Invitación a Juntas Vecinales y Dirigentes de Bolivia */
             <div className="space-y-3.5">
               <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
                 <Building2 className="w-4 h-4 text-emerald-400" />
-                <span>Gobernanza Digital Barrial</span>
+                <span>Para Mesas Directivas</span>
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                ¿Eres dirigente de una OTB en Bolivia? Moderniza la administración de tu comunidad sin costos de instalación:
+                ¿Eres dirigente de una OTB o junta vecinal? Administra tu barrio con total claridad:
               </p>
 
               <div className="p-4 rounded-2xl bg-[#0B132B] border border-slate-800 space-y-2.5 text-xs text-slate-300">
                 <div className="space-y-1.5">
                   <p className="flex items-center gap-2 text-slate-200">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span>Cobros por QR Simple (0% comisión).</span>
+                    <span>Cobros por QR Simple de cualquier banco.</span>
                   </p>
                   <p className="flex items-center gap-2 text-slate-200">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span>Recibos oficiales sellados con código QR.</span>
+                    <span>Emisión automática de recibos oficiales.</span>
                   </p>
                   <p className="flex items-center gap-2 text-slate-200">
                     <CheckCircle2 className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                    <span>Consultas y asambleas democráticas directas.</span>
+                    <span>Reportes listos para imprimir en asambleas.</span>
                   </p>
                 </div>
 
@@ -313,7 +308,6 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
               </div>
             </div>
           ) : (
-            /* Vista Interna: Datos específicos de la OTB una vez iniciada sesión */
             <div className="space-y-3.5">
               <h3 className="font-black text-white text-sm sm:text-base flex items-center gap-2 uppercase tracking-wider">
                 <Building className="w-4 h-4 text-emerald-400" />
@@ -351,32 +345,19 @@ export const CommunityFooter: React.FC<CommunityFooterProps> = ({
       </div>
 
       {/* =================================================================== */}
-      {/* 3. FRANJA INFERIOR: COPYRIGHT, REPOSITORIO & ESTADO DEL SISTEMA     */}
+      {/* 3. FRANJA INFERIOR LIMPIA: COPYRIGHT Y ESTADO DEL SISTEMA           */}
       {/* =================================================================== */}
       <div className="border-t border-slate-800/80 bg-[#01040D] px-4 sm:px-8 py-5">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-left text-xs text-slate-400">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-bold text-slate-200">© 2026 XENTRA OTB BOLIVIA</span>
             <span>•</span>
-            <span>Software Libre bajo Licencia MIT</span>
-            <span>•</span>
-            <a
-              href="https://github.com/k3v1bvo/xentra"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 font-mono underline"
-            >
-              github.com/k3v1bvo/xentra
-            </a>
+            <span>Plataforma Vecinal para Comunidades y Barrios</span>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] font-mono">
-            <span className="inline-flex items-center gap-1.5 text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Red Comunal 100% Operativa</span>
-            </span>
-            <span>•</span>
-            <span className="text-slate-500">Vercel Edge</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Sistema Conectado y Operativo en Toda Bolivia</span>
           </div>
         </div>
       </div>

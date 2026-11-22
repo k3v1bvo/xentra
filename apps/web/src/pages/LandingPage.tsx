@@ -648,20 +648,20 @@ export const LandingPage: React.FC = () => {
       {/* =================================================================== */}
       <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-16 border-t border-slate-800 text-left">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
-          <div className="max-w-2xl space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+          <div className="max-w-3xl space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-black">
               <Compass className="w-4 h-4 text-emerald-400" />
-              <span>Mapa Oficial del Barrio</span>
+              <span>Ejemplo en Vivo • Catastro Barrial Municipal Real</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Manzanos, Calles y Áreas Verdes
+              Delimitación Oficial de Calles, Manzanos y Áreas Verdes
             </h2>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-              Ubica la sede social, las canchas, los parques y los límites oficiales de tu comunidad.
+              Mira cómo se dibuja y organiza una OTB real: trazado por el eje de las calles, separación entre manzanas, áreas verdes protegidas y colindancia con barrios vecinos.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
             <button
               onClick={() => setIsInstallModalOpen(true)}
               className="h-11 px-5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs sm:text-sm font-black text-slate-200 flex items-center gap-2 transition-all cursor-pointer shadow-sm"
@@ -672,18 +672,47 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Mapa Interactivo de la OTB */}
+        {/* Tarjetas Informativas Destacadas del Catastro */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
+            <span className="text-[11px] font-bold text-amber-400 block uppercase tracking-wider">Demarcación</span>
+            <p className="font-black text-white text-sm mt-0.5">Trazado por Calles</p>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Corredores y avenidas reales sin sobreposición</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
+            <span className="text-[11px] font-bold text-emerald-400 block uppercase tracking-wider">Manzanos</span>
+            <p className="font-black text-white text-sm mt-0.5">Manzanas 261 al 270</p>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Códigos oficiales según plano municipal GAMC</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
+            <span className="text-[11px] font-bold text-blue-400 block uppercase tracking-wider">Colindancias</span>
+            <p className="font-black text-white text-sm mt-0.5">5 OTBs Vecinas</p>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Pacata Central, Luján, 10 de Dic., FAB y Mesadilla</span>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
+            <span className="text-[11px] font-bold text-rose-400 block uppercase tracking-wider">Edición Comunal</span>
+            <p className="font-black text-white text-sm mt-0.5">Exclusivo Directiva</p>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Lápiz digital para dibujar o editar en cualquier OTB</span>
+          </div>
+        </div>
+
+        {/* Mapa Interactivo Panorámico de la OTB */}
         <div className="rounded-3xl overflow-hidden border-2 border-slate-800 shadow-2xl bg-[#0B132B]">
           <div className="px-5 py-3.5 bg-[#030712] border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-400" />
-              <span className="font-black text-white">Plano Oficial de la OTB ({currentOtb?.name || 'OTB Villa Graciela'})</span>
+              <span className="font-black text-white">Plano Oficial de Demostración: OTB Villa Graciela (Distrito 1 • Cochabamba)</span>
               <span className="text-slate-500">•</span>
-              <span className="text-slate-400 font-medium">Catastro Municipal • Libre Consulta</span>
+              <span className="text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800/60">
+                Catastro GAMC
+              </span>
             </div>
 
             <a
-              href="https://www.google.com/maps?q=-17.41325,-66.16543"
+              href="https://www.google.com/maps?q=-17.41315,-66.16495"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1.5 transition-colors self-start sm:self-auto"
@@ -694,12 +723,13 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <CommunityInteractiveMap
-            centerLat={-17.41325}
-            centerLng={-66.16543}
+            centerLat={-17.41315}
+            centerLng={-66.16495}
             zoom={16}
-            heightClass="h-96 sm:h-[480px]"
-            otbName={currentOtb?.name || 'OTB Villa Esperanza'}
-            otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
+            heightClass="h-[460px] sm:h-[540px] lg:h-[620px]"
+            otbName="OTB Villa Graciela (Distrito 1 Cochabamba)"
+            otbId="11111111-1111-1111-1111-111111111111"
+            showControls={true}
           />
         </div>
       </section>

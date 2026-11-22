@@ -166,7 +166,7 @@ export const LoginPage: React.FC = () => {
             <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800 text-left text-xs space-y-1.5">
               <div className="flex items-center gap-2 text-slate-300 font-bold">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Acceso Seguro y Aislamiento Multi-Tenant</span>
+                <span>Acceso Seguro y Exclusivo por OTB</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
                 Cada cuenta accede estrictamente a la información de su OTB. Si eres socio, solicita tus credenciales a la Directiva de tu barrio.

@@ -250,7 +250,7 @@ export const CommunityTransparencyModal: React.FC<CommunityTransparencyModalProp
         {activeTab === 'gastos' && (
           <div className="space-y-3 overflow-y-auto pr-1 text-xs">
             <div className="flex items-center justify-between pb-1 text-slate-400">
-              <span>Gastos ejecutados con respaldo documental y auditoría TRACE:</span>
+              <span>Gastos ejecutados con facturas y respaldo contable:</span>
               <span className="font-bold text-white font-mono">Total: {formatBOB(3800.00)}</span>
             </div>
 
@@ -281,7 +281,7 @@ export const CommunityTransparencyModal: React.FC<CommunityTransparencyModalProp
                     <span>Respaldo: <strong className="text-slate-200">{eg.invoiceRef}</strong></span>
                     <span className="flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                      <span>Hash TRACE: <code className="text-emerald-300 font-mono">{eg.traceHash}</code></span>
+                      <span>Comprobante Oficial: <code className="text-emerald-300 font-mono">{eg.traceHash}</code></span>
                     </span>
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export const CommunityTransparencyModal: React.FC<CommunityTransparencyModalProp
             <div className="p-4 rounded-2xl bg-[#020617] border border-slate-700 text-xs text-slate-200 space-y-2">
               <strong className="text-white block font-bold text-sm">Garantía de Auditoría Comunitaria Ley 1551:</strong>
               <p className="leading-relaxed">
-                Cada centavo que ingresa por QR Simple o ventanilla física se deposita en la cuenta comunal de la OTB y es auditado mediante el protocolo criptográfico <strong>XENTRA TRACE</strong>. Los libros contables están a disposición de cualquier vecino en asamblea general.
+                Cada centavo que ingresa por QR o caja física se deposita en la cuenta comunal de la OTB y queda registrado de forma transparente con su recibo correspondiente. Los libros de caja y comprobantes están a disposición de cualquier vecino en asamblea general.
               </p>
             </div>
           </div>

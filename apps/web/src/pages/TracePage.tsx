@@ -10,7 +10,9 @@ import {
   ExternalLink,
   Layers,
   Lock,
-  ArrowDown
+  ArrowDown,
+  MessageCircle,
+  Printer
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
@@ -18,6 +20,10 @@ import { useTenantStore } from '../stores/tenantStore';
 
 export const TracePage: React.FC = () => {
   const { currentOtb } = useTenantStore();
+  const otbName = currentOtb?.name || 'OTB Villa Graciela';
+
+  const shareText = `🏛️ *${otbName} - Rendición de Cuentas y Obras*\n\nInformamos a los vecinos el avance del proyecto "Tinglado Cancha Polifuncional":\n• Recaudado en aportes: Bs. 8.500,00 (100% cobrado)\n• Materiales adquiridos: Bs. 3.800,00 (Factura N° 004819)\n• Mano de obra calificada: Bs. 2.400,00 (Recibo y CI)\n• Saldo en cuenta comunal: Bs. 2.300,00\n\nTodos los comprobantes y facturas están respaldados para revisión de cualquier vecino.`;
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Cabecera */}
@@ -25,29 +31,39 @@ export const TracePage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              XENTRA TRACE
+              Libro de Movimientos y Cuentas Claras
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-400 border border-blue-500/30">
-              Contabilidad Inmutable & Anti-Desvío
+              {otbName}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Seguimiento honesto y auditable del flujo de recursos: Aportes → Fondos Comunitarios → Proyectos → Gastos Ejecutados.
+            Cada aporte de los vecinos tiene un destino transparente: Aportes Cobrados → Fondo de Obra → Comprobantes y Facturas.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-11 px-4 rounded-xl text-xs sm:text-sm font-black text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/30 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Compartir por WhatsApp</span>
+          </a>
+
           <button
             onClick={() => window.print()}
-            className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-slate-300 bg-[#0B132B]/90 border border-slate-700 hover:border-slate-500 hover:text-white shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+            className="h-11 px-4 rounded-xl text-xs sm:text-sm font-black text-slate-300 bg-[#0B132B]/90 border border-slate-700 hover:border-slate-500 hover:text-white shadow-lg transition-all flex items-center gap-2 cursor-pointer"
           >
-            <FileText className="w-4 h-4 text-blue-400" />
-            <span>Descargar Informe PDF</span>
+            <Printer className="w-4 h-4 text-blue-400" />
+            <span>Imprimir para Asamblea</span>
           </button>
         </div>
       </div>
 
-      {/* Banner Informativo de Honestidad Contable */}
+      {/* Banner Informativo */}
       <TiltCard3D>
         <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-blue-950/80 via-[#0B132B] to-[#0B132B] border-2 border-blue-500/30 text-white shadow-2xl flex items-start gap-4">
           <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -55,31 +71,31 @@ export const TracePage: React.FC = () => {
           </div>
           <div className="space-y-1">
             <p className="font-black text-sm sm:text-base text-white">
-              Principio de Trazabilidad por Fondos y Asignación Directa
+              Cuentas Claras: Destino Específico de Cada Aporte Comunal
             </p>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              El dinero de la comunidad se agrupa en cuentas y fondos específicos autorizados por asamblea vecinal.
-              XENTRA TRACE demuestra con precisión matemática la imputación de los aportes recaudados y los comprobantes
-              fiscales o recibos que respaldan cada centavo gastado, sin riesgo de cajas negras ni desvíos.
+              Los aportes de los vecinos se destinan exclusivamente a los proyectos aprobados en asamblea.
+              Aquí se comprueba exactamente en qué se invirtió cada boliviano, con sus facturas y recibos respaldados
+              a la vista de cualquier socio de la comunidad.
             </p>
           </div>
         </div>
       </TiltCard3D>
 
-      {/* Visualización del Grafo TRACE en 3D */}
+      {/* Visualización del Destino de Fondos */}
       <TiltCard3D>
         <div className="p-6 sm:p-8 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 block">
-                Cadena de Trazabilidad Comunal
+                Destino y Ejecución de Recursos
               </span>
               <h2 className="text-base sm:text-lg font-black text-white">
-                Grafo de Destino de Recursos — "Proyecto Tinglado Cancha Polifuncional" ({currentOtb?.name || 'Villa Esperanza'})
+                Proyecto: "Tinglado Metálico Cancha Polifuncional" ({otbName})
               </h2>
             </div>
             <span className="text-xs font-mono px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold self-start sm:self-auto">
-              Auditoría Verificada
+              ✓ Rendición Respaldada
             </span>
           </div>
 
@@ -159,8 +175,8 @@ export const TracePage: React.FC = () => {
                     <p className="text-xs text-slate-400 mt-0.5">
                       Proveedor: "Ferretería El Tornillo S.R.L." • Factura N° 004819
                     </p>
-                    <p className="text-[10px] font-mono text-slate-500 mt-1">
-                      Hash SHA-256: 4a8e2b9c7d1e0f3a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a
+                    <p className="text-[10px] font-mono text-slate-400 mt-1">
+                      Comprobante Registrado: FACT-004819 • Archivo físico en Sede Social
                     </p>
                   </div>
                 </div>
@@ -182,8 +198,8 @@ export const TracePage: React.FC = () => {
                     <p className="text-xs text-slate-400 mt-0.5">
                       Maestro Soldador: Faustino Choque • Recibo Oficial con Fotocopia CI
                     </p>
-                    <p className="text-[10px] font-mono text-slate-500 mt-1">
-                      Hash SHA-256: 9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c
+                    <p className="text-[10px] font-mono text-slate-400 mt-1">
+                      Comprobante Registrado: REC-MANO-OBRA-012 • Archivo físico en Sede Social
                     </p>
                   </div>
                 </div>

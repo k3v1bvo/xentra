@@ -80,20 +80,20 @@ export const AuditorPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              XENTRA AI Auditor
+              Revisión y Control de Cuentas
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-400 border border-purple-500/30">
-              Reglas Deterministas + IA Fiscalizadora
+              Apoyo al Comité de Vigilancia
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-1">
             <p className="text-xs sm:text-sm text-slate-400">
-              Detección preventiva de inconsistencias contables, sobregiros y apoyo técnico al Comité de Vigilancia.
+              Revisión automática de gastos, ingresos y comprobantes para evitar descuadres de caja antes de la asamblea.
             </p>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-800 text-slate-300">
-              <span>Jurisdicción:</span>
-              <strong className="text-white">{currentOtb?.name || 'OTB Villa Esperanza'}</strong>
-              <span className="font-mono text-[10px] text-purple-400">({currentOtb?.code || 'OTB-CBBA-001'})</span>
+              <span>Comunidad:</span>
+              <strong className="text-white">{currentOtb?.name || 'OTB Villa Graciela'}</strong>
+              <span className="font-mono text-[10px] text-purple-400">({currentOtb?.code || 'OTB-CBBA-024'})</span>
             </span>
           </div>
         </div>
@@ -105,14 +105,14 @@ export const AuditorPage: React.FC = () => {
             className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-white bg-blue-600 hover:bg-blue-500 shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
-            <span>{isScanning ? 'Auditando...' : 'Ejecutar Auditoría'}</span>
+            <span>{isScanning ? 'Revisando...' : 'Revisar Cuentas'}</span>
           </button>
           <button
             onClick={() => setShowAiReport(true)}
             className="h-12 px-5 rounded-2xl text-xs sm:text-sm font-black text-purple-300 bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/40 transition-all flex items-center gap-2.5 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-purple-400" />
-            <span>Generar Informe Asamblea</span>
+            <span>Informe para Asamblea</span>
           </button>
         </div>
       </div>

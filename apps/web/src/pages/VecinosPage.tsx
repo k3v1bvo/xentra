@@ -22,7 +22,8 @@ import {
   Trash2,
   X,
   Check,
-  AlertTriangle
+  AlertTriangle,
+  MessageCircle
 } from 'lucide-react';
 import { formatBOB } from '@xentra/shared';
 import { TiltCard3D } from '../components/TiltCard3D';
@@ -54,12 +55,12 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     name: 'Juan José Flores Morales',
     ci: '7412589 CBBA',
     phone: '74567890',
-    block: 'Manzana A',
+    block: 'Manzano 263',
     house: 'Lote 12',
     status: 'En Mora',
     debt: 50.00,
-    latitude: -17.4128,
-    longitude: -66.1648
+    latitude: -17.4119,
+    longitude: -66.1664
   },
   {
     id: '2',
@@ -68,12 +69,12 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     name: 'Silvia Rojas Torrico',
     ci: '8521479 CBBA',
     phone: '75678901',
-    block: 'Manzana B',
+    block: 'Manzano 266',
     house: 'Lote 05',
     status: 'En Mora',
     debt: 125.00,
-    latitude: -17.4138,
-    longitude: -66.1659
+    latitude: -17.4131,
+    longitude: -66.1645
   },
   {
     id: '3',
@@ -82,12 +83,12 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     name: 'Roberto Fernández Vargas',
     ci: '5289341 CBBA',
     phone: '72345678',
-    block: 'Manzana A',
+    block: 'Manzano 262',
     house: 'Lote 01',
     status: 'Al Día',
     debt: 0.00,
-    latitude: -17.4122,
-    longitude: -66.1642
+    latitude: -17.4118,
+    longitude: -66.1645
   },
   {
     id: '4',
@@ -96,12 +97,12 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     name: 'Marina Condori Rocha',
     ci: '6398412 CBBA',
     phone: '73456789',
-    block: 'Manzana C',
+    block: 'Manzano 270',
     house: 'Lote 08',
     status: 'Al Día',
     debt: 0.00,
-    latitude: -17.4145,
-    longitude: -66.1662
+    latitude: -17.4144,
+    longitude: -66.1665
   },
   {
     id: '5',
@@ -110,12 +111,26 @@ const INITIAL_NEIGHBORS: NeighborMock[] = [
     name: 'Pedro Gonzalo Canaviri',
     ci: '4896325 CBBA',
     phone: '78912345',
-    block: 'Manzana B',
+    block: 'Manzano 261',
     house: 'Lote 14',
     status: 'Al Día',
     debt: 0.00,
-    latitude: -17.4140,
-    longitude: -66.1651
+    latitude: -17.4118,
+    longitude: -66.1628
+  },
+  {
+    id: '6',
+    otbId: '11111111-1111-1111-1111-111111111111',
+    socioCode: 'SOC-003',
+    name: 'Carlos Mamani Choque',
+    ci: '5289140 CBBA',
+    phone: '71234567',
+    block: 'Manzano 268',
+    house: 'Lote 08',
+    status: 'En Mora',
+    debt: 75.00,
+    latitude: -17.4144,
+    longitude: -66.1638
   },
   // Vecinos OTB Los Pinos (La Paz)
   {
@@ -184,6 +199,7 @@ export const VecinosPage: React.FC = () => {
   const currentOtbId = currentOtb?.id || '11111111-1111-1111-1111-111111111111';
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBlockFilter, setSelectedBlockFilter] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
   const [showMapSection, setShowMapSection] = useState(true);
   const [neighbors, setNeighbors] = useState(INITIAL_NEIGHBORS);
@@ -213,7 +229,7 @@ export const VecinosPage: React.FC = () => {
   const [newName, setNewName] = useState('');
   const [newCi, setNewCi] = useState('');
   const [newPhone, setNewPhone] = useState('');
-  const [newBlock, setNewBlock] = useState('Manzana A');
+  const [newBlock, setNewBlock] = useState('Manzano 261');
   const [newHouse, setNewHouse] = useState('');
   const [newLat, setNewLat] = useState(-17.4132);
   const [newLng, setNewLng] = useState(-66.1654);
@@ -223,7 +239,7 @@ export const VecinosPage: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editCi, setEditCi] = useState('');
   const [editPhone, setEditPhone] = useState('');
-  const [editBlock, setEditBlock] = useState('Manzana A');
+  const [editBlock, setEditBlock] = useState('Manzano 261');
   const [editHouse, setEditHouse] = useState('');
   const [editStatus, setEditStatus] = useState<'Al Día' | 'En Mora'>('Al Día');
   const [editDebt, setEditDebt] = useState('0.00');
@@ -233,14 +249,20 @@ export const VecinosPage: React.FC = () => {
   // Estados para CRUD - Dar de Baja / Eliminar Vecino (Delete)
   const [deletingNeighbor, setDeletingNeighbor] = useState<NeighborMock | null>(null);
 
-  const filtered = visibleNeighbors.filter(
-    (n) =>
+  const filtered = visibleNeighbors.filter((n) => {
+    const matchesSearch =
       n.socioCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.ci.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.block.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      n.house.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      n.house.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesBlock =
+      selectedBlockFilter === 'ALL' ||
+      n.block.toLowerCase().includes(selectedBlockFilter.toLowerCase());
+
+    return matchesSearch && matchesBlock;
+  });
 
   const handleFocusNeighborOnMap = (vecino: NeighborMock) => {
     setFocusedNeighbor(vecino);
@@ -535,27 +557,47 @@ export const VecinosPage: React.FC = () => {
         </div>
       )}
 
-      {/* Buscador de Alto Contraste */}
+      {/* Buscador de Alto Contraste y Filtro por Manzano */}
       <TiltCard3D>
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl flex items-center gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
-            <Search className="w-5 h-5 text-blue-400" />
+        <div className="p-4 sm:p-5 rounded-3xl bg-[#0B132B]/90 border-2 border-slate-800 shadow-2xl space-y-3">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
+              <Search className="w-5 h-5 text-blue-400" />
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por código (SOC-012), nombre completo, carnet (CI) o lote..."
+              className="w-full text-sm sm:text-base bg-transparent focus:outline-none text-white placeholder-slate-500 font-semibold"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 rounded-lg cursor-pointer"
+              >
+                Limpiar
+              </button>
+            )}
           </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por código (SOC-012), nombre completo, carnet (CI) o lote..."
-            className="w-full text-sm sm:text-base bg-transparent focus:outline-none text-white placeholder-slate-500 font-semibold"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="px-3 py-1 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 rounded-lg cursor-pointer"
-            >
-              Limpiar
-            </button>
-          )}
+
+          {/* Filtro Rápido por Manzano */}
+          <div className="pt-2 border-t border-slate-800 flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <span className="text-slate-400 font-bold whitespace-nowrap text-[11px]">Manzano:</span>
+            {['ALL', '261', '262', '263', '266', '268', '270'].map((mza) => (
+              <button
+                key={mza}
+                onClick={() => setSelectedBlockFilter(mza)}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap border ${
+                  selectedBlockFilter === mza
+                    ? 'bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-600/30'
+                    : 'bg-slate-900 text-slate-300 hover:text-white border-slate-800 hover:bg-slate-800'
+                }`}
+              >
+                {mza === 'ALL' ? 'Todos los Manzanos' : `Manzano ${mza}`}
+              </button>
+            ))}
+          </div>
         </div>
       </TiltCard3D>
 
@@ -669,6 +711,23 @@ export const VecinosPage: React.FC = () => {
                             <span>Ficha</span>
                           </button>
 
+                          <a
+                            href={`https://api.whatsapp.com/send?phone=591${vecino.phone.replace(/\D/g, '')}&text=${encodeURIComponent(
+                              `🏛️ *${currentOtb?.name || 'OTB Villa Graciela'} - Información Comunal*\n\nHola estimado(a) vecino(a) *${vecino.name}*, le saluda la Directiva de la OTB.\n\n${
+                                vecino.debt > 0
+                                  ? `Le recordamos amablemente que tiene un saldo de cuotas pendientes de *${formatBOB(vecino.debt)}* en su inmueble (${vecino.block}, ${vecino.house}). Puede cancelar por QR o pasar por la Sede Social.`
+                                  : `Le confirmamos que su lote (${vecino.block}, ${vecino.house}) se encuentra *al día* con todos sus aportes comunales. ¡Muchas gracias por su compromiso con el barrio!`
+                              }`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-black bg-emerald-950/60 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 transition-all flex items-center gap-1.5 cursor-pointer"
+                            title="Enviar aviso o estado de cuenta por WhatsApp"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>WhatsApp</span>
+                          </a>
+
                           {/* Botón Editar Vecino (CRUD Update) */}
                           <button
                             onClick={() => handleStartEdit(vecino)}
@@ -765,7 +824,7 @@ export const VecinosPage: React.FC = () => {
                     type="text"
                     value={newBlock}
                     onChange={(e) => setNewBlock(e.target.value)}
-                    placeholder="Ej. Manzana D"
+                    placeholder="Ej. Manzano 263"
                     className="w-full text-sm px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-blue-500 text-white placeholder-slate-500"
                   />
                 </div>

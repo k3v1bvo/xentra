@@ -85,7 +85,7 @@ export const DashboardPage: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-md transition-all cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4 text-blue-400" />
-            <span>Ver TRACE</span>
+            <span>Libro de Movimientos</span>
           </button>
         </div>
       </div>
@@ -233,13 +233,13 @@ export const DashboardPage: React.FC = () => {
           <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Auditoría transparente al día</span>
+              <span>Cuentas claras y al día</span>
             </div>
             <button
               onClick={() => navigate('/admin/trace')}
               className="text-xs text-blue-400 hover:text-blue-300 font-black cursor-pointer"
             >
-              Ver Trazabilidad →
+              Ver Libro de Movimientos →
             </button>
           </div>
         </div>

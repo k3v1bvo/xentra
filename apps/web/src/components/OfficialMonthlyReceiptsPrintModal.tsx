@@ -594,13 +594,13 @@ export const OfficialMonthlyReceiptsPrintModal: React.FC<OfficialMonthlyReceipts
                     <div className="space-y-0.5 overflow-hidden text-left">
                       <div className="flex items-center gap-1 text-blue-950 font-black text-[9px] uppercase">
                         <ShieldCheck className="w-3 h-3 text-blue-700 flex-shrink-0" />
-                        <span>Sello TRACE SHA-256</span>
+                        <span>Sello Oficial de Tesorería</span>
                       </div>
-                      <p className="text-[8px] font-mono text-slate-500 truncate">
-                        {receipt.token.slice(0, 20)}...
+                      <p className="text-[8px] font-mono text-slate-600 truncate">
+                        Recibo N° {receipt.receiptNumber}
                       </p>
                       <span className="text-[8px] text-emerald-700 font-bold block">
-                        Certificado en Libro Mayor
+                        ✓ Asentado en Libro de Caja
                       </span>
                     </div>
                   </div>

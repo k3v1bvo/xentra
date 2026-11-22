@@ -73,7 +73,7 @@ export const NeighborLayout: React.FC = () => {
             }
           >
             <QrCode className="w-4 h-4 text-purple-300" />
-            <span>Verificar Recibo TRACE</span>
+            <span>Comprobar Recibo QR</span>
           </NavLink>
         </nav>
 

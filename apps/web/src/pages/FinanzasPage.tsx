@@ -27,7 +27,8 @@ import {
   Trash2,
   Plus,
   Tag,
-  RefreshCw
+  RefreshCw,
+  MessageCircle
 } from 'lucide-react';
 import { formatBOB, generateSecureReceiptToken, PaymentMethod } from '@xentra/shared';
 import { useTenantStore } from '../stores/tenantStore';
@@ -338,7 +339,7 @@ export const FinanzasPage: React.FC = () => {
       };
       setPayments([newPay, ...payments]);
       setInspectingVoucher(null);
-      alert(`¡Comprobante verificado con éxito! Se emitió el Recibo Oficial N° ${newPay.receiptNumber} sellado con token TRACE.`);
+      alert(`¡Comprobante verificado con éxito! Se emitió el Recibo Oficial N° ${newPay.receiptNumber} registrado en caja con código QR.`);
     }
   };
 
@@ -1026,6 +1027,19 @@ export const FinanzasPage: React.FC = () => {
                           <span>Ver QR</span>
                         </button>
 
+                        <a
+                          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                            `🏛️ *${currentOtb?.name || 'OTB Villa Graciela'} - Recibo Oficial*\n\nHola vecino(a) *${p.neighborName}*, su aporte de *${formatBOB(p.amount)}* por concepto de _"${p.concept}"_ fue registrado en el Libro de Caja.\n\n📄 *Recibo N°:* ${p.receiptNumber}\n🔍 *Verificar:* ${window.location.origin}/verificar-recibo?receipt=${p.receiptNumber}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Enviar comprobante de recibo por WhatsApp al vecino"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-500/40 transition-colors cursor-pointer"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>WhatsApp</span>
+                        </a>
+
                         {/* Botón Anular Recibo (Solo si está Confirmado) */}
                         {p.status === 'Confirmed' && (
                           <button
@@ -1429,22 +1443,36 @@ export const FinanzasPage: React.FC = () => {
               <p className="text-slate-400">Método: <span className="text-white">{generatedReceipt.method}</span></p>
             </div>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  navigate(`/verificar-recibo?token=${generatedReceipt.token}&receipt=${generatedReceipt.receiptNumber}`);
-                  setGeneratedReceipt(null);
-                }}
-                className="flex-1 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 cursor-pointer"
+            <div className="space-y-2">
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                  `🏛️ *${currentOtb?.name || 'OTB Villa Graciela'} - Comprobante Oficial*\n\nHola vecino(a) *${generatedReceipt.neighborName}*, le confirmamos que su aporte de *${formatBOB(generatedReceipt.amount)}* por concepto de _"${generatedReceipt.concept}"_ fue registrado exitosamente en el Libro de Caja de la OTB.\n\n📄 *Recibo Oficial N°:* ${generatedReceipt.receiptNumber}\n🔍 *Verificar y Ver Recibo:* ${window.location.origin}/verificar-recibo?receipt=${generatedReceipt.receiptNumber}\n\n¡Gracias por cumplir con su comunidad!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 px-3 text-xs font-black text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer transition-colors"
               >
-                Abrir Verificación QR
-              </button>
-              <button
-                onClick={() => setGeneratedReceipt(null)}
-                className="px-4 py-2.5 text-xs font-bold text-slate-300 hover:text-white rounded-xl cursor-pointer"
-              >
-                Cerrar
-              </button>
+                <MessageCircle className="w-4 h-4" />
+                <span>Enviar Recibo por WhatsApp</span>
+              </a>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    navigate(`/verificar-recibo?token=${generatedReceipt.token}&receipt=${generatedReceipt.receiptNumber}`);
+                    setGeneratedReceipt(null);
+                  }}
+                  className="flex-1 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 cursor-pointer"
+                >
+                  Abrir Verificación QR
+                </button>
+                <button
+                  onClick={() => setGeneratedReceipt(null)}
+                  className="px-4 py-2.5 text-xs font-bold text-slate-300 hover:text-white rounded-xl cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>

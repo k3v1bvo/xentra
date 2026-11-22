@@ -28,14 +28,14 @@ import { useTenantStore } from '../stores/tenantStore';
 import { AppRole } from '@xentra/shared';
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard Comunal', icon: LayoutDashboard },
-  { to: '/admin/vecinos', label: 'Vecinos & Mapa Catastral', icon: Users },
-  { to: '/admin/finanzas', label: 'Finanzas & Tesorería', icon: Wallet },
-  { to: '/admin/finanzas?tab=config_qr', label: 'Banco & QR Oficial OTB', icon: QrCode },
-  { to: '/admin/trace', label: 'XENTRA TRACE', icon: GitBranch },
-  { to: '/admin/auditor', label: 'XENTRA AI Auditor', icon: ShieldAlert },
-  { to: '/admin/vota', label: 'XENTRA VOTA', icon: Vote },
-  { to: '/verificar-recibo', label: 'Verificar Recibo QR', icon: QrCode }
+  { to: '/admin', label: 'Inicio / Resumen', icon: LayoutDashboard },
+  { to: '/admin/vecinos', label: 'Padrón y Mapa de Manzanos', icon: Users },
+  { to: '/admin/finanzas', label: 'Caja y Recibos', icon: Wallet },
+  { to: '/admin/finanzas?tab=config_qr', label: 'Cobro por QR y Banco', icon: QrCode },
+  { to: '/admin/trace', label: 'Libro de Movimientos', icon: GitBranch },
+  { to: '/admin/auditor', label: 'Control de Cuentas', icon: ShieldAlert },
+  { to: '/admin/vota', label: 'Asambleas y Votaciones', icon: Vote },
+  { to: '/verificar-recibo', label: 'Comprobar Recibo QR', icon: QrCode }
 ];
 
 export const AdminLayout: React.FC = () => {

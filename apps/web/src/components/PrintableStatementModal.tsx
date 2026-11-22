@@ -353,13 +353,13 @@ export const PrintableStatementModal: React.FC<PrintableStatementModalProps> = (
               <div className="space-y-0.5 overflow-hidden text-left">
                 <div className="flex items-center gap-1 text-blue-950 font-black text-[10px] uppercase">
                   <ShieldCheck className="w-3.5 h-3.5 text-blue-700 flex-shrink-0" />
-                  <span>XENTRA TRACE</span>
+                  <span>Sello Oficial de Tesorería</span>
                 </div>
                 <p className="text-[9px] text-slate-600 leading-tight">
-                  Escanea para certificar autenticidad legal en el libro mayor.
+                  Escanea para comprobar la autenticidad de tus cuotas y recibos.
                 </p>
-                <p className="text-[8px] font-mono text-slate-500 truncate pt-0.5">
-                  SHA-256: {data.tokenHash ? data.tokenHash.slice(0, 24) : '7a9f2b84c13e5d02'}...
+                <p className="text-[8px] font-mono text-slate-600 truncate pt-0.5">
+                  Registro Comunal N° {data.socioCode}
                 </p>
               </div>
             </div>

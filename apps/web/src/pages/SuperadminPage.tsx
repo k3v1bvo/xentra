@@ -245,7 +245,7 @@ export const SuperadminPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <XentraLogo size="md" variant="light" />
           <span className="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
-            Consola Superadmin Nacional • Multi-Tenant Bolivia
+            Administración General de OTBs de Bolivia
           </span>
         </div>
 

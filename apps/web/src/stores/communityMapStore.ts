@@ -33,42 +33,43 @@ export interface OtbTerritoryConfig {
 }
 
 const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
-  // OTB Villa Graciela (OTB No. 24 - Distrito 1 GAMC Cochabamba)
+  // OTB Villa Graciela (Distrito 1 - Cochabamba)
   '11111111-1111-1111-1111-111111111111': {
     otbId: '11111111-1111-1111-1111-111111111111',
     otbName: 'OTB Villa Graciela (Distrito 1)',
-    centerLat: -17.41315,
-    centerLng: -66.16495,
+    centerLat: -17.4128,
+    centerLng: -66.1654,
     zoom: 16,
-    // Perímetro oficial ajustado al trazado vial del GAMC (Distrito 1)
+    // Perímetro oficial único de la OTB delimitado por las calles limítrofes reales
     perimeter: [
-      [-17.4110, -66.1672], // NO: Av. Circunvalación Norte
-      [-17.4110, -66.1616], // NE: Av. Circunvalación esq. Calle Los Pinos (Límite con OTB 6 Pacata Central)
-      [-17.4154, -66.1616], // SE: Av. Litoral Sur esq. Calle Los Pinos
-      [-17.4154, -66.1677], // Sur: Av. Litoral Sur
-      [-17.4151, -66.1687], // SO: Curva de unión vial
-      [-17.4144, -66.1692], // Oeste: Curva limítrofe con OTB 13 Mesadilla
-      [-17.4127, -66.1686], // NO: Corredor curvo
-      [-17.4118, -66.1680]  // Cierre NO
+      [-17.4105, -66.1672], // NO: Av. 6 de Agosto esq. Calle Villar / José Aguirre Gainsborg
+      [-17.4108, -66.1648], // N: Av. 6 de Agosto (frente a Plaza Walter Arze)
+      [-17.4112, -66.1632], // N-NE: Av. 6 de Agosto curva
+      [-17.4116, -66.1622], // NE: Av. 6 de Agosto esq. Calle Carlos Taboada
+      [-17.4130, -66.1622], // Este: Calle Carlos Taboada
+      [-17.4146, -66.1622], // SE: Calle Carlos Taboada esq. Calle Viloma
+      [-17.4146, -66.1665], // Sur: Calle Viloma
+      [-17.4145, -66.1682], // SO: Calle Viloma esq. Calle Villar
+      [-17.4137, -66.1680], // Oeste: Calle Villar
+      [-17.4125, -66.1678]  // NO: Curva hacia Av. 6 de Agosto
     ],
-    // Manzanos trazados con cuadrícula orgánica oficial y corredores viales reales
+    // Manzanos trazados respetando los corredores de calles reales de OpenStreetMap
     manzanos: [
-      // FILA NORTE (Bordeando Av. Circunvalación Norte)
+      // FILA NORTE (Delimitados entre Av. 6 de Agosto y Calle Guaqui)
       {
         id: 'mza-263',
         code: '263',
         name: 'Manzano 263',
-        color: '#FDBA74', // Durazno Melocotón (Plano GAMC OTB 24)
+        color: '#FDBA74',
         polygon: [
-          [-17.4114, -66.1669],
-          [-17.4114, -66.1656],
-          [-17.4124, -66.1656],
-          [-17.4124, -66.1675],
-          [-17.4119, -66.1673],
-          [-17.4115, -66.1670]
+          [-17.4109, -66.1674],
+          [-17.4111, -66.1669],
+          [-17.4116, -66.1669],
+          [-17.4116, -66.1676],
+          [-17.4112, -66.1676]
         ],
         lotsCount: 22,
-        description: 'Av. Circunvalación Norte esq. Calle Cochabamba • Esquina curva noroeste'
+        description: 'Sector Noroeste • Av. 6 de Agosto esq. Calle Sipe Sipe (22 Lotes)'
       },
       {
         id: 'mza-262',
@@ -76,13 +77,13 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 262',
         color: '#FDBA74',
         polygon: [
-          [-17.4114, -66.1652],
-          [-17.4114, -66.1638],
-          [-17.4124, -66.1638],
-          [-17.4124, -66.1652]
+          [-17.4112, -66.1664],
+          [-17.4114, -66.1650],
+          [-17.4116, -66.1650],
+          [-17.4116, -66.1664]
         ],
         lotsCount: 24,
-        description: 'Sector Central Norte • 24 Lotes Censados'
+        description: 'Sector Norte Central • Calle Sipe Sipe hacia Av. de la Fuerza Aérea (24 Lotes)'
       },
       {
         id: 'mza-261',
@@ -90,30 +91,30 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 261',
         color: '#FDBA74',
         polygon: [
-          [-17.4114, -66.1634],
-          [-17.4114, -66.1620],
-          [-17.4124, -66.1620],
-          [-17.4124, -66.1634]
+          [-17.4115, -66.1644],
+          [-17.4118, -66.1624],
+          [-17.4121, -66.1624],
+          [-17.4121, -66.1644]
         ],
         lotsCount: 20,
-        description: 'Av. Circunvalación Norte esq. Calle Los Pinos (Límite OTB 6 Pacata Central)'
+        description: 'Sector Noreste • Av. 6 de Agosto esq. Calle Carlos Taboada (20 Lotes)'
       },
 
-      // FILA CENTRAL (Bordeando Calle Los Ceibos y Calle Las Retamas)
+      // FILA MEDIA (Delimitados entre Calle Guaqui y Calle Tablas)
       {
         id: 'mza-267',
         code: '267',
         name: 'Manzano 267',
         color: '#FDBA74',
         polygon: [
-          [-17.4127, -66.1678],
-          [-17.4127, -66.1656],
-          [-17.4136, -66.1656],
-          [-17.4136, -66.1683],
-          [-17.4131, -66.1681]
+          [-17.4120, -66.1677],
+          [-17.4120, -66.1669],
+          [-17.4135, -66.1669],
+          [-17.4135, -66.1678],
+          [-17.4128, -66.1678]
         ],
         lotsCount: 26,
-        description: 'Sector Residencial Oeste • Borde vial diagonal con OTB 13'
+        description: 'Sector Oeste • Calle Villar esq. Calle Ayoma (26 Lotes)'
       },
       {
         id: 'mza-266',
@@ -121,45 +122,44 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 266',
         color: '#FDBA74',
         polygon: [
-          [-17.4127, -66.1652],
-          [-17.4127, -66.1638],
-          [-17.4136, -66.1638],
-          [-17.4136, -66.1652]
+          [-17.4120, -66.1664],
+          [-17.4120, -66.1650],
+          [-17.4135, -66.1650],
+          [-17.4135, -66.1664]
         ],
         lotsCount: 28,
-        description: 'Corazón de la OTB • 28 Lotes Censados (Incluye Sede Social)'
+        description: 'Sector Central • Sede Social de la OTB y salón comunal (28 Lotes)'
       },
       {
         id: 'mza-265',
         code: '265',
-        name: 'Manzano 265',
-        color: '#FDBA74',
+        name: 'Área Verde & Cancha Comunal',
+        color: '#16A34A',
         polygon: [
-          [-17.4127, -66.1634],
-          [-17.4127, -66.1620],
-          [-17.4136, -66.1620],
-          [-17.4136, -66.1634]
+          [-17.4124, -66.1644],
+          [-17.4124, -66.1624],
+          [-17.4135, -66.1624],
+          [-17.4135, -66.1644]
         ],
-        lotsCount: 22,
-        description: 'Sector Residencial Este • Calle Los Pinos'
+        lotsCount: 0,
+        description: '🌳 Complejo Deportivo, Cancha Polifuncional con Tinglado y Parque Infantil'
       },
 
-      // FILA SUR (Bordeando Av. Litoral Sur)
+      // FILA SUR (Delimitados entre Calle Tablas y Calle Viloma)
       {
         id: 'mza-270',
         code: '270',
         name: 'Manzano 270 (Gran Manzano Suroeste)',
         color: '#FDBA74',
         polygon: [
-          [-17.4139, -66.1685],
-          [-17.4139, -66.1648],
-          [-17.4150, -66.1648],
-          [-17.4150, -66.1675],
-          [-17.4148, -66.1684],
-          [-17.4144, -66.1688]
+          [-17.4139, -66.1680],
+          [-17.4139, -66.1665],
+          [-17.4144, -66.1665],
+          [-17.4144, -66.1681],
+          [-17.4141, -66.1681]
         ],
-        lotsCount: 38,
-        description: 'Gran Manzano Suroeste • Curva vial y emblema oficial OTB 24'
+        lotsCount: 36,
+        description: 'Gran Manzano Suroeste • Calle Villar y Calle Viloma (36 Lotes)'
       },
       {
         id: 'mza-268',
@@ -167,13 +167,13 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 268',
         color: '#FDBA74',
         polygon: [
-          [-17.4139, -66.1644],
-          [-17.4139, -66.1632],
-          [-17.4150, -66.1632],
-          [-17.4150, -66.1644]
+          [-17.4139, -66.1660],
+          [-17.4139, -66.1650],
+          [-17.4144, -66.1650],
+          [-17.4144, -66.1660]
         ],
         lotsCount: 20,
-        description: 'Sector Sur Central • 20 Lotes Censados'
+        description: 'Sector Sur Central • Calle Viloma esq. Calle Colomi (20 Lotes)'
       },
       {
         id: 'mza-269',
@@ -181,13 +181,13 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         name: 'Manzano 269',
         color: '#FDBA74',
         polygon: [
-          [-17.4139, -66.1628],
-          [-17.4139, -66.1620],
-          [-17.4150, -66.1620],
-          [-17.4150, -66.1628]
+          [-17.4139, -66.1644],
+          [-17.4139, -66.1624],
+          [-17.4144, -66.1624],
+          [-17.4144, -66.1644]
         ],
         lotsCount: 18,
-        description: 'Sector Pasaje Los Pinos Sur • Límite con OTB 6 Pacata Central'
+        description: 'Sector Sureste • Calle Viloma esq. Calle Carlos Taboada (18 Lotes)'
       }
     ],
     facilities: [
@@ -195,48 +195,48 @@ const DEFAULT_TERRITORIES: Record<string, OtbTerritoryConfig> = {
         id: 'fac-1',
         name: '🏛️ Sede Social OTB Villa Graciela',
         category: 'sede',
-        lat: -17.4131,
-        lng: -66.1648,
+        lat: -17.4127,
+        lng: -66.1657,
         description: 'Salón de Asambleas Generales, Oficina de Presidencia y Secretaría.'
       },
       {
         id: 'fac-2',
         name: '⚽ Cancha Polifuncional & Tinglado',
         category: 'cancha',
-        lat: -17.4131,
-        lng: -66.1630,
+        lat: -17.4129,
+        lng: -66.1634,
         description: 'Complejo deportivo barrial con obra de tinglado metálico e iluminación LED.'
       },
       {
         id: 'fac-3',
         name: '🚨 Alarma Vecinal & Cámara de Seguridad (Acceso Norte)',
         category: 'seguridad',
-        lat: -17.4111,
-        lng: -66.1650,
-        description: 'Pulsador de pánico vecinal y monitoreo de ingreso por Av. Circunvalación.'
+        lat: -17.4110,
+        lng: -66.1666,
+        description: 'Pulsador de pánico vecinal e ingreso por Av. 6 de Agosto y Calle Sipe Sipe.'
       },
       {
         id: 'fac-4',
         name: '🚨 Alarma Vecinal & Cámara de Seguridad (Acceso Sur)',
         category: 'seguridad',
-        lat: -17.4151,
-        lng: -66.1650,
-        description: 'Circuito preventivo en Av. Litoral.'
+        lat: -17.4145,
+        lng: -66.1663,
+        description: 'Circuito preventivo en Calle Viloma y Calle Sipe Sipe.'
       },
       {
         id: 'fac-5',
         name: '💧 Tanque Comunitario y Válvula Matriz',
         category: 'agua',
-        lat: -17.4144,
-        lng: -66.1630,
+        lat: -17.4132,
+        lng: -66.1634,
         description: 'Punto de distribución de agua potable y control de presión barrial.'
       },
       {
         id: 'fac-6',
         name: '🛝 Parque Infantil y Área Verde',
         category: 'parque',
-        lat: -17.4134,
-        lng: -66.1630,
+        lat: -17.4126,
+        lng: -66.1634,
         description: 'Juegos infantiles, jardines comunales y bancos de descanso vecinal.'
       }
     ],
@@ -648,7 +648,7 @@ export const useCommunityMapStore = create<CommunityMapState>()(
       }
     }),
     {
-      name: 'xentra_community_territory_v3_gamc_catastro'
+      name: 'xentra_community_territory_v6_single_otb_streets_real'
     }
   )
 );

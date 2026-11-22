@@ -687,9 +687,9 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
-            <span className="text-[11px] font-bold text-blue-400 block uppercase tracking-wider">Colindancias</span>
-            <p className="font-black text-white text-sm mt-0.5">5 OTBs Vecinas</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">Pacata Central, Luján, 10 de Dic., FAB y Mesadilla</span>
+            <span className="text-[11px] font-bold text-blue-400 block uppercase tracking-wider">Calles Libres</span>
+            <p className="font-black text-white text-sm mt-0.5">Visibilidad Total</p>
+            <span className="text-[11px] text-slate-400 block mt-0.5">Av. 6 de Agosto, Calle Sipe Sipe, Viloma y Villar</span>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#030712] border border-slate-800/80">
@@ -712,7 +712,7 @@ export const LandingPage: React.FC = () => {
             </div>
 
             <a
-              href="https://www.google.com/maps?q=-17.41315,-66.16495"
+              href="https://www.google.com/maps?q=-17.4128,-66.1654"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1.5 transition-colors self-start sm:self-auto"
@@ -723,8 +723,8 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <CommunityInteractiveMap
-            centerLat={-17.41315}
-            centerLng={-66.16495}
+            centerLat={-17.4128}
+            centerLng={-66.1654}
             zoom={16}
             heightClass="h-[460px] sm:h-[540px] lg:h-[620px]"
             otbName="OTB Villa Graciela (Distrito 1 Cochabamba)"

@@ -105,105 +105,6 @@ const COCHABAMBA_CADASTRE_PALETTE = [
   { name: 'Verde Lima', color: '#86EFAC' }
 ];
 
-// OTBs Colindantes del Distrito 1 de Cochabamba (GAMC - DOT), réplica fidedigna del plano municipal
-const COCHABAMBA_DISTRICT_1_NEIGHBORS = [
-  {
-    code: '6',
-    name: 'OTB Pacata Central',
-    color: '#FEF08A', // Amarillo Crema (Plano GAMC)
-    borderColor: '#CA8A04',
-    direction: 'Este (Colindancia)',
-    polygon: [
-      [-17.4110, -66.1614],
-      [-17.4110, -66.1560],
-      [-17.4154, -66.1560],
-      [-17.4154, -66.1614]
-    ] as [number, number][],
-    description: 'OTB Colindante al Este • Incluye manzanos 271, 272 y Área Verde comunal'
-  },
-  {
-    code: '22',
-    name: 'OTB Virgen de Luján',
-    color: '#FECDD3', // Rosa Distrito (Plano GAMC)
-    borderColor: '#E11D48',
-    direction: 'Norte (Cruzando Av. Circunvalación)',
-    polygon: [
-      [-17.4072, -66.1672],
-      [-17.4072, -66.1616],
-      [-17.4106, -66.1616],
-      [-17.4106, -66.1672]
-    ] as [number, number][],
-    description: 'OTB Colindante al Norte • Manzanos 180, 181, 182 y Plaza Barrial'
-  },
-  {
-    code: '13',
-    name: 'OTB Mesadilla',
-    color: '#FDA4AF', // Rosa Coral
-    borderColor: '#E11D48',
-    direction: 'Oeste (Cruzando Av. de Conexión)',
-    polygon: [
-      [-17.4110, -66.1735],
-      [-17.4110, -66.1688],
-      [-17.4154, -66.1688],
-      [-17.4154, -66.1735]
-    ] as [number, number][],
-    description: 'OTB Colindante al Oeste • Distrito 1 GAMC Cochabamba'
-  },
-  {
-    code: '4',
-    name: 'OTB Aeronáutica FAB',
-    color: '#ECFCCB', // Verde Lima Claro (Plano GAMC)
-    borderColor: '#65A30D',
-    direction: 'Sur-Este (Cruzando Av. Litoral)',
-    polygon: [
-      [-17.4158, -66.1614],
-      [-17.4158, -66.1555],
-      [-17.4188, -66.1555],
-      [-17.4188, -66.1614]
-    ] as [number, number][],
-    description: 'OTB Colindante al Sur-Este • Manzanos de la Fuerza Aérea'
-  },
-  {
-    code: '5',
-    name: 'OTB Urb. SEMAPA',
-    color: '#BBF7D0', // Verde Bosque Claro (Plano GAMC)
-    borderColor: '#16A34A',
-    direction: 'Sur (Corredor Ecológico y Torrentera)',
-    polygon: [
-      [-17.4158, -66.1686],
-      [-17.4158, -66.1620],
-      [-17.4185, -66.1620],
-      [-17.4185, -66.1686]
-    ] as [number, number][],
-    description: 'OTB Colindante al Sur • Franja y torrentera de amortiguamiento ambiental'
-  },
-  {
-    code: '23',
-    name: 'OTB 10 de Diciembre',
-    color: '#FDE047', // Ocre Ámbar
-    borderColor: '#D97706',
-    direction: 'Noreste (Colindancia)',
-    polygon: [
-      [-17.4072, -66.1614],
-      [-17.4072, -66.1560],
-      [-17.4106, -66.1560],
-      [-17.4106, -66.1614]
-    ] as [number, number][],
-    description: 'OTB Colindante al Noreste • Distrito 1 GAMC Cochabamba'
-  }
-];
-
-// Calles y Avenidas principales de la cuadrícula urbana (para rotulación precisa)
-const COCHABAMBA_STREET_LABELS = [
-  { name: '🛣️ Av. Circunvalación Norte', lat: -17.4108, lng: -66.1650, type: 'avenida' },
-  { name: '🛣️ Av. Litoral Sur', lat: -17.4151, lng: -66.1650, type: 'avenida' },
-  { name: '🛣️ Av. Ecológica (Oeste)', lat: -17.4131, lng: -66.1678, type: 'avenida' },
-  { name: 'Calle Los Pinos (Límite Este)', lat: -17.4131, lng: -66.1618, type: 'calle' },
-  { name: 'Calle Los Ceibos', lat: -17.41255, lng: -66.1650, type: 'calle' },
-  { name: 'Calle Las Retamas', lat: -17.41375, lng: -66.1650, type: 'calle' },
-  { name: 'Calle Cochabamba', lat: -17.4131, lng: -66.1658, type: 'calle' }
-];
-
 export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = ({
   reports = [],
   neighbors = [],
@@ -264,8 +165,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
   const [layerFilters, setLayerFilters] = useState({
     perimetro: true,
     manzanos: true,
-    colindantes: true,
-    calles: true,
     equipamiento: true,
     vecinos: true,
     reportes: true
@@ -643,68 +542,8 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
           iconSize: [34, 34],
           iconAnchor: [17, 17]
         });
-        L.marker([-17.4142, -66.1666], { icon: otb24Icon }).addTo(group);
+        L.marker([-17.4141, -66.1673], { icon: otb24Icon }).addTo(group);
       }
-    }
-
-    // B.2 DIBUJAR OTBs COLINDANTES DEL DISTRITO 1 (GAMC)
-    if (layerFilters.colindantes && isCochabambaShowcase) {
-      COCHABAMBA_DISTRICT_1_NEIGHBORS.forEach((otb) => {
-        const poly = L.polygon(otb.polygon, {
-          color: otb.borderColor,
-          weight: 2,
-          dashArray: '5, 5',
-          fillColor: otb.color,
-          fillOpacity: 0.38
-        }).addTo(group);
-
-        poly.bindPopup(`
-          <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4; min-width: 220px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #CBD5E1; padding-bottom: 4px;">
-              <strong style="color: #0F172A; font-size: 14px;">🏘️ ${otb.name}</strong>
-              <span style="background: ${otb.color}; color: #0F172A; font-weight: 900; font-size: 11px; padding: 2px 7px; border-radius: 6px; border: 1px solid ${otb.borderColor};">
-                OTB No. ${otb.code}
-              </span>
-            </div>
-            <p style="color: #475569; font-size: 12px; margin: 4px 0;">${otb.description}</p>
-            <div style="font-size: 11px; color: #64748B; font-weight: bold; margin-top: 4px;">
-              📍 Ubicación: ${otb.direction}
-            </div>
-          </div>
-        `);
-
-        // Badge en el centro de la OTB colindante
-        const centroid = getPolygonCentroid(otb.polygon);
-        const otbLabelIcon = L.divIcon({
-          html: `
-            <div style="background-color: ${otb.color}; color: #0F172A; padding: 2.5px 8px; border-radius: 12px; font-weight: 900; font-size: 11px; font-family: ui-monospace, monospace; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1.5px solid ${otb.borderColor}; opacity: 0.95; cursor: pointer;">
-              <span>OTB ${otb.code}: ${otb.name.replace('OTB ', '')}</span>
-            </div>
-          `,
-          className: 'otb-colindante-label',
-          iconSize: [80, 22],
-          iconAnchor: [40, 11]
-        });
-        L.marker(centroid, { icon: otbLabelIcon }).addTo(group);
-      });
-    }
-
-    // B.3 DIBUJAR ROTULACIÓN DE CALLES Y AVENIDAS
-    if (layerFilters.calles && isCochabambaShowcase) {
-      COCHABAMBA_STREET_LABELS.forEach((st) => {
-        const isAvenue = st.type === 'avenida';
-        const streetIcon = L.divIcon({
-          html: `
-            <div style="background-color: ${isAvenue ? '#0F172A' : '#1E293B'}; color: ${isAvenue ? '#38BDF8' : '#94A3B8'}; padding: 1.5px 6px; border-radius: 6px; font-weight: 800; font-size: 9.5px; font-family: system-ui, sans-serif; white-space: nowrap; border: 1px solid ${isAvenue ? '#0284C7' : '#334155'}; pointer-events: none; letter-spacing: 0.3px; box-shadow: 0 1px 4px rgba(0,0,0,0.4);">
-              ${st.name}
-            </div>
-          `,
-          className: 'street-label-icon',
-          iconSize: [60, 18],
-          iconAnchor: [30, 9]
-        });
-        L.marker([st.lat, st.lng], { icon: streetIcon }).addTo(group);
-      });
     }
 
     // C. DIBUJAR VIVIENDAS DE LOS VECINOS REGISTRADOS
@@ -1096,26 +935,6 @@ export const CommunityInteractiveMap: React.FC<CommunityInteractiveMapProps> = (
                 title="Mostrar Sede, Tinglado, Agua y Seguridad"
               >
                 <span>📍 Puntos Clave</span>
-              </button>
-
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, colindantes: !p.colindantes }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.colindantes ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar/Ocultar OTBs Colindantes del Distrito 1 (GAMC)"
-              >
-                <span>🗺️ OTBs Vecinas</span>
-              </button>
-
-              <button
-                onClick={() => setLayerFilters((p) => ({ ...p, calles: !p.calles }))}
-                className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-                  layerFilters.calles ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-                title="Mostrar/Ocultar Rótulos de Calles y Avenidas"
-              >
-                <span>🛣️ Calles</span>
               </button>
             </div>
           )}

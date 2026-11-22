@@ -171,16 +171,16 @@ export const AuditorPage: React.FC = () => {
           <TiltCard3D key={alert.id}>
             <div
               className={`p-6 rounded-3xl border-2 transition-all ${alert.isResolved
-                  ? 'bg-[#0B132B]/60 border-slate-800 opacity-80'
-                  : 'bg-[#0B132B]/90 border-amber-500/50 shadow-2xl'
+                ? 'bg-[#0B132B]/60 border-slate-800 opacity-80'
+                : 'bg-[#0B132B]/90 border-amber-500/50 shadow-2xl'
                 }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div
                     className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 ${alert.isResolved
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
                       }`}
                   >
                     {alert.isResolved ? (

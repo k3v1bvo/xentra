@@ -871,8 +871,8 @@ export const CommunityAlertsAndEmergencyModal: React.FC<CommunityAlertsAndEmerge
                   📍 O toca/haz clic en el mapa para marcar el lugar exacto:
                 </span>
                 <CommunityInteractiveMap
-                  centerLat={selectedOtbId.includes('2222') ? -16.54124 : -17.41325}
-                  centerLng={selectedOtbId.includes('2222') ? -68.08215 : -66.16543}
+                  centerLat={selectedOtbId.includes('2222') ? -16.54124 : -17.4128}
+                  centerLng={selectedOtbId.includes('2222') ? -68.08215 : -66.1654}
                   zoom={16}
                   heightClass="h-44 sm:h-52"
                   otbName={currentOtbInfo.name}

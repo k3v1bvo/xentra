@@ -525,11 +525,11 @@ export const VecinosPage: React.FC = () => {
 
               {/* Mapa Interactivo con Límites, Manzanos y pines de las casas con Modo Editor Admin */}
               <CommunityInteractiveMap
-                centerLat={focusedNeighbor ? focusedNeighbor.latitude : -17.41325}
-                centerLng={focusedNeighbor ? focusedNeighbor.longitude : -66.16543}
-                zoom={17}
+                centerLat={focusedNeighbor ? focusedNeighbor.latitude : -17.4128}
+                centerLng={focusedNeighbor ? focusedNeighbor.longitude : -66.1654}
+                zoom={16}
                 heightClass="h-96 sm:h-[480px]"
-                otbName={currentOtb?.name || 'OTB Villa Esperanza'}
+                otbName={currentOtb?.name || 'OTB Villa Graciela'}
                 otbId={currentOtb?.id || '11111111-1111-1111-1111-111111111111'}
                 selectedLotName={focusedNeighbor ? `${focusedNeighbor.name} — ${focusedNeighbor.block}, ${focusedNeighbor.house}` : undefined}
                 neighbors={visibleNeighbors}
@@ -588,11 +588,10 @@ export const VecinosPage: React.FC = () => {
               <button
                 key={mza}
                 onClick={() => setSelectedBlockFilter(mza)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap border ${
-                  selectedBlockFilter === mza
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap border ${selectedBlockFilter === mza
                     ? 'bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-600/30'
                     : 'bg-slate-900 text-slate-300 hover:text-white border-slate-800 hover:bg-slate-800'
-                }`}
+                  }`}
               >
                 {mza === 'ALL' ? 'Todos los Manzanos' : `Manzano ${mza}`}
               </button>
@@ -713,10 +712,9 @@ export const VecinosPage: React.FC = () => {
 
                           <a
                             href={`https://api.whatsapp.com/send?phone=591${vecino.phone.replace(/\D/g, '')}&text=${encodeURIComponent(
-                              `🏛️ *${currentOtb?.name || 'OTB Villa Graciela'} - Información Comunal*\n\nHola estimado(a) vecino(a) *${vecino.name}*, le saluda la Directiva de la OTB.\n\n${
-                                vecino.debt > 0
-                                  ? `Le recordamos amablemente que tiene un saldo de cuotas pendientes de *${formatBOB(vecino.debt)}* en su inmueble (${vecino.block}, ${vecino.house}). Puede cancelar por QR o pasar por la Sede Social.`
-                                  : `Le confirmamos que su lote (${vecino.block}, ${vecino.house}) se encuentra *al día* con todos sus aportes comunales. ¡Muchas gracias por su compromiso con el barrio!`
+                              `🏛️ *${currentOtb?.name || 'OTB Villa Graciela'} - Información Comunal*\n\nHola estimado(a) vecino(a) *${vecino.name}*, le saluda la Directiva de la OTB.\n\n${vecino.debt > 0
+                                ? `Le recordamos amablemente que tiene un saldo de cuotas pendientes de *${formatBOB(vecino.debt)}* en su inmueble (${vecino.block}, ${vecino.house}). Puede cancelar por QR o pasar por la Sede Social.`
+                                : `Le confirmamos que su lote (${vecino.block}, ${vecino.house}) se encuentra *al día* con todos sus aportes comunales. ¡Muchas gracias por su compromiso con el barrio!`
                               }`
                             )}`}
                             target="_blank"
